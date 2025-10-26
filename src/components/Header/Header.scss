@@ -13,7 +13,7 @@
     column-gap: 16px;
   }
 
-  &__title {
+  &__label {
     font-weight: 800;
     color: var(--color-white);
     font-size: fluid(25, 15);
@@ -28,6 +28,10 @@
     //@include tablet-above {
     //  justify-content: end;
     //}
+  }
+
+  &__icon {
+    padding: 8px;
   }
 
 

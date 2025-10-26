@@ -8,8 +8,6 @@
 
     --transition-duration: 0.2s;
 
-    --container-width: #{fluid-to-laptop(
-    $container-desktop-width,
-    $container-laptop-width)};
+    --container-width: #{fluid-to-laptop(1600, 1280)};
     --container-padding-x: 32px;
 }
