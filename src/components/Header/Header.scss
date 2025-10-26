@@ -1,0 +1,34 @@
+.header {
+  position: sticky;
+  z-index: 100;
+  top: 0;
+  width: 100%;
+  padding-block: fluid(20, 18);
+  background-color: var(--color-purple);
+
+  &__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 16px;
+  }
+
+  &__title {
+    font-weight: 800;
+    color: var(--color-white);
+    font-size: fluid(25, 15);
+  }
+
+  &__actions {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    align-items: center;
+    column-gap: fluid(15, 10);
+
+    //@include tablet-above {
+    //  justify-content: end;
+    //}
+  }
+
+
+}

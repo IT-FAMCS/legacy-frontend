@@ -1,0 +1,86 @@
+html {
+  &.is-lock {
+    overflow: hidden;
+  }
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-family-base) "Berlin Sans FB";
+  color: var(--color-grey);
+  background-color: var(--color-white);
+}
+
+main {
+  flex-grow: 1;
+}
+
+.container {
+  width: 100%;
+  max-width: calc(var(--container-width) + var(--container-padding-x) * 2);
+  margin-inline: auto; // горизонтальное центрирование
+  padding-inline: var(--container-padding-x);
+}
+
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+  color: var(--color-grey);
+}
+
+h1, .h1 {
+  font-size: fluid(58, 28);
+  font-weight: 700;
+}
+h2, .h2 {
+  font-size: fluid(48, 24);
+  font-weight: 700;
+}
+h3, .h3 {
+  font-size: fluid(38, 20);
+  font-weight: 700;
+}
+h4, .h4 {
+  font-size: fluid(24, 18);
+  font-weight: 600;
+}
+h5, .h5 {
+  font-size: fluid(22, 18);
+  font-weight: 500;
+}
+h6, .h6 {
+  font-size: fluid(20, 16);
+  font-weight: 600;
+}
+
+a,
+button,
+label,
+input,
+textarea,
+select,
+svg * {
+  transition-duration: var(--transition-duration);
+}
+
+a {
+  color: inherit;
+
+  @include hover {
+    color: var(--color-yellow);
+  }
+
+  &[class] {
+    text-decoration: none;
+  }
+}
+
+:focus-visible {
+  @include focus-visible;
+}
+
+
