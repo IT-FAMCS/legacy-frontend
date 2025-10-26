@@ -17,8 +17,13 @@ const Icon: React.FC<IconProps> = (
     }) => {
     return (
         <span className={clsx(className, 'icon')} aria-label={ariaLabel}>
-      <img src={src} alt="" loading="lazy" />
-    </span>
+            <img
+                className={clsx(className, 'icon')}
+                src={src}
+                alt=""
+                loading="lazy"
+            />
+        </span>
     );
 };
 
