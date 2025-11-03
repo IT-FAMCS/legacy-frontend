@@ -13,6 +13,8 @@ export interface ButtonProps {
     full?: boolean;
     fillColor?: boolean;
     style?: React.CSSProperties;
+    hoverStyle?: React.CSSProperties;
+    activeStyle?: React.CSSProperties;
 }
 
 const Button: React.FC<ButtonProps> = (
@@ -27,10 +29,16 @@ const Button: React.FC<ButtonProps> = (
         onClick,
         full,
         fillColor,
-        style
+        style,
+        hoverStyle,
+        activeStyle
     }) => {
     const isLink = typeof href === 'string';
     const borderStyle = !isLink ? 'none' : '1px solid #FFFFFF';
+
+    const [isHovered, setIsHovered] = React.useState(false);
+    const [isActive, setIsActive] = React.useState(false);
+
     const commonStyles: React.CSSProperties = {
         display: 'inline-flex',
         alignItems: 'center',
@@ -50,7 +58,10 @@ const Button: React.FC<ButtonProps> = (
         width: full ? '100%' : undefined,
         textDecoration: 'none',
         cursor: 'pointer',
-        ...style
+        transition: 'all 0.2s ease',
+        ...style,
+        ...(isHovered && hoverStyle),
+        ...(isActive && activeStyle)
     };
 
     const buttonContent = (
@@ -68,6 +79,18 @@ const Button: React.FC<ButtonProps> = (
         </>
     )
 
+    const interactionProps = {
+        onMouseEnter: () => setIsHovered(true),
+        onMouseLeave: () => {
+            setIsHovered(false);
+            setIsActive(false);
+        },
+        onMouseDown: () => setIsActive(true),
+        onMouseUp: () => setIsActive(false),
+        onTouchStart: () => setIsActive(true),
+        onTouchEnd: () => setIsActive(false),
+    };
+
     if (isLink) {
         return (
             <a
@@ -77,6 +100,7 @@ const Button: React.FC<ButtonProps> = (
                 title={isLabelHidden ? label : undefined}
                 aria-label={isLabelHidden ? label : undefined}
                 style={commonStyles}
+                {...interactionProps}
             >
                 {buttonContent}
             </a>
@@ -91,6 +115,7 @@ const Button: React.FC<ButtonProps> = (
             title={isLabelHidden ? label : undefined}
             aria-label={isLabelHidden ? label : undefined}
             style={commonStyles}
+            {...interactionProps}
         >
             {buttonContent}
         </button>
