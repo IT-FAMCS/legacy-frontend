@@ -23,6 +23,19 @@ const containerStyle: React.CSSProperties = {
     boxSizing: 'border-box'
 };
 
+const buttonHoverStyle: React.CSSProperties = {
+    background: '#FFFFFF',
+    color: '#686ACF',
+    border: '1px solid #FFFFFF'
+};
+
+const buttonActiveStyle: React.CSSProperties = {
+    background: '#F0F0F0',
+    color: '#686ACF',
+    border: '1px solid #FFFFFF',
+    transform: 'scale(0.98)'
+};
+
 const Header: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const isDesktop = useIsDesktop(768);
@@ -89,7 +102,8 @@ const Header: React.FC = () => {
         width: '100%',
         height: 2,
         background: '#FFFFFF',
-        borderRadius: 2
+        borderRadius: 2,
+        transition: 'all 0.2s ease'
     };
 
     const burgerMenuStyle = useMemo<React.CSSProperties>(() => ({
@@ -130,7 +144,8 @@ const Header: React.FC = () => {
         height: 32,
         border: 0,
         background: 'transparent',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        transition: 'all 0.2s ease'
     };
 
     const closeLineBase: React.CSSProperties = {
@@ -140,7 +155,8 @@ const Header: React.FC = () => {
         top: '50%',
         height: 2,
         background: '#FFFFFF',
-        borderRadius: 2
+        borderRadius: 2,
+        transition: 'all 0.2s ease'
     };
 
     return (
@@ -157,7 +173,12 @@ const Header: React.FC = () => {
 
                     {isDesktop ? (
                         <nav style={{ display: 'inline-flex', alignItems: 'center', gap: 12 }}>
-                            <Button href="/" label="НА ГЛАВНУЮ" />
+                            <Button
+                                href="/"
+                                label="НА ГЛАВНУЮ"
+                                hoverStyle={buttonHoverStyle}
+                                activeStyle={buttonActiveStyle}
+                            />
                             <Button
                                 href="#"
                                 isLabelHidden
@@ -173,6 +194,14 @@ const Header: React.FC = () => {
                             aria-label="Открыть меню"
                             onClick={() => setIsMenuOpen(true)}
                             style={burgerStyle}
+                            onMouseEnter={(e) => {
+                                const target = e.currentTarget;
+                                target.style.gap = '5px';
+                            }}
+                            onMouseLeave={(e) => {
+                                const target = e.currentTarget;
+                                target.style.gap = '4px';
+                            }}
                         >
                             <span style={burgerLineStyle} />
                             <span style={burgerLineStyle} />
@@ -196,16 +225,56 @@ const Header: React.FC = () => {
                             aria-label="Закрыть меню"
                             onClick={() => setIsMenuOpen(false)}
                             style={closeBtnStyle}
+                            onMouseEnter={(e) => {
+                                const target = e.currentTarget;
+                                target.style.transform = 'rotate(90deg)';
+                                const lines = target.querySelectorAll('span');
+                                lines.forEach(line => {
+                                    (line as HTMLElement).style.background = '#686ACF';
+                                });
+                            }}
+                            onMouseLeave={(e) => {
+                                const target = e.currentTarget;
+                                target.style.transform = 'rotate(0deg)';
+                                const lines = target.querySelectorAll('span');
+                                lines.forEach(line => {
+                                    (line as HTMLElement).style.background = '#FFFFFF';
+                                });
+                            }}
                         >
                             <span style={{ ...closeLineBase, transform: 'translateY(-50%) rotate(45deg)' }} />
                             <span style={{ ...closeLineBase, transform: 'translateY(-50%) rotate(-45deg)' }} />
                         </button>
                     </div>
                     <nav style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
-                        <Button full href="/" label="На главную" />
-                        <Button full href="#" label="Раздел 1" />
-                        <Button full href="#" label="Раздел 2" />
-                        <Button full href="#" label="Раздел 3" />
+                        <Button
+                            full
+                            href="/"
+                            label="На главную"
+                            hoverStyle={buttonHoverStyle}
+                            activeStyle={buttonActiveStyle}
+                        />
+                        <Button
+                            full
+                            href="#"
+                            label="Раздел 1"
+                            hoverStyle={buttonHoverStyle}
+                            activeStyle={buttonActiveStyle}
+                        />
+                        <Button
+                            full
+                            href="#"
+                            label="Раздел 2"
+                            hoverStyle={buttonHoverStyle}
+                            activeStyle={buttonActiveStyle}
+                        />
+                        <Button
+                            full
+                            href="#"
+                            label="Раздел 3"
+                            hoverStyle={buttonHoverStyle}
+                            activeStyle={buttonActiveStyle}
+                        />
                     </nav>
                     <div style={{ marginTop: 10, marginInline: 'auto' }}>
                         <Button
