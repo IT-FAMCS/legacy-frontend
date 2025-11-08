@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import Icon from '../Icon/Icon';
-import Button from '../Button/Button';
+import Icon from '../../components/Icon/Icon';
+import Button from '../../components/Button/Button';
 import '../../styles/variables.scss';
 
 const useIsDesktop = (bp = 768) => {
