@@ -4,6 +4,15 @@ html {
   }
 }
 
+:root {
+  --color-gold-crest: #DF9E37;
+
+  --transition-duration: 0.2s;
+
+  --container-width: #{fluid-to-laptop(1600, 1280)};
+  --container-padding-x: 32px;
+}
+
 #root {
   min-width: 100%;
   min-height: 100%;
@@ -12,9 +21,10 @@ html {
 body {
   display: flex;
   flex-direction: column;
-  font-family: var(--font-family-base) "Berlin Sans FB";
-  color: var(--color-grey);
-  background-color: var(--color-white);
+  color: #46484F;
+  background-color: #FFFFFF;
+  margin: 0;
+  padding: 0;
 }
 
 main {
@@ -24,7 +34,7 @@ main {
 .container {
   width: 100%;
   max-width: calc(var(--container-width) + var(--container-padding-x) * 2);
-  margin-inline: auto; // горизонтальное центрирование
+  //margin-inline: auto;
   padding-inline: var(--container-padding-x);
 }
 
@@ -70,22 +80,6 @@ textarea,
 select,
 svg * {
   transition-duration: var(--transition-duration);
-}
-
-a {
-  color: inherit;
-
-  @include hover {
-    color: var(--color-yellow);
-  }
-
-  &[class] {
-    text-decoration: none;
-  }
-}
-
-:focus-visible {
-  @include focus-visible;
 }
 
 

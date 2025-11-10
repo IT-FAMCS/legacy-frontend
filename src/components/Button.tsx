@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon from '../Icon/Icon';
+import Icon from './Icon.tsx';
 
 export interface ButtonProps {
     className?: string;
@@ -17,7 +17,7 @@ export interface ButtonProps {
     activeStyle?: React.CSSProperties;
 }
 
-const Button: React.FC<ButtonProps> = (
+const Button = (
     {
         className,
         href,
@@ -32,8 +32,9 @@ const Button: React.FC<ButtonProps> = (
         style,
         hoverStyle,
         activeStyle
-    }) => {
+    }: ButtonProps) => {
     const isLink = typeof href === 'string';
+    const Component = isLink ? 'a' : 'button';
     const borderStyle = !isLink ? 'none' : '1px solid #FFFFFF';
 
     const [isHovered, setIsHovered] = React.useState(false);
@@ -91,24 +92,8 @@ const Button: React.FC<ButtonProps> = (
         onTouchEnd: () => setIsActive(false),
     };
 
-    if (isLink) {
-        return (
-            <a
-                className={className}
-                href={href}
-                onClick={onClick as any}
-                title={isLabelHidden ? label : undefined}
-                aria-label={isLabelHidden ? label : undefined}
-                style={commonStyles}
-                {...interactionProps}
-            >
-                {buttonContent}
-            </a>
-        );
-    }
-
     return (
-        <button
+        <Component
             className={className}
             type={type}
             onClick={onClick}
@@ -118,7 +103,7 @@ const Button: React.FC<ButtonProps> = (
             {...interactionProps}
         >
             {buttonContent}
-        </button>
+        </Component>
     );
 };
 

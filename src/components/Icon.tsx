@@ -8,30 +8,30 @@ export interface IconProps {
     style?: React.CSSProperties;
 }
 
-const Icon: React.FC<IconProps> = (
+const Icon = (
     {
         className,
         src,
         ariaLabel,
         size = 40,
         style
-    }) => {
+    }: IconProps) => {
 
     return (
-        <span
-            className={className}
-            aria-label={ariaLabel}
-            role={ariaLabel ? 'img' : undefined}
-            style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: size,
-                height: size,
-                ...style
-            }}
-        >
-      <img
+      <span
+          className={className}
+          aria-label={ariaLabel}
+          role={ariaLabel ? 'img' : undefined}
+          style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: size,
+              height: size,
+              ...style
+          }}
+      >
+        <img
           src={src}
           alt=""
           loading="lazy"
@@ -41,8 +41,8 @@ const Icon: React.FC<IconProps> = (
               height: '100%',
               objectFit: 'contain'
           }}
-      />
-    </span>
+        />
+      </span>
     );
 };
 

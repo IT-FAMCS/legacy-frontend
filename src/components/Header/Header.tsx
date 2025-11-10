@@ -1,19 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import Icon from '../Icon/Icon';
-import Button from '../Button/Button';
-import '../../styles/variables.scss';
-
-const useIsDesktop = (bp = 768) => {
-    const [isDesk, setIsDesk] = useState(
-        typeof window !== 'undefined' ? window.innerWidth >= bp : true
-    );
-    useEffect(() => {
-        const onResize = () => setIsDesk(window.innerWidth >= bp);
-        window.addEventListener('resize', onResize);
-        return () => window.removeEventListener('resize', onResize);
-    }, [bp]);
-    return isDesk;
-};
+import Icon from '../Icon.tsx';
+import Button from '../Button.tsx';
+import '../../styles/globals.scss';
+import useIsDesktop from './useIsDesktop.js';
 
 const containerStyle: React.CSSProperties = {
     width: '100%',
@@ -36,7 +25,7 @@ const buttonActiveStyle: React.CSSProperties = {
     transform: 'scale(0.98)'
 };
 
-const Header: React.FC = () => {
+const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const isDesktop = useIsDesktop(768);
 
@@ -159,6 +148,25 @@ const Header: React.FC = () => {
         transition: 'all 0.2s ease'
     };
 
+    const headerLinks = [
+        {
+            href: '#',
+            label: 'На главную',
+        },
+        {
+            href: '#',
+            label: '1',
+        },
+        {
+            href: '#',
+            label: '2',
+        },
+        {
+            href: '#',
+            label: '3',
+        },
+    ]
+
     return (
         <header>
             <div style={headerBarStyle}>
@@ -211,7 +219,7 @@ const Header: React.FC = () => {
                 </div>
             </div>
 
-            <aside aria-hidden={!isMenuOpen} style={burgerMenuStyle}>
+            <div aria-hidden={!isMenuOpen} style={burgerMenuStyle}>
                 <div style={burgerMenuInnerStyle}>
                     <div style={burgerMenuHeadStyle}>
                         <a href="/" style={brandStyle} onClick={() => setIsMenuOpen(false)}>
@@ -247,34 +255,16 @@ const Header: React.FC = () => {
                         </button>
                     </div>
                     <nav style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
-                        <Button
-                            full
-                            href="/"
-                            label="На главную"
-                            hoverStyle={buttonHoverStyle}
-                            activeStyle={buttonActiveStyle}
-                        />
-                        <Button
-                            full
-                            href="#"
-                            label="Раздел 1"
-                            hoverStyle={buttonHoverStyle}
-                            activeStyle={buttonActiveStyle}
-                        />
-                        <Button
-                            full
-                            href="#"
-                            label="Раздел 2"
-                            hoverStyle={buttonHoverStyle}
-                            activeStyle={buttonActiveStyle}
-                        />
-                        <Button
-                            full
-                            href="#"
-                            label="Раздел 3"
-                            hoverStyle={buttonHoverStyle}
-                            activeStyle={buttonActiveStyle}
-                        />
+                        {headerLinks.map(({ href, label }, index) => (
+                            <Button
+                                full
+                                href={href}
+                                label={label}
+                                hoverStyle={buttonHoverStyle}
+                                activeStyle={buttonActiveStyle}
+                                key={index}
+                            />
+                        ))}
                     </nav>
                     <div style={{ marginTop: 10, marginInline: 'auto' }}>
                         <Button
@@ -288,7 +278,7 @@ const Header: React.FC = () => {
                         />
                     </div>
                 </div>
-            </aside>
+            </div>
         </header>
     );
 };

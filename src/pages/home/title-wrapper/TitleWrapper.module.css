@@ -1,7 +1,7 @@
 .wrapper {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   background: url("../../../assets/images/title-wrapper-bg.png");
   background-size: cover;
   background-position: center;
@@ -14,7 +14,7 @@
   width: 3rem;
   position: absolute; 
   top: 10%;
-  left: 2.5%;
+  left: 25px;
 }
 
 .title-container {
@@ -23,21 +23,25 @@
   justify-content: flex-end;
   align-items: center;
   gap: 40px;
+  margin-block: 13vh;
+  width: 100%;
 }
 
 .subtitle-text {
   font-weight: 500;
   text-align: center;
   justify-content: flex-end;
-  font-size: 7vw;
-  line-height: 80px;
+  font-size: 8vw;
+  line-height: 1.2;
   word-break: break-word;
+  margin: 0;
 }
 
 .title-text {
   font-style: italic;
   color: var(--color-gold-crest);
-  font-size: 13vw;
+  font-size: 15vw;
   font-weight: 700;
   line-height: 1;
+  margin: 0;
 }
