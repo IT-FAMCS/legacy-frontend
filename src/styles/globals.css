@@ -1,0 +1,34 @@
+:root {
+  --color-gold-crest: #DF9E37;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+#root {
+  min-width: 100%;
+  min-height: 100%;
+}
+
+html {
+  &.is-lock {
+    overflow: hidden;
+  }
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex-grow: 1;
+}
+
+a {
+  color: #FFFFFF;
+  text-decoration: none;
+}
