@@ -1,13 +1,5 @@
-import React from 'react';
 import Icon from './Icon.tsx';
 import Button from "./Button.tsx";
-
-const containerStyle: React.CSSProperties = {
-  width: '100%',
-  margin: '0 auto',
-  padding: '10px 25px',
-  boxSizing: 'border-box'
-};
 
 const Header = () => {
   return (
@@ -23,7 +15,10 @@ const Header = () => {
       <div
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20,
-          ...containerStyle
+          width: '100%',
+          margin: '0 auto',
+          padding: '10px 25px',
+          boxSizing: 'border-box'
         }}
       >
         <a
