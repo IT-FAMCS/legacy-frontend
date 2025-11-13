@@ -1,5 +1,10 @@
 :root {
-  --gold-crest: #DF9E37;
+  --color-gold-crest: #DF9E37;
+
+  --transition-duration: 0.2s;
+
+  --container-width: 1280px;
+  --container-padding-x: 32px;
 }
 
 * {
@@ -11,4 +16,43 @@
 #root {
   min-width: 100%;
   min-height: 100%;
+}
+
+html {
+  &.is-lock {
+    overflow: hidden;
+  }
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  color: #46484F;
+  background-color: #FFFFFF;
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  flex-grow: 1;
+}
+
+.container {
+  width: 100%;
+  max-width: calc(var(--container-width) + var(--container-padding-x) * 2);
+  padding-inline: var(--container-padding-x);
+}
+
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6,
+a {
+  color: #FFFFFF;
+}
+
+a {
+  text-decoration: none;
 }
