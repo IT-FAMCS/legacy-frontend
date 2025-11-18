@@ -1,19 +1,21 @@
-import './App.css'
-import { useLoadUser } from './hooks/use-user'
-import { useUserStore } from './stores/user';
-import { QueryClient } from "@tanstack/react-query";
-
-
-
+import "./App.css";
+import { RouterProvider } from "react-router";
+import router from "./routes";
+import { useLoadUser } from "./hooks/use-user";
+import { AboutUser } from "./pages/user/about";
+import { useUserStore } from "./stores/user";
+import "./App.css";
+import Header from "./components/Header.tsx";
 
 function App() {
   useLoadUser();
   const user = useUserStore((s) => s.user);
-  console.log(user)
-
   return (
-      <></>
-  )
+    <div className="App">
+      <Header />
+      <RouterProvider router={router} />
+    </div>
+  );
 }
 
-export default App
+export default App;
