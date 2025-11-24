@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.5",
+    "zustand": "^5.0.8",
     "@gsap/react": "^2.1.2",
     "gsap": "^3.13.0",
     "react": "^19.1.1",
