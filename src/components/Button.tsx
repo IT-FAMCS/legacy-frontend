@@ -77,17 +77,20 @@ const Button = (
   };
 
   return (
-    <Component
-      className={className}
-      {...(Component === 'button' ? {type} : {})}
-      onClick={onClick}
-      title={isLabelHidden ? label : undefined}
-      aria-label={isLabelHidden ? label : undefined}
-      style={commonStyles}
-      {...interactionProps}
-    >
-      {buttonContent}
-    </Component>
+    <a href={href}>
+      <Component
+        className={className}
+        {...(Component === 'button' ? {type} : {})}
+        onClick={onClick}
+        title={isLabelHidden ? label : undefined}
+        aria-label={isLabelHidden ? label : undefined}
+        style={commonStyles}
+        {...interactionProps}
+      >
+        {buttonContent}
+      </Component>
+    </a>
+
   );
 };
 

@@ -23,7 +23,7 @@ const Footer = () => {
         </p>
         <nav style={{display: 'inline-flex', alignItems: 'center'}}>
           <Button
-            href="#"
+            href="/about"
             label={"О создателях".toUpperCase()}
             style={{fontWeight: 500, letterSpacing: '0.02em'}}
             hoverStyle={{color: "#686ACF", background: '#FFFFFF'}}
