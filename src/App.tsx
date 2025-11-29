@@ -6,6 +6,7 @@ import { AboutUser } from "./pages/user/about";
 import { useUserStore } from "./stores/user";
 import "./App.css";
 import Header from "./components/Header.tsx";
+import Footer from "./components/Footer.tsx";
 
 function App() {
   useLoadUser();
@@ -14,6 +15,7 @@ function App() {
     <div className="App">
       <Header />
       <RouterProvider router={router} />
+      <Footer />
     </div>
   );
 }

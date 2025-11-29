@@ -11,6 +11,7 @@ export interface ButtonProps {
   full?: boolean;
   fillColor?: boolean;
   style?: React.CSSProperties;
+  textStyle?: React.CSSProperties;
   hoverStyle?: React.CSSProperties;
   activeStyle?: React.CSSProperties;
 }

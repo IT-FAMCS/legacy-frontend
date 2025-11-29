@@ -41,6 +41,7 @@ const Header = () => {
           <Button
             href="#"
             isLabelHidden
+            type='a'
             iconSrc="/src/assets/icons/profile.svg"
             iconSize={32}
             style={{border: 'none'}}
