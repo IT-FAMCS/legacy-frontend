@@ -1,6 +1,6 @@
 export interface IconProps {
   className?: string;
-  src: string;
+  src?: string;
   ariaLabel?: string;
   size?: number;
   style?: React.CSSProperties;

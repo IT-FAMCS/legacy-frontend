@@ -30,7 +30,7 @@ const Button = (
     alignItems: 'center',
     justifyContent: full ? 'center' : 'flex-start',
     gap: 10,
-    borderRadius: 10,
+    borderRadius: 15,
     border: borderStyle,
     padding: '0 10px',
     height: 35,

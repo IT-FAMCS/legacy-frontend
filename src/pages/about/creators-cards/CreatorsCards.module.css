@@ -1,0 +1,19 @@
+.creators-wrapper {
+  --gridColumns: 3;
+
+  display: grid;
+  grid-template-columns: repeat(var(--gridColumns), 1fr);
+  gap: 50px;
+  padding-block: 30px;
+  padding-inline: 60px;
+  margin: auto;
+
+  @media (max-width: 1150px) {
+    --gridColumns: 2;
+    gap: 40px;
+  }
+
+  @media (max-width: 760px) {
+    --gridColumns: 1;
+  }
+}
