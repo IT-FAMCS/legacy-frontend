@@ -13,10 +13,6 @@ const Button = (
     iconSize = 25,
     ariaLabel,
     onClick,
-    full,
-    fillColor,
-    hoverStyle,
-    activeStyle
   }: ButtonProps) => {
   const isLink = typeof href === 'string';
   const Component = isLink ? 'a' : 'button';
@@ -25,27 +21,6 @@ const Button = (
   const [isHovered, setIsHovered] = React.useState(false);
   const [isActive, setIsActive] = React.useState(false);
 
-  const commonStyles: React.CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: full ? 'center' : 'flex-start',
-    gap: 10,
-    borderRadius: 10,
-    border: borderStyle,
-    padding: '0 16px',
-    height: 40,
-    color: fillColor ? '#2B2B2B' : '#FFFFFF',
-    background: fillColor ? '#FFD54F' : 'transparent',
-    fontWeight: 600,
-    fontSize: 16,
-    lineHeight: 1,
-    whiteSpace: 'nowrap',
-    width: full ? '100%' : undefined,
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    ...(isHovered && hoverStyle),
-    ...(isActive && activeStyle)
-  };
 
   const buttonContent = (
     <>
@@ -82,7 +57,7 @@ const Button = (
       onClick={onClick}
       title={isLabelHidden ? label : undefined}
       aria-label={isLabelHidden ? label : undefined}
-      style={commonStyles}
+    
       {...interactionProps}
     >
       {buttonContent}
