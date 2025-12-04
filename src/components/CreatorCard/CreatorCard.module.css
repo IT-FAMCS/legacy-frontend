@@ -1,0 +1,52 @@
+.creator-card {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  row-gap: 12px;
+  border-radius: 20px;
+  padding: 25px;
+  color: #FFFFFF;
+  background-color: #DF9E37;
+  box-shadow: 0 8px 8px 0 rgba(0, 0, 0, 0.3), 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+  transition-duration: 0.5s;
+
+  &:hover {
+    background-color: #E58A2D;
+    scale: 1.02;
+    transition-duration: 0.5s;
+  }
+
+  @media (max-width: 760px) {
+    row-gap: 6px;
+  }
+}
+
+.creator-title {
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 22px;
+  text-align: center;
+  text-wrap: wrap;
+  line-height: 1.5;
+}
+
+.creator-social {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 10px;
+}
+
+.creator-social-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.creator-social-text {
+  color: #FFFFFF;
+  font-weight: 400;
+  font-size: 16px;
+  letter-spacing: 1px;
+}

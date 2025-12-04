@@ -15,12 +15,12 @@ const Button = (
     onClick,
     full,
     fillColor,
+    style,
     hoverStyle,
     activeStyle
   }: ButtonProps) => {
-  const isLink = typeof href === 'string';
-  const Component = isLink ? 'a' : 'button';
-  const borderStyle = isLink ? 'none' : '1px solid #FFFFFF';
+  const Component = type === 'button' ? 'button' : 'a';
+  const borderStyle = Component === 'a' ? 'none' : '1px solid #FFFFFF';
 
   const [isHovered, setIsHovered] = React.useState(false);
   const [isActive, setIsActive] = React.useState(false);
@@ -30,19 +30,20 @@ const Button = (
     alignItems: 'center',
     justifyContent: full ? 'center' : 'flex-start',
     gap: 10,
-    borderRadius: 10,
+    borderRadius: 15,
     border: borderStyle,
-    padding: '0 16px',
-    height: 40,
+    padding: '0 10px',
+    height: 35,
     color: fillColor ? '#2B2B2B' : '#FFFFFF',
     background: fillColor ? '#FFD54F' : 'transparent',
-    fontWeight: 600,
     fontSize: 16,
+    fontFamily: "Jost, sans-serif", // почему-то общие стили не работают
     lineHeight: 1,
     whiteSpace: 'nowrap',
     width: full ? '100%' : undefined,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
+    ...style,
     ...(isHovered && hoverStyle),
     ...(isActive && activeStyle)
   };
@@ -76,17 +77,19 @@ const Button = (
   };
 
   return (
-    <Component
-      className={className}
-      {...(Component === 'button' ? {type} : {})}
-      onClick={onClick}
-      title={isLabelHidden ? label : undefined}
-      aria-label={isLabelHidden ? label : undefined}
-      style={commonStyles}
-      {...interactionProps}
-    >
-      {buttonContent}
-    </Component>
+    <a href={href}>
+      <Component
+        className={className}
+        {...(Component === 'button' ? {type} : {})}
+        onClick={onClick}
+        title={isLabelHidden ? label : undefined}
+        aria-label={isLabelHidden ? label : undefined}
+        style={commonStyles}
+        {...interactionProps}
+      >
+        {buttonContent}
+      </Component>
+    </a>
   );
 };
 
