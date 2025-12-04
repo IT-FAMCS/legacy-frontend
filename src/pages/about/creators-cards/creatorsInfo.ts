@@ -1,6 +1,6 @@
 const creatorsInfo = [
   {
-    title: 'Савицкая Анна-Мария',
+    title: 'Савицкая Анна\u2011Мария',
     telegram: '@s_anmaria',
     github: 'sens-et',
   },
@@ -10,19 +10,14 @@ const creatorsInfo = [
     github: 'NI4Ell',
   },
   {
-    title: 'Карпушевич Настя',
-    telegram: '@mastya_krp',
-    github: 'NastyaKrp',
-  },
-  {
-    title: 'Коробкин Артём',
-    telegram: '@aiki_v',
-    github: 'essaon',
-  },
-  {
     title: 'Женя Рысь',
     telegram: '@pblcb_ev',
     github: 'PblCbGomel',
+  },
+  {
+    title: 'Винокуров Александр',
+    telegram: '@SERB_12',
+    github: 'Serb-vs3',
   },
   {
     title: 'Пашук Алеся',
@@ -40,9 +35,9 @@ const creatorsInfo = [
     github: 'Kentixx',
   },
   {
-    title: 'Будник Михаил',
-    telegram: '@mshkshshk',
-    github: 'nedoxff',
+    title: 'Соколовский Ян',
+    telegram: '@ne_ochen_horosho',
+    github: 'NeOchenHorosho',
   },
 ]
 

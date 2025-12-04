@@ -20,7 +20,8 @@ const Footer = () => {
         }}
       >
         <p style={{fontSize: 18, fontWeight: 500, color: '#FFFFFF'}}>
-            © {"It-Famcs".toUpperCase()} <time dateTime="2025">2025</time>
+          © {"It-Famcs".toUpperCase()}
+          <time dateTime="2025">2025</time>
         </p>
         <nav style={{display: 'inline-flex', alignItems: 'center'}}>
           <Button

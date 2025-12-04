@@ -1,10 +1,10 @@
 export interface CreatorCardProps {
-    title: string;
-    social: {
-        telegram: string;
-        github: string;
-    };
-    style?: React.CSSProperties;
-    hoverStyle?: React.CSSProperties;
-    activeStyle?: React.CSSProperties;
+  title: string;
+  social: {
+    telegram: string;
+    github: string;
+  };
+  style?: React.CSSProperties;
+  hoverStyle?: React.CSSProperties;
+  activeStyle?: React.CSSProperties;
 }
