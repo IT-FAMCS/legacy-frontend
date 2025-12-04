@@ -41,4 +41,4 @@ const creatorsInfo = [
   },
 ]
 
-export default creatorsInfo
+export default creatorsInfo;

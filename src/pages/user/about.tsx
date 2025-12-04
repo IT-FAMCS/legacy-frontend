@@ -1,14 +1,14 @@
 import Button from "../../components/Button";
-import { useUserStore } from "../../stores/user";
-import { EditUser } from "./edit";
-import { useState } from "react";
+import {useUserStore} from "../../stores/user";
+import {EditUser} from "./edit";
+import {useState} from "react";
 
 export function AboutUser() {
   const user = useUserStore((s) => s.user);
   const [isEdit, setIsEdit] = useState(false);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+    <div style={{display: "flex", flexDirection: "column", gap: "8px"}}>
       <h3>Личный кабинет</h3>
       <p>
         ФИО: {user?.firstName} {user?.lastName}
@@ -20,12 +20,12 @@ export function AboutUser() {
       <Button
         label="Редактировать"
         fillColor
-        style={{ border: "none", width: "200px" }}
+        style={{border: "none", width: "200px"}}
         onClick={() => {
           setIsEdit(!isEdit);
         }}
       />
-      {isEdit && <EditUser setIsEdit={setIsEdit} />}
+      {isEdit && <EditUser setIsEdit={setIsEdit}/>}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import CreatorsCards from "./creators-cards/creators-cards.tsx";
 
 const AboutPage = () => {
   return (
-    <CreatorsCards />
+    <CreatorsCards/>
   )
 }
 
