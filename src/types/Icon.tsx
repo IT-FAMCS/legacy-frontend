@@ -1,4 +1,4 @@
-export interface IconProps {
+export type IconProps = {
   className?: string;
   src: string;
   ariaLabel?: string;

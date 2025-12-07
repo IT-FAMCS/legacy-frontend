@@ -13,7 +13,9 @@ function App() {
   return (
     <div className="App">
       <Header />
-      <RouterProvider router={router} />
+      <main style={{ marginTop: "var(--header-height)" }}>
+        <RouterProvider router={router} />
+      </main>
     </div>
   );
 }

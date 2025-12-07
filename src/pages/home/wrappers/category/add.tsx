@@ -1,9 +1,9 @@
-import Button from "../../components/Button";
-import { ModalWrapper } from "../../components/modal";
+import Button from "../../../../components/Button";
+import { ModalWrapper } from "../../../../components/modal";
 
-export function EditUser({ setIsEdit }: { setIsEdit: Function }) {
+export function AddCategory({ setIsAdd }: { setIsAdd: Function }) {
   return (
-    <ModalWrapper setIsOpen={setIsEdit}>
+    <ModalWrapper setIsOpen={setIsAdd}>
       <div
         style={{
           display: "flex",
@@ -12,18 +12,18 @@ export function EditUser({ setIsEdit }: { setIsEdit: Function }) {
           height: "100%",
         }}
       >
-        <div>Тут редактирование по полям юзера</div>
+        <div>Тут форма создания категории</div>
         <div>
           <Button
             onClick={() => {
-              setIsEdit(false);
+              setIsAdd(false);
             }}
             label="Отменить"
             fillColor
           />
           <Button
             onClick={() => {
-              setIsEdit(false);
+              setIsAdd(false);
             }}
             label="Сохранить"
             fillColor

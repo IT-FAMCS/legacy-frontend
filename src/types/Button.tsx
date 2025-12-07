@@ -1,4 +1,4 @@
-export interface ButtonProps {
+export type ButtonProps = {
   className?: string;
   href?: string;
   type?: "button";
