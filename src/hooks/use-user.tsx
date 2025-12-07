@@ -21,7 +21,7 @@ export function useLoadUser() {
       setUser(null);
     }
   }, [q.isSuccess, q.isError, q.data, q.error, setUser]);
-}
+};
 
 export function useEditUser({ newInfoUser }: { newInfoUser: UserInfo }) {
   const setUser = useUserStore((s) => s.setUserInfo);
@@ -33,4 +33,4 @@ export function useEditUser({ newInfoUser }: { newInfoUser: UserInfo }) {
     // откат при ошибке
     onError: (err) => {},
   });
-}
+};
