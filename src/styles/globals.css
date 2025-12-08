@@ -1,4 +1,13 @@
 :root {
+  --main-blue: #3742FA;
+  --main-green: #2ED573;
+  --aux-dark-gray: #2F3542;
+  --aux-gray: #747D8C;
+  --aux-light-gray: #F1F2F6;
+  --aux-cream: #FFF9F2;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --gradient-primary: linear-gradient(135deg, #686ACF, #8A8CF5);
+  --gradient-secondary: linear-gradient(135deg, var(--aux-cream), #FFFFFF);
   --color-gold-crest: #DF9E37;
 }
 
