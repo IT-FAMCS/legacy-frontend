@@ -1,7 +1,7 @@
-import Button from "../../components/Button";
-import { ModalWrapper } from "../../components/modal";
+import Button from "../../../../components/Button";
+import { ModalWrapper } from "../../../../components/modal";
 
-export function EditUser({ setIsEdit }: { setIsEdit: Function }) {
+export function EditCategory({ setIsEdit }: { setIsEdit: Function }) {
   return (
     <ModalWrapper setIsOpen={setIsEdit}>
       <div
@@ -12,7 +12,7 @@ export function EditUser({ setIsEdit }: { setIsEdit: Function }) {
           height: "100%",
         }}
       >
-        <div>Тут редактирование по полям юзера</div>
+        <div>Тут редактирование по полям категории</div>
         <div>
           <Button
             onClick={() => {

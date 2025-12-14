@@ -3,7 +3,7 @@ import gsap from 'gsap';
 import  { useGSAP } from '@gsap/react';
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
 import visibilityIcon from '../../../assets/icons/eye.svg';
-import styles from './TitleWrapper.module.css';
+import background from "../../../assets/images/title-wrapper-bg.png";
 
 gsap.registerPlugin(ScrambleTextPlugin);
 
@@ -92,21 +92,61 @@ const TitleWrapper = () => {
   }, []); 
 
   return (
-    <div className={styles["wrapper"]}>
+    <div style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "flex-end",
+      background: `url(${background})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      minHeight: "100vh",
+      color: "#ffffff"
+    }}>
       <img
         src={visibilityIcon}
         alt="Eye"
         ref={visibilityIconRef}
-        className={styles["visibility-icon"]}
+        style={{
+          height: "3rem",
+          width: "3rem",
+          position: "absolute",
+          top: "95px",
+          left: "30px",
+          zIndex : "1"
+        }}
         onMouseEnter = {handleVisibilityMouseEnter}
         onMouseLeave = {handleVisibilityMouseLeave}
       />
-      <div className={styles["title-container"]} ref={titleContainerRef}>
-          <h2 className={styles["subtitle-text"]} ref={subTitleRef}></h2>
-          <h1 className={styles["title-text"]} ref={titleRef}></h1>
+      <div ref={titleContainerRef} style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        gap: "40px",
+        marginBlock: "10vh",
+        width: "100%"
+      }}>
+          <h2 ref={subTitleRef} style={{
+            fontWeight: "500",
+            textAlign: "center",
+            justifyContent: "flex-end",
+            fontSize: "max(7vw, 55px)",
+            paddingInline: "6vw",
+            lineHeight: "1.2",
+            wordBreak: "break-word",
+            margin: "0"
+          }}></h2>
+          <h1 ref={titleRef} style={{
+            fontStyle: "italic",
+            color: "var(--color-gold-crest)",
+            fontSize: "max(14vw, 80px)",
+            fontWeight: "700",
+            lineHeight: "1",
+            margin: "0"
+          }}></h1>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default TitleWrapper;
