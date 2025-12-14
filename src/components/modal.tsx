@@ -10,7 +10,10 @@ export function ModalWrapper({
   return createPortal(
     <div
       style={{
-        position: "absolute",
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
         width: "100vw",
         height: "100vh",
         zIndex: 100,
@@ -32,10 +35,13 @@ export function ModalWrapper({
           backgroundColor: "rgb(0, 0, 0, 0.7)",
           padding: "40px 20px",
         }}
+        onClick={
+          (e) => e.stopPropagation()
+        }
       >
         {children}
       </div>
     </div>,
     document.body
   );
-}
+};

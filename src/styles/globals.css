@@ -1,5 +1,9 @@
 :root {
   --color-gold-crest: #DF9E37;
+  --color-alabaster-grey: #E7E5DF;
+  --сolor-dark-grayish-blue: #46484f;
+
+  --header-height: 80px;
 }
 
 * {

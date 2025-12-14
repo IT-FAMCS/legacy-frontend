@@ -5,11 +5,12 @@ const Header = () => {
   return (
     <header
       style={{
-        position: "sticky",
+        position: "fixed",
         top: 0,
         width: "100%",
+        height: "var(--header-height)",
         backgroundColor: "#686ACF",
-        zIndex: 1,
+        zIndex: 1000,
       }}
     >
       <div

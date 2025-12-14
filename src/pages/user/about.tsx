@@ -28,4 +28,4 @@ export function AboutUser() {
       {isEdit && <EditUser setIsEdit={setIsEdit} />}
     </div>
   );
-}
+};
