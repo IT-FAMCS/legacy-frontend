@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Icon from './Icon.tsx';
 import type {ButtonProps} from "../interfaces/Button.tsx";
 
@@ -22,8 +22,8 @@ const Button = (
   const Component = type === 'button' ? 'button' : 'a';
   const borderStyle = Component === 'a' ? 'none' : '1px solid #FFFFFF';
 
-  const [isHovered, setIsHovered] = React.useState(false);
-  const [isActive, setIsActive] = React.useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isActive, setIsActive] = useState(false);
 
   const commonStyles: React.CSSProperties = {
     display: 'inline-flex',

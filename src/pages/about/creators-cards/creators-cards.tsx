@@ -12,7 +12,7 @@ const CreatorsCards = () => {
             "telegram": telegram,
             "github": github,
           }}
-          key={index}
+          key={telegram}
         />
       ))}
     </div>

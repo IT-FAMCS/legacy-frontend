@@ -2,7 +2,7 @@ import styles from "./CreatorCard.module.css";
 import type {CreatorCardProps} from "../../interfaces/CreatorCard.tsx";
 import Icon from "../Icon.tsx";
 
-const CreatorCard = ({title, social}: CreatorCardProps) => {
+function CreatorCard({title, social}: CreatorCardProps) {
   const socialNetworks = [
     {
       iconSrc: "/src/assets/icons/telegram.svg",
