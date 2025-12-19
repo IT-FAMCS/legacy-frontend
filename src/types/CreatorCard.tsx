@@ -1,4 +1,4 @@
-export interface CreatorCardProps {
+export type CreatorCardProps {
   title: string;
   social: {
     telegram: string;

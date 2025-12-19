@@ -1,12 +1,14 @@
-import { createPortal } from "react-dom";
+import {createPortal} from "react-dom";
 
-export function ModalWrapper({
-  setIsOpen,
-  children,
-}: {
-  setIsOpen: Function;
-  children: React.ReactNode;
-}) {
+export function ModalWrapper(
+  {
+    setIsOpen,
+    children,
+  }: {
+    setIsOpen: Function;
+    children: React.ReactNode;
+  }
+) {
   return createPortal(
     <div
       style={{

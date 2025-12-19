@@ -1,7 +1,7 @@
 import Icon from "./Icon.tsx";
 import Button from "./Button.tsx";
 
-const Header = () => {
+export function Header() {
   return (
     <header
       style={{
@@ -52,5 +52,3 @@ const Header = () => {
     </header>
   )
 };
-
-export default Header;

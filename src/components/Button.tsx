@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import Icon from './Icon.tsx';
-import type {ButtonProps} from "../interfaces/Button.tsx";
+import type {ButtonProps} from "../types/Button.tsx";
 
-const Button = (
+export function Button(
   {
     className,
     href,
@@ -18,7 +18,7 @@ const Button = (
     style,
     hoverStyle,
     activeStyle
-  }: ButtonProps) => {
+  }: ButtonProps) {
   const Component = type === 'button' ? 'button' : 'a';
   const borderStyle = Component === 'a' ? 'none' : '1px solid #FFFFFF';
 
@@ -92,5 +92,3 @@ const Button = (
     </a>
   );
 };
-
-export default Button;

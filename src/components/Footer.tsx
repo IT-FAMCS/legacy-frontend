@@ -1,6 +1,6 @@
 import Button from "./Button.tsx";
 
-const Footer = () => {
+export function Footer() {
   return (
     <footer
       style={{
@@ -37,5 +37,3 @@ const Footer = () => {
     </footer>
   )
 };
-
-export default Footer;

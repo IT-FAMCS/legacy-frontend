@@ -1,15 +1,14 @@
 import React from 'react';
-import type {IconProps} from "../interfaces/Icon.tsx";
+import type {IconProps} from "../types/Icon.tsx";
 
-const Icon = (
+export function Icon(
   {
     className,
     src,
     ariaLabel,
     size = 40,
     style
-  }: IconProps) => {
-
+  }: IconProps) {
   return (
     <span
       className={className}

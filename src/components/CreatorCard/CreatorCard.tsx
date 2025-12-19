@@ -1,8 +1,8 @@
 import styles from "./CreatorCard.module.css";
-import type {CreatorCardProps} from "../../interfaces/CreatorCard.tsx";
+import type {CreatorCardProps} from "../../types/CreatorCard.tsx";
 import Icon from "../Icon.tsx";
 
-function CreatorCard({title, social}: CreatorCardProps) {
+export function CreatorCard({title, social}: CreatorCardProps) {
   const socialNetworks = [
     {
       iconSrc: "/src/assets/icons/telegram.svg",
@@ -37,5 +37,3 @@ function CreatorCard({title, social}: CreatorCardProps) {
     </div>
   )
 }
-
-export default CreatorCard;
