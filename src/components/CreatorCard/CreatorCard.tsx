@@ -1,5 +1,5 @@
 import styles from "./CreatorCard.module.css";
-import type {CreatorCardProps} from "../../interfaces/CreatorCard.tsx";
+import type {CreatorCardProps} from "../../types/CreatorCard.tsx";
 import Icon from "../Icon.tsx";
 
 function CreatorCard({title, social}: CreatorCardProps) {

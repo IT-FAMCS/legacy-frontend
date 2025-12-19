@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Icon from './Icon.tsx';
-import type {ButtonProps} from "../interfaces/Button.tsx";
+import type {ButtonProps} from "../types/Button.tsx";
 
 const Button = (
   {
