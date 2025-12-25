@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Icon from './Icon.tsx';
-import type {ButtonProps} from "../types/Button.tsx";
+import type { ButtonProps } from "../types/Button.tsx";
 
 export function Button(
   {
@@ -91,4 +91,4 @@ export function Button(
       </Component>
     </a>
   );
-};
+}

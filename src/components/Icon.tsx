@@ -1,5 +1,5 @@
 import React from 'react';
-import type {IconProps} from "../types/Icon.tsx";
+import type { IconProps } from "../types/Icon.tsx";
 
 export function Icon(
   {
@@ -37,6 +37,4 @@ export function Icon(
         />
       </span>
   );
-};
-
-export default Icon;
+}

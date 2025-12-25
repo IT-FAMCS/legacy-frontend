@@ -33,12 +33,7 @@ const creatorsInfo = [
     title: 'Хованский Иван',
     telegram: '@n_sxphne',
     github: 'Kentixx',
-  },
-  {
-    title: 'Соколовский Ян',
-    telegram: '@ne_ochen_horosho',
-    github: 'NeOchenHorosho',
-  },
+  }
 ]
 
 export default creatorsInfo;
