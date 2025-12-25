@@ -1,11 +1,11 @@
-import CreatorCard from "../../../components/CreatorCard/CreatorCard.tsx";
+import { CreatorCard } from "../../../components/CreatorCard/CreatorCard.tsx";
 import styles from './CreatorsCards.module.css'
 import creatorsInfo from './creatorsInfo.ts'
 
 const CreatorsCards = () => {
   return (
     <div className={styles["creators-wrapper"]}>
-      {creatorsInfo.map(({title, telegram, github,}, index) => (
+      {creatorsInfo.map(({ title, telegram, github }) => (
         <CreatorCard
           title={title}
           social={{

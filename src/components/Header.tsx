@@ -1,5 +1,5 @@
-import Icon from "./Icon.tsx";
-import Button from "./Button.tsx";
+import { Icon } from "./Icon.tsx";
+import { Button } from "./Button.tsx";
 
 export function Header() {
   return (
@@ -8,7 +8,7 @@ export function Header() {
         position: "sticky",
         top: 0,
         width: "100%",
-        backgroundColor: "#686ACF",
+        backgroundColor: "var(--color-migol-blue)",
         zIndex: 1
       }}
     >
@@ -51,4 +51,4 @@ export function Header() {
       </div>
     </header>
   )
-};
+}

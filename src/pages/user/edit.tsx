@@ -1,7 +1,7 @@
-import Button from "../../components/Button";
-import {ModalWrapper} from "../../components/modal";
+import { Button } from "../../components/Button";
+import { ModalWrapper } from "../../components/modal";
 
-export function EditUser({setIsEdit}: { setIsEdit: Function }) {
+export function EditUser({ setIsEdit }: { setIsEdit: Function }) {
   return (
     <ModalWrapper setIsOpen={setIsEdit}>
       <div

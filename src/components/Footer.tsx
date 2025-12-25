@@ -1,11 +1,11 @@
-import Button from "./Button.tsx";
+import { Button } from "./Button.tsx";
 
 export function Footer() {
   return (
     <footer
       style={{
         width: '100%',
-        backgroundColor: '#686ACF',
+        backgroundColor: 'var(--color-migol-blue)',
         zIndex: 1,
         marginTop: 'auto'
       }}
@@ -20,7 +20,7 @@ export function Footer() {
         }}
       >
         <p style={{fontSize: 18, fontWeight: 500, color: '#FFFFFF'}}>
-          © {"It-Famcs".toUpperCase()}
+          © {"It-Famcs ".toUpperCase()}
           <time dateTime="2025">2025</time>
         </p>
         <nav style={{display: 'inline-flex', alignItems: 'center'}}>
@@ -28,12 +28,12 @@ export function Footer() {
             href="/about"
             label={"О создателях".toUpperCase()}
             style={{fontWeight: 500, letterSpacing: '0.02em'}}
-            hoverStyle={{color: "#686ACF", background: '#FFFFFF'}}
-            activeStyle={{color: "#686ACF"}}
+            hoverStyle={{color: "var(--color-migol-blue)", background: '#FFFFFF'}}
+            activeStyle={{color: "var(--color-migol-blue)"}}
             ariaLabel="О создателях"
           />
         </nav>
       </div>
     </footer>
   )
-};
+}

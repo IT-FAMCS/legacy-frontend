@@ -1,6 +1,6 @@
 import styles from "./CreatorCard.module.css";
-import type {CreatorCardProps} from "../../types/CreatorCard.tsx";
-import Icon from "../Icon.tsx";
+import type { CreatorCardProps } from "../../types/CreatorCard.tsx";
+import { Icon } from "../Icon.tsx";
 
 export function CreatorCard({title, social}: CreatorCardProps) {
   const socialNetworks = [

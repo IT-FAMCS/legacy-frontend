@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import gsap from 'gsap';
-import  { useGSAP } from '@gsap/react';
+import { useGSAP } from '@gsap/react';
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
 import visibilityIcon from '../../../assets/icons/eye.svg';
 import styles from './TitleWrapper.module.css';

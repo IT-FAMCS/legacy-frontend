@@ -1,7 +1,7 @@
-import Button from "../../components/Button";
-import {useUserStore} from "../../stores/user";
-import {EditUser} from "./edit";
-import {useState} from "react";
+import { Button } from "../../components/Button";
+import { useUserStore } from "../../stores/user";
+import { EditUser } from "./edit";
+import { useState } from "react";
 
 export function AboutUser() {
   const user = useUserStore((s) => s.user);
