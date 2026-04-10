@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getUsersList, deactivateUser } from "../../api/user";
+import { getUsers, deactivateUser, activateUser, updateUser } from "../../api/user";
 import type { UserInfo } from "../../stores/user";
 import Button from "../../components/Button";
 import { ModalWrapper } from "../../components/modal";
@@ -25,12 +25,12 @@ export function AccountList() {
   const queryClient = useQueryClient();
 
   const { data: users, isLoading } = useQuery({
-    queryKey: ["users", showInactive],
-    queryFn: ({ signal }) => getUsersList({ signal, showInactive }),
+    queryKey: ["users"],
+    queryFn: ({ signal }) => getUsers({ signal }),
   });
 
   const deactivateMutation = useMutation({
-    mutationFn: (userId: number) => deactivateUser({ userId }),
+    mutationFn: (userId: number) => deactivateUser(userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
@@ -51,15 +51,50 @@ export function AccountList() {
     });
   };
 
+  const updateMutation = useMutation({
+    mutationFn: ({ userId, userData }: { userId: number; userData: Partial<UserInfo> }) =>
+      updateUser({ userId, userData }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setEditingUser(null);
+      setFormData(null);
+    },
+    onError: () => {
+      alert("Ошибка при обновлении пользователя");
+    },
+  });
+
+  const activateMutation = useMutation({
+    mutationFn: (userId: number) => activateUser(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
+
   const handleSave = () => {
-    // TODO: Implement update user API
-    setEditingUser(null);
-    setFormData(null);
-    queryClient.invalidateQueries({ queryKey: ["users"] });
+    if (!editingUser) return;
+    updateMutation.mutate({
+      userId: editingUser.id,
+      userData: {
+        firstName: formData?.firstName,
+        lastName: formData?.lastName,
+        patronymic: formData?.patronymic,
+        department: formData?.department,
+        course: formData?.course,
+        group: formData?.group ? Number(formData.group) : undefined,
+        hb: formData?.hb,
+        position: formData?.position,
+      },
+    });
   };
 
   const handleDeactivate = (userId: number) => {
-    deactivateMutation.mutate(userId);
+    const user = users?.find(u => u && u.id === userId);
+    if (user?.isActive) {
+      deactivateMutation.mutate(userId);
+    } else {
+      activateMutation.mutate(userId);
+    }
   };
 
   if (isLoading) {

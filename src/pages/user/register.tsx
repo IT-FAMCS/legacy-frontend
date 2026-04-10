@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { register } from "../../api/user";
 import { useUserStore } from "../../stores/user";
+import { useErrorStore } from "../../stores/error";
 import type { UserRole } from "../../stores/user";
 import Button from "../../components/Button";
 
@@ -20,18 +21,18 @@ export function RegisterPage() {
     position: "",
     role: "member" as UserRole,
   });
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const setUser = useUserStore((s) => s.setUserInfo);
+  const setError = useErrorStore((s) => s.setError);
 
   const registerMutation = useMutation({
-    mutationFn: (userData: Parameters<typeof register>[0]["userData"]) => register({ userData }),
+    mutationFn: (registerData: Parameters<typeof register>[0]["registerData"]) => register({ registerData }),
     onSuccess: (data) => {
       setUser(data);
       navigate("/");
     },
-    onError: () => {
-      setError("Ошибка регистрации");
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : "Ошибка регистрации");
     },
   });
 
@@ -41,15 +42,23 @@ export function RegisterPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError(null);
     if (!formData.login || !formData.password || !formData.firstName || !formData.lastName) {
       setError("Заполните обязательные поля");
       return;
     }
     registerMutation.mutate({
-      ...formData,
-      course: formData.course ? Number(formData.course) : undefined,
-      group: formData.group ? Number(formData.group) : undefined,
+      login: formData.login,
+      password: formData.password,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      patronymic: formData.patronymic || undefined,
+      department: formData.department || undefined,
+      course: formData.course || undefined,
+      group: formData.group || undefined,
+      hb: formData.hb || undefined,
+      position: formData.position || undefined,
+      role: formData.role,
     });
   };
 
@@ -76,9 +85,6 @@ export function RegisterPage() {
           borderRadius: "10px",
         }}
       >
-        {error && (
-          <p style={{ color: "red", margin: 0, textAlign: "center" }}>{error}</p>
-        )}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <label htmlFor="lastName" style={{ fontWeight: 600 }}>Фамилия *</label>

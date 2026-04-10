@@ -1,15 +1,32 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Button from "../../../../components/Button";
 import { ModalWrapper } from "../../../../components/modal";
+import { createCategory } from "../../../../api/category";
 
 export function AddCategory({ setIsAdd }: { setIsAdd: (value: boolean) => void }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const queryClient = useQueryClient();
+
+  const createMutation = useMutation({
+    mutationFn: createCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      setIsAdd(false);
+    },
+    onError: (err) => {
+      console.error("Ошибка создания категории:", err);
+      alert("Ошибка при создании категории");
+    },
+  });
 
   const handleSave = () => {
-    // TODO: Отправить данные на бэкенд для создания категории
-    console.log("Создание категории:", { title, description });
-    setIsAdd(false);
+    if (!title.trim()) {
+      alert("Введите название категории");
+      return;
+    }
+    createMutation.mutate({ categoryData: { title, description } });
   };
 
   return (

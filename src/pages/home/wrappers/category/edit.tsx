@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Button from "../../../../components/Button";
 import { ModalWrapper } from "../../../../components/modal";
+import { updateCategory } from "../../../../api/category";
 import type { Category } from "../../../../types/Category";
 
 export function EditCategory({
@@ -12,11 +14,34 @@ export function EditCategory({
 }) {
   const [title, setTitle] = useState(category?.title || "");
   const [description, setDescription] = useState(category?.description || "");
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (category) {
+      setTitle(category.title);
+      setDescription(category.description);
+    }
+  }, [category]);
+
+  const updateMutation = useMutation({
+    mutationFn: ({ categoryId, categoryData }: { categoryId: number; categoryData: { title: string; description: string } }) =>
+      updateCategory({ categoryId, categoryData }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      setIsEdit(false);
+    },
+    onError: (err) => {
+      console.error("Ошибка обновления категории:", err);
+      alert("Ошибка при обновлении категории");
+    },
+  });
 
   const handleSave = () => {
-    // TODO: Отправить данные на бэкенд для обновления категории
-    console.log("Редактирование категории:", { id: category?.id, title, description });
-    setIsEdit(false);
+    if (!title.trim() || !category?.id) {
+      alert("Введите название категории");
+      return;
+    }
+    updateMutation.mutate({ categoryId: category.id, categoryData: { title, description } });
   };
 
   return (

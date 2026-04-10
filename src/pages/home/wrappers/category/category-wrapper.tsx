@@ -50,10 +50,10 @@ const CategoryWrapper = ({ category }: CategoryWrapperProps) => {
       fillColor
       style={{ border: "none", width: "200px" }}
       onClick={() => {
-        setIsDelete(!isEdit);
+        setIsDelete(!isDelete);
       }}
     /> }
-    {isDelete && <DeleteCategory setIsDelete={setIsDelete} categoryTitle={category.title} />}
+    {isDelete && <DeleteCategory setIsDelete={setIsDelete} categoryTitle={category.title} categoryId={category.id} />}
 
     <div style={{ marginTop: "2rem" }}>
       <h3 style={{

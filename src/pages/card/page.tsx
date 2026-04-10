@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getCard, updateCard } from "../../api/category";
 import Button from "../../components/Button";
 
 export function CardPage() {
@@ -8,19 +10,56 @@ export function CardPage() {
   const [isEdit, setIsEdit] = useState(false);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
+  const queryClient = useQueryClient();
 
-  // Загрузка данных карточки (здесь должна быть логика загрузки с бэкенда)
+  const { data: cardData, isLoading } = useQuery({
+    queryKey: ["card", categoryId, cardId],
+    queryFn: () => getCard({
+      categoryId: Number(categoryId),
+      cardId: Number(cardId),
+    }),
+    enabled: !!categoryId && !!cardId,
+  });
+
   useEffect(() => {
-    // TODO: Загрузить данные карточки с бэкенда по categoryId и cardId
-    // Для примера - статичные данные
-    setTitle(`Карточка ${cardId}`);
-    setContent("# Пример контента\n\nЭто пример текста в формате **Markdown**.\n\n- Пункт 1\n- Пункт 2\n- Пункт 3");
-  }, [categoryId, cardId]);
+    if (cardData) {
+      setTitle(cardData.title);
+      setContent(cardData.content);
+    }
+  }, [cardData]);
+
+  const updateMutation = useMutation({
+    mutationFn: (cardData: { title: string; content: string }) =>
+      updateCard({ cardId: Number(cardId), cardData }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["card", categoryId, cardId] });
+      setIsEdit(false);
+    },
+    onError: (err) => {
+      console.error("Ошибка обновления карточки:", err);
+      alert("Ошибка при сохранении");
+    },
+  });
 
   const handleSave = () => {
-    // TODO: Сохранить изменения на бэкенде
-    setIsEdit(false);
+    if (!title.trim()) {
+      alert("Введите заголовок");
+      return;
+    }
+    updateMutation.mutate({ title, content });
   };
+
+  if (isLoading) {
+    return (
+      <div style={{
+        padding: "20px",
+        maxWidth: "900px",
+        margin: "0 auto",
+      }}>
+        Загрузка...
+      </div>
+    );
+  }
 
   return (
     <div style={{

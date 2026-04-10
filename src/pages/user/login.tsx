@@ -3,34 +3,35 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { login } from "../../api/user";
 import { useUserStore } from "../../stores/user";
+import { useErrorStore } from "../../stores/error";
 import Button from "../../components/Button";
 
 export function LoginPage() {
   const [loginValue, setLoginValue] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const setUser = useUserStore((s) => s.setUserInfo);
+  const setError = useErrorStore((s) => s.setError);
 
   const loginMutation = useMutation({
-    mutationFn: login,
+    mutationFn: (variables: Parameters<typeof login>[0]) => login(variables),
     onSuccess: (data) => {
       setUser(data);
       navigate("/");
     },
-    onError: () => {
-      setError("Неверный логин или пароль");
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : "Неверный логин или пароль");
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError(null);
     if (!loginValue || !password) {
       setError("Заполните все поля");
       return;
     }
-    loginMutation.mutate({ login: loginValue, password });
+    loginMutation.mutate({ loginData: { login: loginValue, password } });
   };
 
   return (
@@ -56,9 +57,6 @@ export function LoginPage() {
           borderRadius: "10px",
         }}
       >
-        {error && (
-          <p style={{ color: "red", margin: 0, textAlign: "center" }}>{error}</p>
-        )}
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <label htmlFor="login" style={{ fontWeight: 600 }}>Логин</label>
           <input

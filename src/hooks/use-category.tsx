@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getCategories, addCategory, editCategory, deleteCategory } from "../api/category";
-import type { Category } from "../types/Category";
+import { getCategories, createCategory, updateCategory, deleteCategory } from "../api/category";
+import { useErrorStore } from "../stores/error";
 
 export function useLoadCategories() {
   const q = useQuery({
@@ -14,42 +14,45 @@ export function useLoadCategories() {
 
 export function useAddCategory() {
   const queryClient = useQueryClient();
+  const setError = useErrorStore((s) => s.setError);
 
   return useMutation({
-    mutationFn: ({ categoryInfo }: { categoryInfo: Category }) => addCategory({ categoryInfo }),
-    onSuccess: (data: Category) => {
-      queryClient.setQueryData<Category[]>(['categories'], (categories) => [...(categories ?? []), data]);
+    mutationFn: ({ categoryData }: { categoryData: { title: string; description: string } }) => createCategory({ categoryData }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
     },
-    onError: (err) => {},
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : "Ошибка создания категории");
+    },
   });
 };
 
 export function useEditCategory() {
   const queryClient = useQueryClient();
+  const setError = useErrorStore((s) => s.setError);
 
   return useMutation({
-    mutationFn: ({ id, categoryInfo }: { id: number; categoryInfo: Category }) => editCategory({ id, categoryInfo }),
-
-    onSuccess: (data: Category) => {  
-      queryClient.setQueryData<Category[]>(['categories'], (categories) => {
-        return categories?.map((category) => category.id === data.id ? data : category) || []
-      });
+    mutationFn: ({ id, categoryData }: { id: number; categoryData: { title: string; description: string } }) => updateCategory({ categoryId: id, categoryData }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
     },
-    onError: (err) => {},
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : "Ошибка обновления категории");
+    },
   });
 };
 
 export function useDeleteCategory() {
   const queryClient = useQueryClient();
+  const setError = useErrorStore((s) => s.setError);
 
   return useMutation({
-    mutationFn: ({ id }: { id: number }) => deleteCategory({ id }),
-    onSuccess: (deletedId) => {
-      queryClient.setQueryData<Category[]>(['categories'], (categories) => 
-        categories?.filter((category) => category.id !== deletedId) || []
-      );
+    mutationFn: ({ id }: { id: number }) => deleteCategory({ categoryId: id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
     },
-
-    onError: (err) => {},
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : "Ошибка удаления категории");
+    },
   });
 };

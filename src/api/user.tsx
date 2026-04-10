@@ -1,18 +1,83 @@
 import type { UserInfo } from "../stores/user";
 
-const USER_INFO_PATH = "/api/user/info";
-const USER_EDIT_PATH = "/api/user/edit";
-const USER_LOGIN_PATH = "/api/auth/login";
-const USER_LOGOUT_PATH = "/api/auth/logout";
-const USER_REGISTER_PATH = "/api/auth/register";
-const USER_LIST_PATH = "/api/users/list";
-const USER_DEACTIVATE_PATH = "/api/users/deactivate";
+const API_BASE = "/api";
+
+function getAuthHeaders() {
+  const token = localStorage.getItem("jwt_token");
+  return {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
+export async function login({
+  signal,
+  loginData,
+}: {
+  signal?: AbortSignal;
+  loginData: { login: string; password: string };
+}) {
+  const res = await fetch(`${API_BASE}/auth/login`, {
+    method: "POST",
+    credentials: "include",
+    headers: getAuthHeaders(),
+    signal,
+    body: JSON.stringify(loginData),
+  });
+  if (!res.ok) {
+    const error = await res.text();
+    throw new Error(error || `HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  if (data.token) {
+    localStorage.setItem("jwt_token", data.token);
+  }
+  return data.user as UserInfo;
+}
+
+export async function register({
+  signal,
+  registerData,
+}: {
+  signal?: AbortSignal;
+  registerData: {
+    login: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    patronymic?: string;
+    department?: string;
+    course?: string;
+    group?: string;
+    hb?: string;
+    position?: string;
+    role: "admin" | "chairman" | "member" | "guest";
+  };
+}) {
+  const res = await fetch(`${API_BASE}/auth/register`, {
+    method: "POST",
+    credentials: "include",
+    headers: getAuthHeaders(),
+    signal,
+    body: JSON.stringify(registerData),
+  });
+  if (!res.ok) {
+    const error = await res.text();
+    throw new Error(error || `HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  if (data.token) {
+    localStorage.setItem("jwt_token", data.token);
+  }
+  return data.user as UserInfo;
+}
 
 export async function getUser({ signal }: { signal?: AbortSignal } = {}) {
-  const res = await fetch(USER_INFO_PATH, {
+  const res = await fetch(`${API_BASE}/user/me`, {
     method: "GET",
     credentials: "include",
-    headers: { Accept: "application/json" },
+    headers: getAuthHeaders(),
     signal,
   });
   if (!res.ok) {
@@ -23,58 +88,31 @@ export async function getUser({ signal }: { signal?: AbortSignal } = {}) {
 
 export async function editUser({
   signal,
-  userInfo,
+  userData,
 }: {
   signal?: AbortSignal;
-  userInfo: UserInfo;
+  userData: Partial<UserInfo>;
 }) {
-  const res = await fetch(USER_EDIT_PATH, {
+  const res = await fetch(`${API_BASE}/user/me`, {
     method: "PUT",
     credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+    headers: getAuthHeaders(),
     signal,
-    body: JSON.stringify(userInfo),
+    body: JSON.stringify(userData),
   });
   if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
+    const error = await res.text();
+    throw new Error(error || `HTTP ${res.status}`);
   }
   return (await res.json()) as UserInfo;
 }
 
-export async function login({
-  signal,
-  login: loginParam,
-  password,
-}: {
-  signal?: AbortSignal;
-  login: string;
-  password: string;
-}) {
-  const res = await fetch(USER_LOGIN_PATH, {
+export async function logout() {
+  localStorage.removeItem("jwt_token");
+  const res = await fetch(`${API_BASE}/auth/logout`, {
     method: "POST",
     credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    signal,
-    body: JSON.stringify({ login: loginParam, password }),
-  });
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
-  }
-  return (await res.json()) as UserInfo;
-}
-
-export async function logout({ signal }: { signal?: AbortSignal } = {}) {
-  const res = await fetch(USER_LOGOUT_PATH, {
-    method: "POST",
-    credentials: "include",
-    headers: { Accept: "application/json" },
-    signal,
+    headers: getAuthHeaders(),
   });
   if (!res.ok) {
     throw new Error(`HTTP ${res.status}`);
@@ -82,52 +120,11 @@ export async function logout({ signal }: { signal?: AbortSignal } = {}) {
   return true;
 }
 
-export async function register({
-  signal,
-  userData,
-}: {
-  signal?: AbortSignal;
-  userData: {
-    login: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    patronymic?: string;
-    course?: number;
-    group?: number;
-    department?: string;
-    position: string;
-    hb?: string;
-    role: string;
-  };
-}) {
-  const res = await fetch(USER_REGISTER_PATH, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    signal,
-    body: JSON.stringify(userData),
-  });
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
-  }
-  return (await res.json()) as UserInfo;
-}
-
-export async function getUsersList({
-  signal,
-  showInactive = false,
-}: {
-  signal?: AbortSignal;
-  showInactive?: boolean;
-} = {}) {
-  const res = await fetch(`${USER_LIST_PATH}?showInactive=${showInactive}`, {
+export async function getUsers({ signal }: { signal?: AbortSignal } = {}) {
+  const res = await fetch(`${API_BASE}/users`, {
     method: "GET",
     credentials: "include",
-    headers: { Accept: "application/json" },
+    headers: getAuthHeaders(),
     signal,
   });
   if (!res.ok) {
@@ -136,25 +133,49 @@ export async function getUsersList({
   return (await res.json()) as UserInfo[];
 }
 
-export async function deactivateUser({
+export async function updateUser({
   signal,
   userId,
+  userData,
 }: {
   signal?: AbortSignal;
   userId: number;
+  userData: Partial<UserInfo>;
 }) {
-  const res = await fetch(USER_DEACTIVATE_PATH, {
+  const res = await fetch(`${API_BASE}/users/${userId}`, {
+    method: "PUT",
+    credentials: "include",
+    headers: getAuthHeaders(),
+    signal,
+    body: JSON.stringify(userData),
+  });
+  if (!res.ok) {
+    const error = await res.text();
+    throw new Error(error || `HTTP ${res.status}`);
+  }
+  return (await res.json()) as UserInfo;
+}
+
+export async function deactivateUser(userId: number) {
+  const res = await fetch(`${API_BASE}/users/${userId}/deactivate`, {
     method: "POST",
     credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    signal,
-    body: JSON.stringify({ userId }),
+    headers: getAuthHeaders(),
   });
   if (!res.ok) {
     throw new Error(`HTTP ${res.status}`);
   }
-  return (await res.json()) as UserInfo;
+  return true;
+}
+
+export async function activateUser(userId: number) {
+  const res = await fetch(`${API_BASE}/users/${userId}/activate`, {
+    method: "POST",
+    credentials: "include",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+  return true;
 }

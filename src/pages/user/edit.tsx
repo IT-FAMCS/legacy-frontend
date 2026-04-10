@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { editUser } from "../../api/user";
+import { useEditUser } from "../../hooks/use-user";
 import { useUserStore } from "../../stores/user";
 import Button from "../../components/Button";
 import { ModalWrapper } from "../../components/modal";
 
 export function EditUser({ setIsEdit }: { setIsEdit: (value: boolean) => void }) {
   const user = useUserStore((s) => s.user);
-  const setUser = useUserStore((s) => s.setUserInfo);
   
   const [formData, setFormData] = useState({
     firstName: "",
@@ -35,16 +33,7 @@ export function EditUser({ setIsEdit }: { setIsEdit: (value: boolean) => void })
     }
   }, [user]);
 
-  const editMutation = useMutation({
-    mutationFn: (userInfo: Parameters<typeof editUser>[0]["userInfo"]) => editUser({ userInfo }),
-    onSuccess: (data) => {
-      setUser(data);
-      setIsEdit(false);
-    },
-    onError: () => {
-      alert("Ошибка при сохранении");
-    },
-  });
+  const editMutation = useEditUser();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -53,11 +42,15 @@ export function EditUser({ setIsEdit }: { setIsEdit: (value: boolean) => void })
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     editMutation.mutate({
-      ...user,
-      ...formData,
+      firstName: formData.firstName || undefined,
+      lastName: formData.lastName || undefined,
+      patronymic: formData.patronymic || undefined,
+      department: formData.department || undefined,
       course: formData.course ? Number(formData.course) : undefined,
       group: formData.group ? Number(formData.group) : undefined,
-    } as Parameters<typeof editUser>[0]["userInfo"]);
+      hb: formData.hb || undefined,
+      position: formData.position || undefined,
+    });
   };
 
   return (
