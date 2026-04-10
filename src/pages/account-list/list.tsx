@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useErrorStore } from "../../stores/error";
 import { getUsers, deactivateUser, activateUser, updateUser } from "../../api/user";
 import type { UserInfo } from "../../stores/user";
 import Button from "../../components/Button";
@@ -23,6 +24,7 @@ export function AccountList() {
   const [formData, setFormData] = useState<UserFormData | null>(null);
 
   const queryClient = useQueryClient();
+  const setError = useErrorStore((s) => s.setError);
 
   const { data: users, isLoading } = useQuery({
     queryKey: ["users"],
@@ -59,8 +61,8 @@ export function AccountList() {
       setEditingUser(null);
       setFormData(null);
     },
-    onError: () => {
-      alert("Ошибка при обновлении пользователя");
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : "Ошибка при обновлении пользователя");
     },
   });
 

@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useErrorStore } from "../../../../stores/error";
 import Button from "../../../../components/Button";
 import { ModalWrapper } from "../../../../components/modal";
 import { deleteCategory } from "../../../../api/category";
@@ -13,6 +14,7 @@ export function DeleteCategory({
   categoryId: number;
 }) {
   const queryClient = useQueryClient();
+  const setError = useErrorStore((s) => s.setError);
 
   const deleteMutation = useMutation({
     mutationFn: () => deleteCategory({ categoryId }),
@@ -21,8 +23,7 @@ export function DeleteCategory({
       setIsDelete(false);
     },
     onError: (err) => {
-      console.error("Ошибка удаления категории:", err);
-      alert("Ошибка при удалении категории");
+      setError(err instanceof Error ? err.message : "Ошибка при удалении категории");
     },
   });
 

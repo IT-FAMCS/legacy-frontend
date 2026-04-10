@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useErrorStore } from "../../stores/error";
 import { getCard, updateCard } from "../../api/category";
 import Button from "../../components/Button";
 
@@ -11,6 +12,7 @@ export function CardPage() {
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
   const queryClient = useQueryClient();
+  const setError = useErrorStore((s) => s.setError);
 
   const { data: cardData, isLoading } = useQuery({
     queryKey: ["card", categoryId, cardId],
@@ -36,14 +38,13 @@ export function CardPage() {
       setIsEdit(false);
     },
     onError: (err) => {
-      console.error("Ошибка обновления карточки:", err);
-      alert("Ошибка при сохранении");
+      setError(err instanceof Error ? err.message : "Ошибка при сохранении");
     },
   });
 
   const handleSave = () => {
     if (!title.trim()) {
-      alert("Введите заголовок");
+      setError("Введите заголовок");
       return;
     }
     updateMutation.mutate({ title, content });

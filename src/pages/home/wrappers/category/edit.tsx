@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useErrorStore } from "../../../../stores/error";
 import Button from "../../../../components/Button";
 import { ModalWrapper } from "../../../../components/modal";
 import { updateCategory } from "../../../../api/category";
@@ -15,6 +16,7 @@ export function EditCategory({
   const [title, setTitle] = useState(category?.title || "");
   const [description, setDescription] = useState(category?.description || "");
   const queryClient = useQueryClient();
+  const setError = useErrorStore((s) => s.setError);
 
   useEffect(() => {
     if (category) {
@@ -31,14 +33,13 @@ export function EditCategory({
       setIsEdit(false);
     },
     onError: (err) => {
-      console.error("Ошибка обновления категории:", err);
-      alert("Ошибка при обновлении категории");
+      setError(err instanceof Error ? err.message : "Ошибка при обновлении категории");
     },
   });
 
   const handleSave = () => {
     if (!title.trim() || !category?.id) {
-      alert("Введите название категории");
+      setError("Введите название категории");
       return;
     }
     updateMutation.mutate({ categoryId: category.id, categoryData: { title, description } });
