@@ -1,35 +1,227 @@
+import { useState, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { editUser } from "../../api/user";
+import { useUserStore } from "../../stores/user";
 import Button from "../../components/Button";
 import { ModalWrapper } from "../../components/modal";
 
-export function EditUser({ setIsEdit }: { setIsEdit: Function }) {
+export function EditUser({ setIsEdit }: { setIsEdit: (value: boolean) => void }) {
+  const user = useUserStore((s) => s.user);
+  const setUser = useUserStore((s) => s.setUserInfo);
+  
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    patronymic: "",
+    department: "",
+    course: "",
+    group: "",
+    hb: "",
+    position: "",
+  });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        patronymic: user.patronymic || "",
+        department: user.department || "",
+        course: user.course?.toString() || "",
+        group: user.group?.toString() || "",
+        hb: user.hb || "",
+        position: user.position || "",
+      });
+    }
+  }, [user]);
+
+  const editMutation = useMutation({
+    mutationFn: (userInfo: Parameters<typeof editUser>[0]["userInfo"]) => editUser({ userInfo }),
+    onSuccess: (data) => {
+      setUser(data);
+      setIsEdit(false);
+    },
+    onError: () => {
+      alert("Ошибка при сохранении");
+    },
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    editMutation.mutate({
+      ...user,
+      ...formData,
+      course: formData.course ? Number(formData.course) : undefined,
+      group: formData.group ? Number(formData.group) : undefined,
+    } as Parameters<typeof editUser>[0]["userInfo"]);
+  };
+
   return (
     <ModalWrapper setIsOpen={setIsEdit}>
-      <div
+      <form
+        onSubmit={handleSubmit}
         style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
           height: "100%",
+          gap: "12px",
         }}
       >
-        <div>Тут редактирование по полям юзера</div>
-        <div>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "12px",
+          overflowY: "auto",
+        }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <label style={{ fontSize: "14px", fontWeight: 600 }}>Фамилия</label>
+            <input
+              name="lastName"
+              type="text"
+              value={formData.lastName}
+              onChange={handleChange}
+              style={{
+                padding: "8px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <label style={{ fontSize: "14px", fontWeight: 600 }}>Имя</label>
+            <input
+              name="firstName"
+              type="text"
+              value={formData.firstName}
+              onChange={handleChange}
+              style={{
+                padding: "8px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <label style={{ fontSize: "14px", fontWeight: 600 }}>Отчество</label>
+            <input
+              name="patronymic"
+              type="text"
+              value={formData.patronymic}
+              onChange={handleChange}
+              style={{
+                padding: "8px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <label style={{ fontSize: "14px", fontWeight: 600 }}>Отдел</label>
+            <input
+              name="department"
+              type="text"
+              value={formData.department}
+              onChange={handleChange}
+              style={{
+                padding: "8px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <label style={{ fontSize: "14px", fontWeight: 600 }}>Курс</label>
+            <input
+              name="course"
+              type="number"
+              value={formData.course}
+              onChange={handleChange}
+              min="1"
+              max="6"
+              style={{
+                padding: "8px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <label style={{ fontSize: "14px", fontWeight: 600 }}>Группа</label>
+            <input
+              name="group"
+              type="text"
+              value={formData.group}
+              onChange={handleChange}
+              style={{
+                padding: "8px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <label style={{ fontSize: "14px", fontWeight: 600 }}>Дата рождения</label>
+            <input
+              name="hb"
+              type="date"
+              value={formData.hb}
+              onChange={handleChange}
+              style={{
+                padding: "8px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <label style={{ fontSize: "14px", fontWeight: 600 }}>Должность</label>
+            <input
+              name="position"
+              type="text"
+              value={formData.position}
+              onChange={handleChange}
+              style={{
+                padding: "8px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+              }}
+            />
+          </div>
+        </div>
+        <div style={{
+          display: "flex",
+          gap: "12px",
+          justifyContent: "flex-end",
+          paddingTop: "12px",
+        }}>
           <Button
             onClick={() => {
               setIsEdit(false);
             }}
-            label="Отменить"
+            label="Отмена"
             fillColor
           />
           <Button
-            onClick={() => {
-              setIsEdit(false);
-            }}
-            label="Сохранить"
+            onClick={() => {}}
+            label={editMutation.isPending ? "Сохранение..." : "Сохранить"}
             fillColor
+            style={{ backgroundColor: "#4CAF50" }}
           />
         </div>
-      </div>
+      </form>
     </ModalWrapper>
   );
-};
+}

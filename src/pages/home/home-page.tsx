@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useLoadCategories } from '../../hooks/use-category';
 import Button from '../../components/Button';
 import TitleWrapper from './wrappers/title-wrapper';
 import CategoryWrapper from './wrappers/category/category-wrapper';
@@ -10,9 +9,22 @@ const HomePage = () => {
   // const categories = useLoadCategories(); — когда появится бэк
   const categories: Category[] = [{
     id: 1,
-    title: "Название категории",
-    description: "Описание категории",
-    themes: []
+    title: "Отделы",
+    description: "Информация по отделам организации",
+    cards: [
+      { id: 1, title: "Фандрайз", content: "# Фандрайз\n\nКонтент карточки..." },
+      { id: 2, title: "SMM", content: "# SMM\n\nКонтент карточки..." },
+      { id: 3, title: "Тик-Ток", content: "# Тик-Ток\n\nКонтент карточки..." },
+      { id: 4, title: "IT", content: "# IT отдел\n\nКонтент карточки..." },
+    ]
+  }, {
+    id: 2,
+    title: "Мероприятия",
+    description: "Информация о мероприятиях",
+    cards: [
+      { id: 5, title: "Тропа", content: "# Тропа\n\nКонтент карточки..." },
+      { id: 6, title: "Капустник", content: "# Капустник\n\nКонтент карточки..." },
+    ]
   }]
 
   const [isAdd, setIsAdd] = useState(false);

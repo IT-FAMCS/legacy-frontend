@@ -1,7 +1,13 @@
 import Icon from "./Icon.tsx";
 import Button from "./Button.tsx";
+import { useUserStore } from "../stores/user";
+import { useNavigate } from "react-router";
 
 const Header = () => {
+  const user = useUserStore((s) => s.user);
+  const isAuthenticated = useUserStore((s) => s.isAuthenticated);
+  const navigate = useNavigate();
+
   return (
     <header
       style={{
@@ -37,11 +43,19 @@ const Header = () => {
             {"Legacy".toUpperCase()}
           </h1>
         </a>
-        <nav style={{ display: "inline-flex", alignItems: "center" }}>
+        <nav style={{ display: "inline-flex", alignItems: "center", gap: "12px" }}>
+          {isAuthenticated && user?.role === "admin" && (
+            <Button
+              label="Пользователи"
+              onClick={() => navigate("/accounts")}
+              style={{ border: "none" }}
+              hoverStyle={{ scale: 1.08 }}
+            />
+          )}
           <Button
             href="/account"
             onClick={() => {
-              window.location.href = "/account";
+              navigate("/account");
             }}
             isLabelHidden
             iconSrc="/src/assets/icons/profile.svg"
