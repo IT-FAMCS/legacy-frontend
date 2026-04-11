@@ -1,41 +1,34 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Button from '../../components/Button';
 import TitleWrapper from './wrappers/title-wrapper';
 import CategoryWrapper from './wrappers/category/category-wrapper';
 import { AddCategory } from './wrappers/category/add';
-import type { Category } from '../../types/Category';
+import { getCategories } from '../../api/category';
+import { useCanEditCategories } from '../../hooks/use-permissions';
 
 const HomePage = () => {
-  // const categories = useLoadCategories(); — когда появится бэк
-  const categories: Category[] = [{
-    id: 1,
-    title: "Отделы",
-    description: "Информация по отделам организации",
-    cards: [
-      { id: 1, title: "Фандрайз", content: "# Фандрайз\n\nКонтент карточки..." },
-      { id: 2, title: "SMM", content: "# SMM\n\nКонтент карточки..." },
-      { id: 3, title: "Тик-Ток", content: "# Тик-Ток\n\nКонтент карточки..." },
-      { id: 4, title: "IT", content: "# IT отдел\n\nКонтент карточки..." },
-    ]
-  }, {
-    id: 2,
-    title: "Мероприятия",
-    description: "Информация о мероприятиях",
-    cards: [
-      { id: 5, title: "Тропа", content: "# Тропа\n\nКонтент карточки..." },
-      { id: 6, title: "Капустник", content: "# Капустник\n\nКонтент карточки..." },
-    ]
-  }]
+  const { data: categories, isLoading } = useQuery({
+    queryKey: ['categories'],
+    queryFn: ({ signal }) => getCategories({ signal }),
+  });
+
+  // Check permissions using position flags from backend via hooks
+  const canEditCategories = useCanEditCategories();
 
   const [isAdd, setIsAdd] = useState(false);
+
+  if (isLoading) {
+    return <div style={{ padding: "20px", marginTop: "var(--header-height)" }}>Загрузка...</div>;
+  }
 
   return (
     <>
       <TitleWrapper />
 
-      { categories?.map((category, index) => <CategoryWrapper key={index} category={category} />) }
+      { categories?.map((category) => <CategoryWrapper key={category.id} category={category} />) }
 
-      { /* isChairman && — когда появится бэк*/ <div style={{
+      { canEditCategories && <div style={{
         background: "var(--color-alabaster-grey)",
         textAlign: "center",
         paddingBlock: "2rem",

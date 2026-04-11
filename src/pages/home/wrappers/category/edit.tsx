@@ -13,20 +13,20 @@ export function EditCategory({
   setIsEdit: (value: boolean) => void;
   category?: Category;
 }) {
-  const [title, setTitle] = useState(category?.title || "");
+  const [name, setName] = useState(category?.name || "");
   const [description, setDescription] = useState(category?.description || "");
   const queryClient = useQueryClient();
   const setError = useErrorStore((s) => s.setError);
 
   useEffect(() => {
     if (category) {
-      setTitle(category.title);
-      setDescription(category.description);
+      setName(category.name);
+      setDescription(category.description || "");
     }
   }, [category]);
 
   const updateMutation = useMutation({
-    mutationFn: ({ categoryId, categoryData }: { categoryId: number; categoryData: { title: string; description: string } }) =>
+    mutationFn: ({ categoryId, categoryData }: { categoryId: number; categoryData: { name: string; description: string } }) =>
       updateCategory({ categoryId, categoryData }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
@@ -38,11 +38,11 @@ export function EditCategory({
   });
 
   const handleSave = () => {
-    if (!title.trim() || !category?.id) {
+    if (!name.trim() || !category?.id) {
       setError("Введите название категории");
       return;
     }
-    updateMutation.mutate({ categoryId: category.id, categoryData: { title, description } });
+    updateMutation.mutate({ categoryId: category.id, categoryData: { name, description } });
   };
 
   return (
@@ -62,8 +62,8 @@ export function EditCategory({
             <label style={{ color: "white", fontWeight: 600 }}>Название</label>
             <input
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Введите название категории"
               style={{
                 padding: "12px",

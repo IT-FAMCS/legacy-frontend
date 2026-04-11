@@ -1,20 +1,29 @@
 import { create } from "zustand";
 
-export type UserRole = "admin" | "chairman" | "member" | "guest";
-
 export type UserInfo = {
   id: number;
   login: string;
-  firstName: string;
-  lastName: string;
-  patronymic?: string;
-  course?: number;
-  group?: number;
-  department?: string;
-  position: string;
-  hb?: string;
-  role: UserRole;
-  isActive: boolean;
+  first_name: string;
+  last_name: string;
+  middle_name?: string | null;
+  birth_date?: string | null;
+  course?: string | null;
+  group?: string | null;
+  position_id: number;
+  position_name?: string | null;
+  department?: string | null;
+  telegram?: string | null;
+  is_active: boolean;
+  is_deactivated: boolean;
+  last_login?: string | null;
+  // Position flags from backend for permission checks
+  can_manage_positions?: boolean;
+  can_register_users?: boolean;
+  can_edit_categories?: boolean;
+  can_delete_categories?: boolean;
+  can_edit_cards?: boolean;
+  can_delete_cards?: boolean;
+  can_edit_any_user?: boolean;
 } | null;
 
 export type UserStoreState = {
@@ -40,6 +49,13 @@ export const useUserStore = create<UserStoreState & UserStoreAction>((set) => ({
     });
   },
   logout: () => {
+    localStorage.removeItem("jwt_token");
     set({ user: {}, isAuthenticated: false });
+  },
+  checkAuth: () => {
+    const token = localStorage.getItem("jwt_token");
+    if (token) {
+      set({ isAuthenticated: true });
+    }
   },
 }));

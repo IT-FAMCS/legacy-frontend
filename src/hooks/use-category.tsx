@@ -17,7 +17,7 @@ export function useAddCategory() {
   const setError = useErrorStore((s) => s.setError);
 
   return useMutation({
-    mutationFn: ({ categoryData }: { categoryData: { title: string; description: string } }) => createCategory({ categoryData }),
+    mutationFn: ({ categoryData }: { categoryData: { name: string; description?: string } }) => createCategory({ categoryData }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
     },
@@ -32,7 +32,7 @@ export function useEditCategory() {
   const setError = useErrorStore((s) => s.setError);
 
   return useMutation({
-    mutationFn: ({ id, categoryData }: { id: number; categoryData: { title: string; description: string } }) => updateCategory({ categoryId: id, categoryData }),
+    mutationFn: ({ id, categoryData }: { id: number; categoryData: { name: string; description?: string } }) => updateCategory({ categoryId: id, categoryData }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
     },

@@ -1,7 +1,7 @@
 export type ButtonProps = {
   className?: string;
   href?: string;
-  type?: "button";
+  type?: "button" | "submit";
   label?: string;
   isLabelHidden?: boolean;
   iconSrc?: string;

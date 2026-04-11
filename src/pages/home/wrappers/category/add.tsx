@@ -6,7 +6,7 @@ import { ModalWrapper } from "../../../../components/modal";
 import { createCategory } from "../../../../api/category";
 
 export function AddCategory({ setIsAdd }: { setIsAdd: (value: boolean) => void }) {
-  const [title, setTitle] = useState("");
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const queryClient = useQueryClient();
   const setError = useErrorStore((s) => s.setError);
@@ -23,11 +23,11 @@ export function AddCategory({ setIsAdd }: { setIsAdd: (value: boolean) => void }
   });
 
   const handleSave = () => {
-    if (!title.trim()) {
+    if (!name.trim()) {
       setError("Введите название категории");
       return;
     }
-    createMutation.mutate({ categoryData: { title, description } });
+    createMutation.mutate({ categoryData: { name, description } });
   };
 
   return (
@@ -47,8 +47,8 @@ export function AddCategory({ setIsAdd }: { setIsAdd: (value: boolean) => void }
             <label style={{ color: "white", fontWeight: 600 }}>Название</label>
             <input
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Введите название категории"
               style={{
                 padding: "12px",

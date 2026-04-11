@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
-import { login } from "../../api/user";
+import { login, getUser } from "../../api/user";
 import { useUserStore } from "../../stores/user";
 import { useErrorStore } from "../../stores/error";
 import Button from "../../components/Button";
+import background from "../../assets/images/title-wrapper-bg.png";
 
 export function LoginPage() {
   const [loginValue, setLoginValue] = useState("");
@@ -12,12 +13,18 @@ export function LoginPage() {
   const navigate = useNavigate();
   const setUser = useUserStore((s) => s.setUserInfo);
   const setError = useErrorStore((s) => s.setError);
+  const queryClient = useQueryClient();
 
   const loginMutation = useMutation({
-    mutationFn: (variables: Parameters<typeof login>[0]) => login(variables),
+    mutationFn: async (variables: Parameters<typeof login>[0]) => {
+      await login(variables);
+      // After successful login, fetch user info
+      return await getUser();
+    },
     onSuccess: (data) => {
       setUser(data);
-      navigate("/");
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      navigate("/home");
     },
     onError: (err) => {
       setError(err instanceof Error ? err.message : "Неверный логин или пароль");
@@ -40,10 +47,13 @@ export function LoginPage() {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      minHeight: "calc(100vh - var(--header-height))",
+      minHeight: "100vh",
       padding: "20px",
+      background: `url(${background})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
     }}>
-      <h2 style={{ marginBottom: "24px", fontSize: "2rem" }}>Вход в систему</h2>
+      <h2 style={{ marginBottom: "24px", fontSize: "2rem", color: "white", textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>Вход в систему</h2>
       <form
         onSubmit={handleSubmit}
         style={{
@@ -53,8 +63,9 @@ export function LoginPage() {
           width: "100%",
           maxWidth: "400px",
           padding: "32px",
-          backgroundColor: "var(--color-alabaster-grey)",
+          backgroundColor: "rgba(255, 255, 255, 0.95)",
           borderRadius: "10px",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -91,21 +102,9 @@ export function LoginPage() {
           label={loginMutation.isPending ? "Вход..." : "Войти"}
           fillColor
           full
+          type="submit"
           style={{ border: "none", marginTop: "8px" }}
-          onClick={() => {}}
         />
-        <div style={{ textAlign: "center", marginTop: "16px" }}>
-          <a
-            href="/register"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/register");
-            }}
-            style={{ color: "var(--color-gold-crest)", textDecoration: "underline" }}
-          >
-            Зарегистрироваться
-          </a>
-        </div>
       </form>
     </div>
   );

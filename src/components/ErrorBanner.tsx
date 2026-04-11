@@ -2,20 +2,25 @@ import { useEffect } from "react";
 
 type ErrorBannerProps = {
   error: string | null;
+  success: string | null;
   onClose: () => void;
 };
 
-export function ErrorBanner({ error, onClose }: ErrorBannerProps) {
+export function ErrorBanner({ error, success, onClose }: ErrorBannerProps) {
   useEffect(() => {
-    if (error) {
+    if (error || success) {
       const timer = setTimeout(() => {
         onClose();
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [error, onClose]);
+  }, [error, success, onClose]);
 
-  if (!error) return null;
+  if (!error && !success) return null;
+
+  const isError = !!error;
+  const message = error || success;
+  const backgroundColor = isError ? "#f44336" : "#4CAF50";
 
   return (
     <div
@@ -24,7 +29,7 @@ export function ErrorBanner({ error, onClose }: ErrorBannerProps) {
         top: "var(--header-height)",
         left: 0,
         right: 0,
-        backgroundColor: "#f44336",
+        backgroundColor,
         color: "white",
         padding: "12px 24px",
         display: "flex",
@@ -34,7 +39,7 @@ export function ErrorBanner({ error, onClose }: ErrorBannerProps) {
         boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
       }}
     >
-      <span style={{ fontSize: "14px" }}>{error}</span>
+      <span style={{ fontSize: "14px" }}>{message}</span>
       <button
         onClick={onClose}
         style={{
