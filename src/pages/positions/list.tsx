@@ -115,7 +115,15 @@ export function PositionsList() {
   };
 
   if (isLoading) {
-    return <div style={{ padding: "20px", marginTop: "var(--header-height)" }}>Загрузка...</div>;
+    return <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: "var(--header-height)",
+      }}>
+        <img alt="racoon" src="/src/assets/images/racoon-loading.gif" width={256} height={256}/>
+        <p>Загрузка...</p>
+      </div>;
   }
 
   const canManagePositions = currentUser?.position_name && 

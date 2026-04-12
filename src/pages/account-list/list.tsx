@@ -183,7 +183,15 @@ export function AccountList() {
   const departments = Array.from(new Set(users?.map((u: User) => u.department).filter(Boolean) as string[]));
 
   if (isLoading) {
-    return <div style={{ padding: "20px", marginTop: "var(--header-height)" }}>Загрузка...</div>;
+    return <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: "var(--header-height)",
+      }}>
+        <img alt="racoon" src="/src/assets/images/racoon-loading.gif" width={256} height={256}/>
+        <p>Загрузка...</p>
+      </div>;
   }
 
   // Helper function to check if user can edit a specific target user

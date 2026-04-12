@@ -105,41 +105,6 @@ export function LandingPage() {
       color: "#ffffff",
       position: "relative",
     }}>
-      {/* Login Button - Beautiful styled */}
-      <button
-        onClick={() => navigate("/login")}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = "translateY(-2px)";
-          e.currentTarget.style.boxShadow = "0 6px 20px rgba(104, 106, 207, 0.6)";
-          e.currentTarget.style.background = "linear-gradient(135deg, #7a7cdf 0%, #6a6cc8 100%)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "translateY(0)";
-          e.currentTarget.style.boxShadow = "0 4px 15px rgba(104, 106, 207, 0.4)";
-          e.currentTarget.style.background = "linear-gradient(135deg, #686ACF 0%, #5a5cb8 100%)";
-        }}
-        style={{
-          position: "absolute",
-          top: "30px",
-          right: "30px",
-          padding: "14px 32px",
-          fontSize: "1.1rem",
-          fontWeight: "600",
-          color: "white",
-          background: "linear-gradient(135deg, #686ACF 0%, #5a5cb8 100%)",
-          border: "2px solid rgba(255,255,255,0.3)",
-          borderRadius: "50px",
-          cursor: "pointer",
-          transition: "all 0.3s ease",
-          boxShadow: "0 4px 15px rgba(104, 106, 207, 0.4)",
-          textTransform: "uppercase",
-          letterSpacing: "1px",
-          zIndex: 100,
-        }}
-      >
-        Войти
-      </button>
-
       <img
         src={visibilityIcon}
         alt="Eye"
@@ -156,6 +121,37 @@ export function LandingPage() {
         onMouseEnter={handleVisibilityMouseEnter}
         onMouseLeave={handleVisibilityMouseLeave}
       />
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'end', gap: '32px'}}>
+            <button
+        onClick={() => navigate("/login")}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "translateY(-2px)";
+          e.currentTarget.style.boxShadow = "0 6px 20px rgba(104, 106, 207, 0.6)";
+          e.currentTarget.style.background = "linear-gradient(135deg, #7a7cdf 0%, #6a6cc8 100%)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "translateY(0)";
+          e.currentTarget.style.boxShadow = "0 4px 15px rgba(104, 106, 207, 0.4)";
+          e.currentTarget.style.background = "linear-gradient(135deg, #686ACF 0%, #5a5cb8 100%)";
+        }}
+        style={{
+          padding: "28px 64px",
+          fontSize: "1.5rem",
+          fontWeight: "600",
+          color: "white",
+          background: "linear-gradient(135deg, #686ACF 0%, #5a5cb8 100%)",
+          border: "2px solid rgba(255,255,255,0.3)",
+          borderRadius: "50px",
+          cursor: "pointer",
+          transition: "all 0.3s ease",
+          boxShadow: "0 4px 15px rgba(104, 106, 207, 0.4)",
+          textTransform: "uppercase",
+          letterSpacing: "1px",
+          zIndex: 100,
+        }}
+      >
+        Войти
+      </button>
       <div ref={titleContainerRef} style={{
         display: "flex",
         flexDirection: "column",
@@ -185,6 +181,7 @@ export function LandingPage() {
           lineHeight: "1",
           margin: "0",
         }}></h1>
+      </div>
       </div>
     </div>
   );

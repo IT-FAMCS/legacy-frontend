@@ -128,12 +128,13 @@ export function CardPage() {
   if (isLoading) {
     return (
       <div style={{
-        padding: "20px",
-        maxWidth: "900px",
-        margin: "0 auto",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         marginTop: "var(--header-height)",
       }}>
-        Загрузка...
+        <img alt="racoon" src="/src/assets/images/racoon-loading.gif" width={256} height={256}/>
+        <p>Загрузка...</p>
       </div>
     );
   }
