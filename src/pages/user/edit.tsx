@@ -326,4 +326,4 @@ export function EditUser({
       </div>
     </ModalWrapper>
   );
-}
+};
