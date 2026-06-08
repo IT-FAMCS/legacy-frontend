@@ -26,6 +26,7 @@ export function ModalWrapper({
       <div
         style={{
           position: "absolute",
+          overflowY: "auto",
           width: "600px",
           height: "350px",
           top: "calc(50% - 175px)",

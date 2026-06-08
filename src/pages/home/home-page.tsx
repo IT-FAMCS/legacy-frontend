@@ -1,29 +1,42 @@
 import { useState } from 'react';
-import { useLoadCategories } from '../../hooks/use-category';
+import { useQuery } from '@tanstack/react-query';
 import Button from '../../components/Button';
 import TitleWrapper from './wrappers/title-wrapper';
 import CategoryWrapper from './wrappers/category/category-wrapper';
 import { AddCategory } from './wrappers/category/add';
-import type { Category } from '../../types/Category';
+import { getCategories } from '../../api/category';
+import { useCanEditCategories } from '../../hooks/use-permissions';
 
 const HomePage = () => {
-  // const categories = useLoadCategories(); — когда появится бэк
-  const categories: Category[] = [{
-    id: 1,
-    title: "Название категории",
-    description: "Описание категории",
-    themes: []
-  }]
+  const { data: categories, isLoading } = useQuery({
+    queryKey: ['categories'],
+    queryFn: ({ signal }) => getCategories({ signal }),
+  });
+
+  // Check permissions using position flags from backend via hooks
+  const canEditCategories = useCanEditCategories();
 
   const [isAdd, setIsAdd] = useState(false);
+
+  if (isLoading) {
+    return <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: "var(--header-height)",
+      }}>
+        <img alt="racoon" src="/src/assets/images/racoon-loading.gif" width={256} height={256}/>
+        <p>Загрузка...</p>
+      </div>;
+  }
 
   return (
     <>
       <TitleWrapper />
 
-      { categories?.map((category, index) => <CategoryWrapper key={index} category={category} />) }
+      { categories?.map((category) => <CategoryWrapper key={category.id} category={category} />) }
 
-      { /* isChairman && — когда появится бэк*/ <div style={{
+      { canEditCategories && <div style={{
         background: "var(--color-alabaster-grey)",
         textAlign: "center",
         paddingBlock: "2rem",

@@ -15,6 +15,7 @@ const Button = (
     onClick,
     full,
     fillColor,
+    style,
     hoverStyle,
     activeStyle
   }: ButtonProps) => {
@@ -43,6 +44,7 @@ const Button = (
     width: full ? '100%' : undefined,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
+    ...style,
     ...(isHovered && hoverStyle),
     ...(isActive && activeStyle)
   };
