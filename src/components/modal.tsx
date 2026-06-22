@@ -4,7 +4,7 @@ export function ModalWrapper({
   setIsOpen,
   children,
 }: {
-  setIsOpen: Function;
+  setIsOpen: (isOpen: boolean) => void;
   children: React.ReactNode;
 }) {
   return createPortal(
