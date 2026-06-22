@@ -1,0 +1,217 @@
+.markdown-content {
+  min-width: 0;
+  font-size: 20px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.markdown-content > :first-child {
+  margin-top: 0;
+}
+
+.markdown-content > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin: 1.4em 0 0.55em;
+  line-height: 1.25;
+}
+
+.markdown-content h1 {
+  font-size: 2rem;
+}
+
+.markdown-content h2 {
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid #d8d8df;
+  font-size: 1.6rem;
+}
+
+.markdown-content h3 {
+  font-size: 1.3rem;
+}
+
+.markdown-content h4 {
+  font-size: 1.1rem;
+}
+
+.markdown-content p,
+.markdown-content ul,
+.markdown-content ol,
+.markdown-content blockquote,
+.markdown-content pre,
+.markdown-content .markdown-table-wrapper,
+.markdown-content hr {
+  margin: 0 0 1em;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 1.65rem;
+}
+
+.markdown-content li + li {
+  margin-top: 0.25rem;
+}
+
+.markdown-content li > ul,
+.markdown-content li > ol {
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.markdown-content .markdown-list-item-content {
+  min-width: 0;
+}
+
+.markdown-content .markdown-list-item-content > p:last-child,
+.markdown-content .markdown-list-item-content > ul:last-child,
+.markdown-content .markdown-list-item-content > ol:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-content .markdown-task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin-left: -1.65rem;
+  list-style: none;
+}
+
+.markdown-content .markdown-task-item input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  margin-top: 0.35rem;
+  accent-color: #686acf;
+  pointer-events: none;
+}
+
+.markdown-content a {
+  color: #4d50b8;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
+.markdown-content a:hover {
+  opacity: 1;
+  text-decoration-thickness: 2px;
+}
+
+.markdown-content a:focus-visible {
+  border-radius: 2px;
+  outline: 3px solid rgba(104, 106, 207, 0.25);
+  outline-offset: 2px;
+}
+
+.markdown-content u {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
+.markdown-content blockquote {
+  padding: 0.15rem 1rem;
+  border-left: 4px solid #686acf;
+  color: #515463;
+  background: rgba(104, 106, 207, 0.08);
+}
+
+.markdown-content blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-content code {
+  padding: 0.12em 0.35em;
+  border-radius: 4px;
+  background: #e5e5ec;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+}
+
+.markdown-content pre {
+  max-width: 100%;
+  padding: 1rem;
+  overflow-x: auto;
+  border-radius: 8px;
+  background: #24262e;
+  color: #f6f7fb;
+  white-space: pre;
+}
+
+.markdown-content pre code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 0.9rem;
+}
+
+.markdown-content .markdown-table-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid #d8d8df;
+  border-radius: 8px;
+}
+
+.markdown-content table {
+  width: 100%;
+  min-width: 420px;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.markdown-content th,
+.markdown-content td {
+  padding: 0.7rem 0.85rem;
+  border-right: 1px solid #d8d8df;
+  border-bottom: 1px solid #d8d8df;
+  vertical-align: top;
+}
+
+.markdown-content th:last-child,
+.markdown-content td:last-child {
+  border-right: 0;
+}
+
+.markdown-content tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.markdown-content th {
+  background: #e8e8ef;
+  font-weight: 700;
+}
+
+.markdown-content tbody tr:nth-child(even) {
+  background: #f8f8fb;
+}
+
+.markdown-content hr {
+  height: 1px;
+  border: 0;
+  background: #cfcfd8;
+}
+
+.markdown-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0.8rem 0;
+  border-radius: 8px;
+}
+
+@media (max-width: 640px) {
+  .markdown-content h1 {
+    font-size: 1.65rem;
+  }
+
+  .markdown-content h2 {
+    font-size: 1.4rem;
+  }
+}
