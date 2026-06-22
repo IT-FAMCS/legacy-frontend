@@ -71,3 +71,14 @@ export default defineConfig([
   },
 ])
 ```
+
+
+## Markdown in cards
+
+Card content supports headings, paragraphs, nested ordered and unordered lists,
+task checkboxes, blockquotes, tables, links, images, inline and fenced code,
+horizontal rules, bold, italic, strikethrough, and underlined text.
+
+Underline is a project extension and uses `++text++`. Raw HTML is intentionally
+rendered as text; links and images accept only safe web, mail, telephone, or
+relative URLs.

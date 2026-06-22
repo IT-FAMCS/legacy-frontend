@@ -6,6 +6,7 @@ import Button from "../../components/Button";
 import { MultiSelect } from "../../components/MultiSelect";
 import { getPositions } from "../../api/user";
 import { useCanEditCards } from "../../hooks/use-permissions";
+import { MarkdownRenderer } from "../../components/MarkdownRenderer";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
@@ -180,6 +181,7 @@ export function CardPage() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Содержимое карточки (поддерживается Markdown)"
+              aria-label="Содержимое карточки в формате Markdown"
               style={{
                 width: "100%",
                 minHeight: "300px",
@@ -191,6 +193,51 @@ export function CardPage() {
                 resize: "vertical",
               }}
             />
+
+            <details style={{ marginTop: "10px" }}>
+              <summary style={{ cursor: "pointer", fontWeight: 600 }}>
+                Подсказка по Markdown
+              </summary>
+              <div style={{
+                marginTop: "8px",
+                padding: "12px",
+                borderRadius: "8px",
+                backgroundColor: "white",
+                fontFamily: "monospace",
+                fontSize: "13px",
+                lineHeight: 1.6,
+                whiteSpace: "pre-wrap",
+              }}>
+                {`**жирный**  *курсив*  ++подчёркнутый++  ~~зачёркнутый~~
+[ссылка](https://example.com)  ![описание](https://example.com/image.png)
+- список
+  - вложенный пункт
+- [x] выполнено
+- [ ] не выполнено
+> цитата
+
+| Колонка 1 | Колонка 2 |
+| --- | ---: |
+| Значение | 10 |
+
+\`код\` или блок между тремя обратными кавычками`}
+              </div>
+            </details>
+
+            {content.trim() && (
+              <div style={{
+                marginTop: "16px",
+                padding: "16px",
+                border: "1px solid #d8d8df",
+                borderRadius: "8px",
+                backgroundColor: "white",
+              }}>
+                <h3 style={{ fontSize: "16px", marginBottom: "12px" }}>
+                  Предпросмотр
+                </h3>
+                <MarkdownRenderer content={content} />
+              </div>
+            )}
             
             <div style={{
               marginTop: "20px",
@@ -288,23 +335,7 @@ export function CardPage() {
               </div>
             )}
             
-            <div
-              style={{
-                fontSize: "16px",
-                lineHeight: "1.6",
-                whiteSpace: "pre-wrap",
-              }}
-              dangerouslySetInnerHTML={{
-                __html: (content || "")
-                  .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-                  .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-                  .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-                  .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
-                  .replace(/\*(.*)\*/gim, '<em>$1</em>')
-                  .replace(/^- (.*$)/gim, '<li>$1</li>')
-                  .replace(/\n/gim, '<br />')
-              }}
-            />
+            <MarkdownRenderer content={content || ""} />
           </>
         )}
       </div>
