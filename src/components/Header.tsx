@@ -3,7 +3,13 @@ import Button from "./Button.tsx";
 import { AddDepartmentModal } from "./AddDepartmentModal";
 import { useUserStore } from "../stores/user";
 import { useNavigate } from "react-router";
-import { useCanManagePositions, useCanEditCategories, useCanEditAnyUser, useCanRegisterUsers, useCanManageDepartments } from "../hooks/use-permissions";
+import {
+  useCanManagePositions,
+  useCanEditCategories,
+  useCanEditAnyUser,
+  useCanRegisterUsers,
+  useCanManageDepartments,
+} from "../hooks/use-permissions";
 import { useState } from "react";
 
 const Header = () => {
@@ -46,14 +52,21 @@ const Header = () => {
           aria-label="На главную"
           style={{ display: "flex", alignItems: "center", gap: 12 }}
         >
-          <Icon src="/src/assets/icons/famcs.svg" ariaLabel="famcs" size={60} />
+          <Icon src="./assets/icons/famcs.svg" ariaLabel="famcs" size={60} />
           <h1
-            style={{ fontSize: 35, fontWeight: 700, letterSpacing: "0.02em", color: "white" }}
+            style={{
+              fontSize: 35,
+              fontWeight: 700,
+              letterSpacing: "0.02em",
+              color: "white",
+            }}
           >
             {"Legacy".toUpperCase()}
           </h1>
         </a>
-        <nav style={{ display: "inline-flex", alignItems: "center", gap: "12px" }}>
+        <nav
+          style={{ display: "inline-flex", alignItems: "center", gap: "12px" }}
+        >
           {isAuthenticated && canEditCategories && (
             <Button
               label="На главную"
@@ -100,14 +113,16 @@ const Header = () => {
               navigate("/account");
             }}
             isLabelHidden
-            iconSrc="/src/assets/icons/profile.svg"
+            iconSrc="./assets/icons/profile.svg"
             iconSize={32}
             style={{ border: "none" }}
             hoverStyle={{ scale: 1.08 }}
           />
         </nav>
       </div>
-      {isAddDepartmentOpen && <AddDepartmentModal setIsOpen={setIsAddDepartmentOpen} />}
+      {isAddDepartmentOpen && (
+        <AddDepartmentModal setIsOpen={setIsAddDepartmentOpen} />
+      )}
     </header>
   );
 };
