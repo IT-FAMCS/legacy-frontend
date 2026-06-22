@@ -76,7 +76,7 @@ export function CardPage() {
   });
 
   // Convert positions to options for MultiSelect
-  const positionOptions = positions.map(pos => ({
+  const positionOptions = positions.map((pos) => ({
     value: pos.name,
     label: pos.name,
   }));
@@ -93,7 +93,12 @@ export function CardPage() {
       setContent(cardData.content || "");
       // Parse comma-separated positions to array
       if (cardData.access_positions) {
-        setSelectedPositions(cardData.access_positions.split(",").map((p: string) => p.trim()).filter(Boolean));
+        setSelectedPositions(
+          cardData.access_positions
+            .split(",")
+            .map((p: string) => p.trim())
+            .filter(Boolean)
+        );
       } else {
         setSelectedPositions([]);
       }
@@ -102,8 +107,12 @@ export function CardPage() {
   }, [cardData]);
 
   const updateMutation = useMutation({
-    mutationFn: (data: { title?: string; content?: string; access_positions?: string; access_logins?: string }) =>
-      updateCardApi({ cardId: Number(cardId), cardData: data }),
+    mutationFn: (data: {
+      title?: string;
+      content?: string;
+      access_positions?: string;
+      access_logins?: string;
+    }) => updateCardApi({ cardId: Number(cardId), cardData: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["card", cardId] });
       setIsEdit(false);
@@ -121,32 +130,42 @@ export function CardPage() {
     updateMutation.mutate({
       title,
       content,
-      access_positions: selectedPositions.length > 0 ? selectedPositions.join(",") : undefined,
+      access_positions:
+        selectedPositions.length > 0 ? selectedPositions.join(",") : undefined,
       access_logins: accessLogins || undefined,
     });
   };
 
   if (isLoading) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: "var(--header-height)",
-      }}>
-        <img alt="racoon" src="/src/assets/images/racoon-loading.gif" width={256} height={256}/>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: "var(--header-height)",
+        }}
+      >
+        <img
+          alt="racoon"
+          src="./assets/images/racoon-loading.gif"
+          width={256}
+          height={256}
+        />
         <p>Загрузка...</p>
       </div>
     );
   }
 
   return (
-    <div style={{
-      padding: "20px",
-      maxWidth: "900px",
-      margin: "0 auto",
-      marginTop: "var(--header-height)",
-    }}>
+    <div
+      style={{
+        padding: "20px",
+        maxWidth: "900px",
+        margin: "0 auto",
+        marginTop: "var(--header-height)",
+      }}
+    >
       <div style={{ marginBottom: "20px" }}>
         <Button
           label="← Назад"
@@ -156,11 +175,13 @@ export function CardPage() {
         />
       </div>
 
-      <div style={{
-        backgroundColor: "var(--color-alabaster-grey)",
-        borderRadius: "10px",
-        padding: "32px",
-      }}>
+      <div
+        style={{
+          backgroundColor: "var(--color-alabaster-grey)",
+          borderRadius: "10px",
+          padding: "32px",
+        }}
+      >
         {isEdit ? (
           <>
             <input
@@ -198,16 +219,18 @@ export function CardPage() {
               <summary style={{ cursor: "pointer", fontWeight: 600 }}>
                 Подсказка по Markdown
               </summary>
-              <div style={{
-                marginTop: "8px",
-                padding: "12px",
-                borderRadius: "8px",
-                backgroundColor: "white",
-                fontFamily: "monospace",
-                fontSize: "13px",
-                lineHeight: 1.6,
-                whiteSpace: "pre-wrap",
-              }}>
+              <div
+                style={{
+                  marginTop: "8px",
+                  padding: "12px",
+                  borderRadius: "8px",
+                  backgroundColor: "white",
+                  fontFamily: "monospace",
+                  fontSize: "13px",
+                  lineHeight: 1.6,
+                  whiteSpace: "pre-wrap",
+                }}
+              >
                 {`**жирный**  *курсив*  ++подчёркнутый++  ~~зачёркнутый~~
 [ссылка](https://example.com)  ![описание](https://example.com/image.png)
 - список
@@ -225,28 +248,40 @@ export function CardPage() {
             </details>
 
             {content.trim() && (
-              <div style={{
-                marginTop: "16px",
-                padding: "16px",
-                border: "1px solid #d8d8df",
-                borderRadius: "8px",
-                backgroundColor: "white",
-              }}>
+              <div
+                style={{
+                  marginTop: "16px",
+                  padding: "16px",
+                  border: "1px solid #d8d8df",
+                  borderRadius: "8px",
+                  backgroundColor: "white",
+                }}
+              >
                 <h3 style={{ fontSize: "16px", marginBottom: "12px" }}>
                   Предпросмотр
                 </h3>
                 <MarkdownRenderer content={content} />
               </div>
             )}
-            
-            <div style={{
-              marginTop: "20px",
-              padding: "16px",
-              backgroundColor: "white",
-              borderRadius: "8px",
-            }}>
-              <h3 style={{ fontSize: "18px", marginBottom: "12px" }}>Настройки доступа</h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+
+            <div
+              style={{
+                marginTop: "20px",
+                padding: "16px",
+                backgroundColor: "white",
+                borderRadius: "8px",
+              }}
+            >
+              <h3 style={{ fontSize: "18px", marginBottom: "12px" }}>
+                Настройки доступа
+              </h3>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                }}
+              >
                 <MultiSelect
                   options={positionOptions}
                   selectedValues={selectedPositions}
@@ -258,7 +293,14 @@ export function CardPage() {
                   Оставьте пустым для доступа всем
                 </small>
                 <div>
-                  <label style={{ fontSize: "14px", fontWeight: 600, display: "block", marginBottom: "4px" }}>
+                  <label
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      display: "block",
+                      marginBottom: "4px",
+                    }}
+                  >
                     Доступ для пользователей (логины, через запятую)
                   </label>
                   <input
@@ -281,11 +323,13 @@ export function CardPage() {
               </div>
             </div>
 
-            <div style={{
-              display: "flex",
-              gap: "12px",
-              marginTop: "16px",
-            }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "12px",
+                marginTop: "16px",
+              }}
+            >
               <Button
                 label="Сохранить"
                 fillColor
@@ -302,13 +346,20 @@ export function CardPage() {
           </>
         ) : (
           <>
-            <div style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "24px",
-            }}>
-              <h1 style={{ fontSize: "2.5rem", color: "var(--сolor-dark-grayish-blue)" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "24px",
+              }}
+            >
+              <h1
+                style={{
+                  fontSize: "2.5rem",
+                  color: "var(--сolor-dark-grayish-blue)",
+                }}
+              >
                 {title}
               </h1>
               {canEditCards && (
@@ -320,21 +371,25 @@ export function CardPage() {
                 />
               )}
             </div>
-            
+
             {(selectedPositions.length > 0 || accessLogins) && (
-              <div style={{
-                padding: "12px",
-                backgroundColor: "#fff3cd",
-                borderRadius: "6px",
-                marginBottom: "16px",
-                fontSize: "14px",
-              }}>
+              <div
+                style={{
+                  padding: "12px",
+                  backgroundColor: "#fff3cd",
+                  borderRadius: "6px",
+                  marginBottom: "16px",
+                  fontSize: "14px",
+                }}
+              >
                 <strong>Ограниченный доступ:</strong>
-                {selectedPositions.length > 0 && <div>Должности: {selectedPositions.join(", ")}</div>}
+                {selectedPositions.length > 0 && (
+                  <div>Должности: {selectedPositions.join(", ")}</div>
+                )}
                 {accessLogins && <div>Пользователи: {accessLogins}</div>}
               </div>
             )}
-            
+
             <MarkdownRenderer content={content || ""} />
           </>
         )}
