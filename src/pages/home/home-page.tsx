@@ -6,6 +6,7 @@ import CategoryWrapper from "./wrappers/category/category-wrapper";
 import { AddCategory } from "./wrappers/category/add";
 import { getCategories } from "../../api/category";
 import { useCanEditCategories } from "../../hooks/use-permissions";
+import racoonLoading from "../../assets/images/racoon-loading.gif";
 
 const HomePage = () => {
   const { data: categories, isLoading } = useQuery({
@@ -28,12 +29,7 @@ const HomePage = () => {
           marginTop: "var(--header-height)",
         }}
       >
-        <img
-          alt="racoon"
-          src="./assets/images/racoon-loading.gif"
-          width={256}
-          height={256}
-        />
+        <img alt="racoon" src={racoonLoading} width={256} height={256} />
         <p>Загрузка...</p>
       </div>
     );

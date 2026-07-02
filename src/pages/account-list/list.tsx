@@ -15,6 +15,7 @@ import { ModalWrapper } from "../../components/modal";
 import { MultiSelect } from "../../components/MultiSelect";
 import type { Position } from "../../types/Position";
 import { useNavigate } from "react-router";
+import racoonLoading from "../../assets/images/racoon-loading.gif";
 
 type Department = {
   id: number;
@@ -195,7 +196,7 @@ export function AccountList() {
   });
 
   const departments = Array.from(
-    new Set(users?.map((u: User) => u.department).filter(Boolean) as string[])
+    new Set(users?.map((u: User) => u.department).filter(Boolean) as string[]),
   );
 
   if (isLoading) {
@@ -208,12 +209,7 @@ export function AccountList() {
           marginTop: "var(--header-height)",
         }}
       >
-        <img
-          alt="racoon"
-          src="./assets/images/racoon-loading.gif"
-          width={256}
-          height={256}
-        />
+        <img alt="racoon" src={racoonLoading} width={256} height={256} />
         <p>Загрузка...</p>
       </div>
     );
@@ -526,7 +522,7 @@ export function AccountList() {
                     (dept: { id: number; name: string }) => ({
                       value: String(dept.id),
                       label: dept.name,
-                    })
+                    }),
                   )}
                   selectedValues={formData?.department_ids.map(String) || []}
                   onChange={(values: string[]) => {

@@ -7,6 +7,7 @@ import { MultiSelect } from "../../components/MultiSelect";
 import { getPositions } from "../../api/user";
 import { useCanEditCards } from "../../hooks/use-permissions";
 import { MarkdownRenderer } from "../../components/MarkdownRenderer";
+import racoonLoading from "../../assets/images/racoon-loading.gif";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
@@ -97,7 +98,7 @@ export function CardPage() {
           cardData.access_positions
             .split(",")
             .map((p: string) => p.trim())
-            .filter(Boolean)
+            .filter(Boolean),
         );
       } else {
         setSelectedPositions([]);
@@ -146,12 +147,7 @@ export function CardPage() {
           marginTop: "var(--header-height)",
         }}
       >
-        <img
-          alt="racoon"
-          src="./assets/images/racoon-loading.gif"
-          width={256}
-          height={256}
-        />
+        <img alt="racoon" src={racoonLoading} width={256} height={256} />
         <p>Загрузка...</p>
       </div>
     );
