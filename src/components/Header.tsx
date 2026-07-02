@@ -11,6 +11,8 @@ import {
   useCanManageDepartments,
 } from "../hooks/use-permissions";
 import { useState } from "react";
+import famcsIcon from "../assets/icons/famcs.svg";
+import profileIcon from "../assets/icons/profile.svg";
 
 const Header = () => {
   const isAuthenticated = useUserStore((s) => s.isAuthenticated);
@@ -52,7 +54,7 @@ const Header = () => {
           aria-label="На главную"
           style={{ display: "flex", alignItems: "center", gap: 12 }}
         >
-          <Icon src="./assets/icons/famcs.svg" ariaLabel="famcs" size={60} />
+          <Icon src={famcsIcon} ariaLabel="famcs" size={60} />
           <h1
             style={{
               fontSize: 35,
@@ -113,7 +115,7 @@ const Header = () => {
               navigate("/account");
             }}
             isLabelHidden
-            iconSrc="./assets/icons/profile.svg"
+            iconSrc={profileIcon}
             iconSize={32}
             style={{ border: "none" }}
             hoverStyle={{ scale: 1.08 }}

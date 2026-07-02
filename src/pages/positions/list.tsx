@@ -11,6 +11,7 @@ import { useUserStore } from "../../stores/user";
 import Button from "../../components/Button";
 import { ModalWrapper } from "../../components/modal";
 import type { Position } from "../../types/Position";
+import racoonLoading from "../../assets/images/racoon-loading.gif";
 
 type PositionFormData = {
   name: string;
@@ -48,7 +49,7 @@ export function PositionsList() {
     },
     onError: (err) => {
       setError(
-        err instanceof Error ? err.message : "Ошибка при создании должности"
+        err instanceof Error ? err.message : "Ошибка при создании должности",
       );
     },
   });
@@ -68,7 +69,7 @@ export function PositionsList() {
     },
     onError: (err) => {
       setError(
-        err instanceof Error ? err.message : "Ошибка при обновлении должности"
+        err instanceof Error ? err.message : "Ошибка при обновлении должности",
       );
     },
   });
@@ -80,7 +81,7 @@ export function PositionsList() {
     },
     onError: (err) => {
       setError(
-        err instanceof Error ? err.message : "Ошибка при удалении должности"
+        err instanceof Error ? err.message : "Ошибка при удалении должности",
       );
     },
   });
@@ -144,12 +145,7 @@ export function PositionsList() {
           marginTop: "var(--header-height)",
         }}
       >
-        <img
-          alt="racoon"
-          src="./assets/images/racoon-loading.gif"
-          width={256}
-          height={256}
-        />
+        <img alt="racoon" src={racoonLoading} width={256} height={256} />
         <p>Загрузка...</p>
       </div>
     );
@@ -158,7 +154,7 @@ export function PositionsList() {
   const canManagePositions =
     currentUser?.position_name &&
     ["админ", "зам", "председатель"].some((role) =>
-      currentUser.position_name?.toLowerCase().includes(role)
+      currentUser.position_name?.toLowerCase().includes(role),
     );
 
   return (
