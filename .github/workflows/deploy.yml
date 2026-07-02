@@ -1,52 +1,35 @@
-name: Deploy to GitHub Pages
+name: Build & push image
 
+# Авторелиз: на пуш в master/main собираем docker-образ фронта и пушим в GHCR.
+# Дальше watchtower на сервере сам подтянет свежий образ и перезапустит контейнер.
+# (Раньше этот workflow деплоил на GitHub Pages — теперь деплой на свой сервер через GHCR.)
 on:
   push:
-    branches:
-      - main
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+    branches: [master, main]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: docker/login-action@v3
         with:
-          node-version: '20'
-          cache: 'npm'
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-        env:
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: docker/build-push-action@v6
         with:
-          path: ./dist
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          context: .
+          push: true
+          # Пусто => фронт ходит на /api того же домена (caddy проксирует на бэк).
+          build-args: |
+            VITE_API_BASE_URL=
+          tags: |
+            ghcr.io/it-famcs/legacy-frontend:latest
+            ghcr.io/it-famcs/legacy-frontend:${{ github.sha }}
