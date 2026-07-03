@@ -71,7 +71,15 @@ export function useCanDeleteCategories(): boolean {
  */
 export function useCanEditCards(): boolean {
   const { can_edit_cards } = usePermissions();
-  return can_edit_cards;
+  const user = useUserStore((s) => s.user);
+  const positionName = user?.position_name?.toLowerCase() || "";
+  return (
+    can_edit_cards ||
+    positionName === "руководитель отдела" ||
+    positionName === "руководитель отдела/направления" ||
+    positionName === "заместитель руководителя отдела" ||
+    positionName.startsWith("заместитель руководителя")
+  );
 }
 
 /**
@@ -79,7 +87,17 @@ export function useCanEditCards(): boolean {
  */
 export function useCanDeleteCards(): boolean {
   const { can_delete_cards } = usePermissions();
-  return can_delete_cards;
+  const user = useUserStore((s) => s.user);
+  const positionName = user?.position_name?.toLowerCase() || "";
+  return (
+    can_delete_cards ||
+    positionName === "admin" ||
+    positionName === "админ" ||
+    positionName === "председатель" ||
+    positionName === "председатель студсовета" ||
+    positionName.startsWith("заместитель председателя") ||
+    positionName.startsWith("зам. председателя")
+  );
 }
 
 /**

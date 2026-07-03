@@ -23,7 +23,9 @@ export function DeleteCategory({
       setIsDelete(false);
     },
     onError: (err) => {
-      setError(err instanceof Error ? err.message : "Ошибка при удалении категории");
+      setError(
+        err instanceof Error ? err.message : "Ошибка при удалении категории",
+      );
     },
   });
 
@@ -42,7 +44,8 @@ export function DeleteCategory({
         }}
       >
         <div style={{ color: "white" }}>
-          Вы действительно хотите удалить категорию <br/> <strong>{categoryTitle}</strong>?
+          Вы действительно хотите удалить категорию <br />{" "}
+          <strong>{categoryTitle}</strong>?
         </div>
         <div>
           <Button

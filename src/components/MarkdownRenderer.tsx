@@ -4,6 +4,13 @@ import "../styles/markdown.css";
 type MarkdownRendererProps = {
   content: string;
   className?: string;
+  onTaskToggle?: (taskIndex: number, checked: boolean) => void;
+  onWordDoubleClick?: (word: string) => void;
+};
+
+type ParseOptions = {
+  onTaskToggle?: (taskIndex: number, checked: boolean) => void;
+  taskIndexRef: { current: number };
 };
 
 type ListMatch = {
@@ -522,6 +529,7 @@ function parseList(
   lines: string[],
   startIndex: number,
   keyPrefix: string,
+  options: ParseOptions,
 ): ParsedBlock {
   const firstMatch = parseListMatch(lines[startIndex]);
 
@@ -611,7 +619,8 @@ function parseList(
     }
 
     const itemKey = `${keyPrefix}-item-${itemIndex}`;
-    const itemContent = parseBlocks(itemLines, `${itemKey}-content`);
+    const itemContent = parseBlocks(itemLines, `${itemKey}-content`, options);
+    const taskIndex = taskMatch ? options.taskIndexRef.current++ : -1;
 
     items.push(
       <li className={isTask ? "markdown-task-item" : undefined} key={itemKey}>
@@ -619,7 +628,8 @@ function parseList(
           <input
             type="checkbox"
             checked={taskMatch[1].toLowerCase() === "x"}
-            readOnly
+            readOnly={!options.onTaskToggle}
+            onChange={(event) => options.onTaskToggle?.(taskIndex, event.target.checked)}
             aria-label={
               taskMatch[1].toLowerCase() === "x"
                 ? "Выполнено"
@@ -647,7 +657,7 @@ function parseList(
   return { node: listNode, nextIndex: index };
 }
 
-function parseBlocks(lines: string[], keyPrefix: string): ReactNode[] {
+function parseBlocks(lines: string[], keyPrefix: string, options: ParseOptions): ReactNode[] {
   const blocks: ReactNode[] = [];
   let index = 0;
   let blockIndex = 0;
@@ -760,7 +770,7 @@ function parseBlocks(lines: string[], keyPrefix: string): ReactNode[] {
 
       blocks.push(
         <blockquote key={blockKey}>
-          {parseBlocks(quoteLines, `${blockKey}-quote`)}
+          {parseBlocks(quoteLines, `${blockKey}-quote`, options)}
         </blockquote>,
       );
       blockIndex += 1;
@@ -823,7 +833,7 @@ function parseBlocks(lines: string[], keyPrefix: string): ReactNode[] {
     }
 
     if (parseListMatch(line)) {
-      const parsedList = parseList(lines, index, blockKey);
+      const parsedList = parseList(lines, index, blockKey, options);
       blocks.push(parsedList.node);
       index = parsedList.nextIndex;
       blockIndex += 1;
@@ -874,14 +884,27 @@ function parseBlocks(lines: string[], keyPrefix: string): ReactNode[] {
 export function MarkdownRenderer({
   content,
   className = "",
+  onTaskToggle,
+  onWordDoubleClick,
 }: MarkdownRendererProps) {
   const renderedContent = useMemo(() => {
     const normalizedContent = content.replace(/\r\n?/g, "\n");
-    return parseBlocks(normalizedContent.split("\n"), "markdown");
-  }, [content]);
+    return parseBlocks(normalizedContent.split("\n"), "markdown", {
+      onTaskToggle,
+      taskIndexRef: { current: 0 },
+    });
+  }, [content, onTaskToggle]);
+
+  const handleDoubleClick = () => {
+    if (!onWordDoubleClick) return;
+    const selectedText = window.getSelection()?.toString().trim();
+    if (!selectedText) return;
+    const word = selectedText.match(/[\p{L}\p{N}_-]+/u)?.[0] || selectedText;
+    onWordDoubleClick(word);
+  };
 
   return (
-    <div className={`markdown-content ${className}`.trim()}>
+    <div className={`markdown-content ${className}`.trim()} onDoubleClick={handleDoubleClick}>
       {renderedContent}
     </div>
   );

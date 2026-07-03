@@ -7,6 +7,8 @@ import {
   getPositions,
   changeUserPassword,
   getDepartments,
+  deactivateUser,
+  activateUser,
 } from "../../api/user";
 import { useUserStore } from "../../stores/user";
 import { useCanEditAnyUser } from "../../hooks/use-permissions";
@@ -126,6 +128,18 @@ export function AccountList() {
     },
   });
 
+  const deactivationMutation = useMutation({
+    mutationFn: ({ login, activate }: { login: string; activate: boolean }) =>
+      activate ? activateUser({ login }) : deactivateUser({ login }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setSuccess("Статус аккаунта обновлен");
+    },
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : "Ошибка при изменении статуса аккаунта");
+    },
+  });
+
   const handleEdit = (user: User) => {
     setEditingUser(user);
     // Get department IDs from user.departments array
@@ -230,6 +244,27 @@ export function AccountList() {
     return false;
   };
 
+  const canDeactivateUser = (targetUser: User) => {
+    if (!currentUser || targetUser.login === currentUser.login) return false;
+    const positionName = currentUser.position_name?.toLowerCase() || "";
+    return (
+      positionName === "admin" ||
+      positionName === "админ" ||
+      positionName === "секретарь" ||
+      positionName === "председатель" ||
+      positionName === "председатель студсовета" ||
+      positionName.startsWith("заместитель председателя") ||
+      positionName.startsWith("зам. председателя")
+    );
+  };
+
+  const handleToggleUserActive = (targetUser: User) => {
+    const isInactive = targetUser.is_deactivated || !targetUser.is_active;
+    const action = isInactive ? "активировать" : "деактивировать";
+    if (!confirm(`${action[0].toUpperCase()}${action.slice(1)} аккаунт ${targetUser.login}?`)) return;
+    deactivationMutation.mutate({ login: targetUser.login, activate: isInactive });
+  };
+
   return (
     <div style={{ padding: "20px", marginTop: "var(--header-height)" }}>
       <div
@@ -299,9 +334,7 @@ export function AccountList() {
             <th style={{ padding: "12px", textAlign: "left" }}>Должность</th>
             <th style={{ padding: "12px", textAlign: "left" }}>Telegram</th>
             <th style={{ padding: "12px", textAlign: "left" }}>Статус</th>
-            {canManageUsers && (
-              <th style={{ padding: "12px", textAlign: "center" }}>Действия</th>
-            )}
+            <th style={{ padding: "12px", textAlign: "center" }}>Действия</th>
           </tr>
         </thead>
         <tbody>
@@ -326,7 +359,11 @@ export function AccountList() {
                 </span>
               </td>
               <td style={{ padding: "12px" }}>{user.login}</td>
-              <td style={{ padding: "12px" }}>{user.department || "-"}</td>
+              <td style={{ padding: "12px" }}>
+                {user.departments && user.departments.length > 0
+                  ? user.departments.map((dept) => dept.name).join(", ")
+                  : user.department || "-"}
+              </td>
               <td style={{ padding: "12px" }}>{user.position_name || "-"}</td>
               <td style={{ padding: "12px" }}>{user.telegram || "-"}</td>
               <td style={{ padding: "12px" }}>
@@ -347,27 +384,37 @@ export function AccountList() {
                     : "Деактивирован"}
                 </span>
               </td>
-              {canEditUser(user) && (
-                <td
-                  style={{
-                    padding: "12px",
-                    display: "flex",
-                    gap: "8px",
-                    justifyContent: "center",
-                  }}
-                >
+              <td
+                style={{
+                  padding: "12px",
+                  display: "flex",
+                  gap: "8px",
+                  justifyContent: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                {canEditUser(user) && (
                   <Button
                     label="Ред."
+                    fillColor
+                    style={{ border: "none", padding: "6px 12px", fontSize: "14px" }}
+                    onClick={() => handleEdit(user)}
+                  />
+                )}
+                {canDeactivateUser(user) && (
+                  <Button
+                    label={user.is_deactivated || !user.is_active ? "Актив." : "Деакт."}
                     fillColor
                     style={{
                       border: "none",
                       padding: "6px 12px",
                       fontSize: "14px",
+                      backgroundColor: user.is_deactivated || !user.is_active ? "#4CAF50" : "#f44336",
                     }}
-                    onClick={() => handleEdit(user)}
+                    onClick={() => handleToggleUserActive(user)}
                   />
-                </td>
-              )}
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
