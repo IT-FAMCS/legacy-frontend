@@ -18,11 +18,12 @@ type VisitHistoryProps = {
   userLogin?: string;
   canView: boolean;
   targetUserId?: number;
+  currentUserId?: number;
 };
 
-const VisitHistory = ({ userLogin, canView, targetUserId }: VisitHistoryProps) => {
+const VisitHistory = ({ userLogin, canView, targetUserId, currentUserId }: VisitHistoryProps) => {
   const { data: cardVisits = [] } = useQuery({
-    queryKey: ["visits", "cards", userLogin, targetUserId],
+    queryKey: ["visits", "cards", userLogin || "me", targetUserId ?? currentUserId],
     queryFn: ({ signal }) => getVisitHistory({ signal, type: "cards", userId: targetUserId }),
     enabled: canView,
   });
@@ -142,7 +143,7 @@ export function AboutUser() {
           <p><strong>Дата рождения:</strong> {user?.birth_date ? user.birth_date.split("T")[0] : "-"}</p>
           <p><strong>Должность:</strong> {user?.position_name || "-"}</p>
           <p><strong>Telegram:</strong> {user?.telegram || "-"}</p>
-          <p><strong>Статус:</strong> {user?.is_active ? "Активен" : "Деактивирован"}</p>
+          <p><strong>Статус:</strong> {user?.is_active && !user?.is_deactivated ? "Активен" : "Деактивирован"}</p>
         </div>
 
         <div style={{
@@ -181,6 +182,7 @@ export function AboutUser() {
           userLogin={params.login}
           canView={!!(isOwnProfile || canViewOthersHistory)}
           targetUserId={targetUser?.id}
+          currentUserId={currentUser?.id}
         />
       )}
     </div>

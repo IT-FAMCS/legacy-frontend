@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import type { Category, Card } from "../../../../types/Category";
 import { EditCategory } from "./edit";
-import { DeleteCategory } from "./delete";
 import { AddCard } from "./add-card";
 import Button from "../../../../components/Button";
 import { useUserStore } from "../../../../stores/user";
@@ -16,7 +15,6 @@ type CategoryWrapperProps = {
 
 const CategoryWrapper = ({ category }: CategoryWrapperProps) => {
   const [isEdit, setIsEdit] = useState(false);
-  const [isDelete, setIsDelete] = useState(false);
   const [isAddCard, setIsAddCard] = useState(false);
   const navigate = useNavigate();
   const currentUser = useUserStore((s) => s.user);
@@ -89,18 +87,9 @@ const CategoryWrapper = ({ category }: CategoryWrapperProps) => {
               setIsEdit(!isEdit);
             }}
           />
-          <Button
-            label="Удалить"
-            fillColor
-            style={{ border: "none", width: "200px", backgroundColor: "#f44336" }}
-            onClick={() => {
-              setIsDelete(!isDelete);
-            }}
-          />
         </>
       )}
       {isEdit && <EditCategory setIsEdit={setIsEdit} category={category} />}
-      {isDelete && <DeleteCategory setIsDelete={setIsDelete} categoryTitle={category.name} categoryId={category.id} />}
       {isAddCard && <AddCard setIsAdd={setIsAddCard} categoryId={category.id} categoryName={category.name} />}
 
       <div style={{ marginTop: "2rem" }}>

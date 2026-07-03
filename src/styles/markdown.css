@@ -90,7 +90,6 @@
   flex: 0 0 auto;
   margin-top: 0.35rem;
   accent-color: #686acf;
-  pointer-events: none;
 }
 
 .markdown-content a {
@@ -213,5 +212,22 @@
 
   .markdown-content h2 {
     font-size: 1.4rem;
+  }
+}
+
+.markdown-content .markdown-task-item input[type="checkbox"]:not(:read-only) {
+  cursor: pointer;
+}
+
+.markdown-editor-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .markdown-editor-layout {
+    grid-template-columns: 1fr;
   }
 }

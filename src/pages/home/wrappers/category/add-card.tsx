@@ -7,6 +7,7 @@ import { createCard } from "../../../../api/category";
 import { getPositions } from "../../../../api/user";
 import { useCanEditCards } from "../../../../hooks/use-permissions";
 import { MultiSelect } from "../../../../components/MultiSelect";
+import { handleMarkdownHotkey } from "../../../../utils/markdown-hotkeys";
 
 export function AddCard({ 
   setIsAdd, 
@@ -105,6 +106,7 @@ export function AddCard({
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              onKeyDown={(e) => handleMarkdownHotkey(e, setContent)}
               placeholder="Введите содержимое карточки"
               rows={6}
               style={{
@@ -116,6 +118,9 @@ export function AddCard({
                 fontFamily: "inherit",
               }}
             />
+            <small style={{ color: "rgba(255,255,255,0.75)", fontSize: "12px" }}>
+              Горячие клавиши: Ctrl+B, Ctrl+I, Ctrl+U, Ctrl+K, Ctrl+E, Ctrl+Shift+X, Ctrl+Shift+7/8.
+            </small>
           </div>
 
           <div style={{ 

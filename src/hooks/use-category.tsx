@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getCategories, createCategory, updateCategory, deleteCategory } from "../api/category";
+import { getCategories, createCategory, updateCategory } from "../api/category";
 import { useErrorStore } from "../stores/error";
 
 export function useLoadCategories() {
@@ -38,21 +38,6 @@ export function useEditCategory() {
     },
     onError: (err) => {
       setError(err instanceof Error ? err.message : "Ошибка обновления категории");
-    },
-  });
-};
-
-export function useDeleteCategory() {
-  const queryClient = useQueryClient();
-  const setError = useErrorStore((s) => s.setError);
-
-  return useMutation({
-    mutationFn: ({ id }: { id: number }) => deleteCategory({ categoryId: id }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-    },
-    onError: (err) => {
-      setError(err instanceof Error ? err.message : "Ошибка удаления категории");
     },
   });
 };

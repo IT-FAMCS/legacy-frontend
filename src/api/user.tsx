@@ -1,42 +1,7 @@
 import type { Position } from "../types/Position";
+import { readErrorResponse, extractErrorMessage } from "../utils/api-error";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
-
-/**
- * Extract error message from backend response
- * FastAPI returns different formats:
- * - 422: { detail: [{ type, loc, msg, ... }, ...] }
- * - 400/401/403/404: { detail: "string" }
- */
-function extractErrorMessage(errorData: unknown): string {
-  if (!errorData || typeof errorData !== "object") return "Неизвестная ошибка";
-  
-  const data = errorData as Record<string, unknown>;
-  
-  if (typeof data.detail === "string") {
-    return data.detail;
-  }
-  
-  if (Array.isArray(data.detail)) {
-    // FastAPI validation errors (422)
-    return (data.detail as Array<Record<string, unknown>>)
-      .map((err) => {
-        const errRecord = err as Record<string, unknown>;
-        const loc = errRecord.loc as string[] | undefined;
-        const field = loc?.slice(1).join(".") || "Поле";
-        const msg = (errRecord.msg as string) || "Неверное значение";
-        return `${field}: ${msg}`;
-      })
-      .join("; ");
-  }
-  
-  if (typeof data.detail === "object" && data.detail !== null) {
-    // Some errors return object with nested details
-    return JSON.stringify(data.detail);
-  }
-  
-  return "Неизвестная ошибка";
-}
 
 function getAuthHeaders() {
   const token = localStorage.getItem("jwt_token");
@@ -126,6 +91,8 @@ export async function editUser({
     telegram: string;
     login?: string;
     position?: string;
+    is_active?: boolean;
+    is_deactivated?: boolean;
   }>;
 }) {
   // Backend expects PUT /api/user/change/{target_login}
@@ -282,8 +249,7 @@ export async function createPosition({
     body: JSON.stringify(positionData),
   });
   if (!res.ok) {
-    const error = await res.text();
-    throw new Error(error || `HTTP ${res.status}`);
+    throw new Error((await readErrorResponse(res)) || `HTTP ${res.status}`);
   }
   return await res.json();
 }
@@ -315,8 +281,7 @@ export async function updatePosition({
     body: JSON.stringify(positionData),
   });
   if (!res.ok) {
-    const error = await res.text();
-    throw new Error(error || `HTTP ${res.status}`);
+    throw new Error((await readErrorResponse(res)) || `HTTP ${res.status}`);
   }
   return await res.json();
 }
@@ -335,10 +300,48 @@ export async function deletePosition({
     signal,
   });
   if (!res.ok) {
-    const error = await res.text();
-    throw new Error(error || `HTTP ${res.status}`);
+    throw new Error((await readErrorResponse(res)) || `HTTP ${res.status}`);
   }
   return true;
+}
+
+
+export async function deactivateUser({
+  signal,
+  login,
+}: {
+  signal?: AbortSignal;
+  login: string;
+}) {
+  const res = await fetch(`${API_BASE}/api/users/${encodeURIComponent(login)}/deactivate`, {
+    method: "PUT",
+    credentials: "include",
+    headers: getAuthHeaders(),
+    signal,
+  });
+  if (!res.ok) {
+    throw new Error((await readErrorResponse(res)) || `HTTP ${res.status}`);
+  }
+  return await res.json();
+}
+
+export async function activateUser({
+  signal,
+  login,
+}: {
+  signal?: AbortSignal;
+  login: string;
+}) {
+  const res = await fetch(`${API_BASE}/api/users/${encodeURIComponent(login)}/activate`, {
+    method: "PUT",
+    credentials: "include",
+    headers: getAuthHeaders(),
+    signal,
+  });
+  if (!res.ok) {
+    throw new Error((await readErrorResponse(res)) || `HTTP ${res.status}`);
+  }
+  return await res.json();
 }
 
 export async function getVisitHistory({

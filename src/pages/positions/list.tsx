@@ -151,11 +151,14 @@ export function PositionsList() {
     );
   }
 
+  const positionName = currentUser?.position_name?.toLowerCase() || "";
   const canManagePositions =
-    currentUser?.position_name &&
-    ["админ", "зам", "председатель"].some((role) =>
-      currentUser.position_name?.toLowerCase().includes(role),
-    );
+    positionName === "admin" ||
+    positionName === "админ" ||
+    positionName === "председатель" ||
+    positionName === "председатель студсовета" ||
+    positionName.startsWith("заместитель председателя") ||
+    positionName.startsWith("зам. председателя");
 
   return (
     <div style={{ padding: "20px", marginTop: "var(--header-height)" }}>
@@ -222,7 +225,7 @@ export function PositionsList() {
               </td>
               <td style={{ padding: "12px", textAlign: "center" }}>
                 {position.can_edit_categories ? "✓" : "—"}
-                {position.can_delete_categories ? " (удаление)" : ""}
+
               </td>
               <td style={{ padding: "12px", textAlign: "center" }}>
                 {position.can_edit_cards ? "✓" : "—"}
@@ -407,7 +410,7 @@ export function PositionsList() {
                     })
                   }
                 />
-                Удаление категорий
+Удаление тем отключено
               </label>
               <label
                 style={{
