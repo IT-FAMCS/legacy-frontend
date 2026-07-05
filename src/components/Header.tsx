@@ -1,30 +1,22 @@
 import Icon from "./Icon.tsx";
 import Button from "./Button.tsx";
-import { AddDepartmentModal } from "./AddDepartmentModal";
 import { useUserStore } from "../stores/user";
 import { useNavigate } from "react-router";
 import {
   useCanManagePositions,
   useCanEditCategories,
-  useCanEditAnyUser,
   useCanRegisterUsers,
-  useCanManageDepartments,
 } from "../hooks/use-permissions";
-import { useState } from "react";
 import famcsIcon from "../assets/icons/famcs.svg";
 import profileIcon from "../assets/icons/profile.svg";
 
 const Header = () => {
   const isAuthenticated = useUserStore((s) => s.isAuthenticated);
   const navigate = useNavigate();
-  const [isAddDepartmentOpen, setIsAddDepartmentOpen] = useState(false);
-
   // Check permissions using position flags from backend via hooks
   const canManagePositions = useCanManagePositions();
-  const canManageUsers = useCanEditAnyUser();
   const canEditCategories = useCanEditCategories();
   const canRegisterUsers = useCanRegisterUsers();
-  const canManageDepartments = useCanManageDepartments();
 
   return (
     <header
@@ -77,7 +69,7 @@ const Header = () => {
               hoverStyle={{ scale: 1.08 }}
             />
           )}
-          {isAuthenticated && canManageUsers && (
+          {isAuthenticated && (
             <Button
               label="Пользователи"
               onClick={() => navigate("/accounts")}
@@ -101,11 +93,11 @@ const Header = () => {
               hoverStyle={{ scale: 1.08 }}
             />
           )}
-          {isAuthenticated && canManageDepartments && (
+          {isAuthenticated && (
             <Button
-              label="Добавить отдел"
-              onClick={() => setIsAddDepartmentOpen(true)}
-              style={{ border: "none", backgroundColor: "#4CAF50" }}
+              label="Отделы"
+              onClick={() => navigate("/departments")}
+              style={{ border: "none" }}
               hoverStyle={{ scale: 1.08 }}
             />
           )}
@@ -122,9 +114,6 @@ const Header = () => {
           />
         </nav>
       </div>
-      {isAddDepartmentOpen && (
-        <AddDepartmentModal setIsOpen={setIsAddDepartmentOpen} />
-      )}
     </header>
   );
 };

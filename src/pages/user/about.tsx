@@ -1,9 +1,11 @@
 import Button from "../../components/Button";
+import { ModalWrapper } from "../../components/modal";
 import { useUserStore } from "../../stores/user";
+import { useErrorStore } from "../../stores/error";
 import { EditUser } from "./edit";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { logout, getVisitHistory, getUserByLogin } from "../../api/user";
+import { logout, getVisitHistory, getUserByLogin, changeOwnPassword } from "../../api/user";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCanEditAnyUser } from "../../hooks/use-permissions";
 
@@ -19,6 +21,12 @@ type VisitHistoryProps = {
   canView: boolean;
   targetUserId?: number;
   currentUserId?: number;
+};
+
+type PasswordForm = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 };
 
 const VisitHistory = ({ userLogin, canView, targetUserId, currentUserId }: VisitHistoryProps) => {
@@ -67,10 +75,96 @@ const VisitHistory = ({ userLogin, canView, targetUserId, currentUserId }: Visit
   );
 };
 
+function OwnPasswordModal({ setIsOpen }: { setIsOpen: (value: boolean) => void }) {
+  const setError = useErrorStore((s) => s.setError);
+  const setSuccess = useErrorStore((s) => s.setSuccess);
+  const [form, setForm] = useState<PasswordForm>({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const passwordMutation = useMutation({
+    mutationFn: () =>
+      changeOwnPassword({
+        currentPassword: form.currentPassword,
+        newPassword: form.newPassword,
+      }),
+    onSuccess: () => {
+      setSuccess("Пароль успешно изменен");
+      setIsOpen(false);
+    },
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : "Ошибка при смене пароля");
+    },
+  });
+
+  const handleSave = () => {
+    if (!form.currentPassword.trim()) {
+      setError("Введите текущий пароль");
+      return;
+    }
+    if (form.newPassword.length < 6) {
+      setError("Новый пароль должен быть не короче 6 символов");
+      return;
+    }
+    if (form.newPassword !== form.confirmPassword) {
+      setError("Новый пароль и подтверждение не совпадают");
+      return;
+    }
+    passwordMutation.mutate();
+  };
+
+  return (
+    <ModalWrapper setIsOpen={setIsOpen}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "20px" }}>
+        <h3 style={{ color: "white", fontSize: "1.5rem" }}>Смена пароля</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <label style={{ color: "white", fontWeight: 600 }}>Текущий пароль</label>
+          <input
+            type="password"
+            value={form.currentPassword}
+            onChange={(e) => setForm({ ...form, currentPassword: e.target.value })}
+            style={{ padding: "12px", borderRadius: "8px", border: "1px solid #ccc", fontSize: "16px" }}
+          />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <label style={{ color: "white", fontWeight: 600 }}>Новый пароль</label>
+          <input
+            type="password"
+            value={form.newPassword}
+            onChange={(e) => setForm({ ...form, newPassword: e.target.value })}
+            style={{ padding: "12px", borderRadius: "8px", border: "1px solid #ccc", fontSize: "16px" }}
+          />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <label style={{ color: "white", fontWeight: 600 }}>Повторите новый пароль</label>
+          <input
+            type="password"
+            value={form.confirmPassword}
+            onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+            style={{ padding: "12px", borderRadius: "8px", border: "1px solid #ccc", fontSize: "16px" }}
+          />
+        </div>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end", marginTop: "16px" }}>
+          <Button label="Отмена" fillColor onClick={() => setIsOpen(false)} />
+          <Button
+            label={passwordMutation.isPending ? "Сохранение..." : "Сменить пароль"}
+            fillColor
+            style={{ backgroundColor: "#4CAF50" }}
+            onClick={handleSave}
+          />
+        </div>
+      </div>
+    </ModalWrapper>
+  );
+}
+
 export function AboutUser() {
   const currentUser = useUserStore((s) => s.user);
   const logoutAction = useUserStore((s) => s.logout);
   const [isEdit, setIsEdit] = useState(false);
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
   const navigate = useNavigate();
   const params = useParams<{ login?: string }>();
   const queryClient = useQueryClient();
@@ -91,26 +185,15 @@ export function AboutUser() {
 
   const isOwnProfile = !params.login;
 
-  // Fetch target user if viewing another user's profile
   const { data: targetUser } = useQuery({
     queryKey: ["user", params.login],
     queryFn: ({ signal }) => getUserByLogin({ signal, login: params.login! }),
     enabled: !isOwnProfile && !!params.login,
   });
 
-  // Use target user data or current user data
   const user = isOwnProfile ? currentUser : targetUser;
-
-  // Backend doesn't allow self-editing - users must contact admin to edit their own profile
-  // Check if current user can edit the target user
-  // Backend: can_edit_any_user flag allows editing any user (except self)
   const canEditTargetUser = canEditAnyUser && !isOwnProfile && targetUser?.login !== currentUser?.login;
-  
-  // Users cannot edit themselves - backend returns 403
   const canEditSelf = false;
-
-  // Check if current user can view others' visit history
-  // Backend: users with can_edit_any_user flag (admins) can view others' data
   const canViewOthersHistory = canEditAnyUser;
 
   return (
@@ -124,7 +207,7 @@ export function AboutUser() {
       marginTop: "var(--header-height)",
     }}>
       <h2 style={{ fontSize: "2rem", marginBottom: "8px" }}>
-        {isOwnProfile ? "Личный кабинет" : `Профиль пользователя`}
+        {isOwnProfile ? "Личный кабинет" : "Профиль пользователя"}
       </h2>
       
       <div style={{
@@ -164,6 +247,14 @@ export function AboutUser() {
           )}
           {isOwnProfile && (
             <Button
+              label="Сменить пароль"
+              fillColor
+              style={{ border: "none", backgroundColor: "#4CAF50" }}
+              onClick={() => setIsPasswordOpen(true)}
+            />
+          )}
+          {isOwnProfile && (
+            <Button
               label="Выйти"
               fillColor
               style={{ border: "none", backgroundColor: "#f44336" }}
@@ -176,6 +267,7 @@ export function AboutUser() {
       </div>
 
       {isEdit && <EditUser setIsEdit={setIsEdit} targetUser={targetUser} />}
+      {isPasswordOpen && <OwnPasswordModal setIsOpen={setIsPasswordOpen} />}
       
       {(isOwnProfile || canViewOthersHistory) && (
         <VisitHistory
@@ -187,4 +279,4 @@ export function AboutUser() {
       )}
     </div>
   );
-};
+}

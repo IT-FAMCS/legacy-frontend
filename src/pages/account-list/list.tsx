@@ -71,11 +71,12 @@ export function AccountList() {
   // Only users with can_edit_any_user can edit users
   const canManageUsers = useCanEditAnyUser();
 
-  // List is available to all users (including unauthenticated)
+  // List is available to all authenticated users. Department filter is sent by id.
+  const selectedDepartmentId = departmentFilter ? Number(departmentFilter) : undefined;
   const { data: users, isLoading } = useQuery({
-    queryKey: ["users", departmentFilter],
+    queryKey: ["users", selectedDepartmentId ?? "all"],
     queryFn: ({ signal }) =>
-      getUsers({ signal, department: departmentFilter || undefined }),
+      getUsers({ signal, departmentId: selectedDepartmentId }),
   });
 
   const { data: positions = [] } = useQuery({
@@ -209,9 +210,6 @@ export function AccountList() {
     return user.is_active && !user.is_deactivated;
   });
 
-  const departments = Array.from(
-    new Set(users?.map((u: User) => u.department).filter(Boolean) as string[]),
-  );
 
   if (isLoading) {
     return (
@@ -300,9 +298,9 @@ export function AccountList() {
             }}
           >
             <option value="">Все отделы</option>
-            {departments.map((dept) => (
-              <option key={dept} value={dept}>
-                {dept}
+            {allDepartments.map((dept: Department) => (
+              <option key={dept.id} value={String(dept.id)}>
+                {dept.name}
               </option>
             ))}
           </select>

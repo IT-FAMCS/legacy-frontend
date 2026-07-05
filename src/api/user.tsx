@@ -151,15 +151,43 @@ export async function changeUserPassword({
   return await res.json();
 }
 
-export async function getUsers({
+
+export async function changeOwnPassword({
   signal,
-  department,
+  currentPassword,
+  newPassword,
 }: {
   signal?: AbortSignal;
-  department?: string;
+  currentPassword: string;
+  newPassword: string;
+}) {
+  const res = await fetch(`${API_BASE}/api/user/me/change-password`, {
+    method: "PUT",
+    credentials: "include",
+    headers: getAuthHeaders(),
+    signal,
+    body: JSON.stringify({
+      current_password: currentPassword,
+      new_password: newPassword,
+    }),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const errorMessage = extractErrorMessage(errorData) || `HTTP ${res.status}`;
+    throw new Error(errorMessage);
+  }
+  return await res.json();
+}
+
+export async function getUsers({
+  signal,
+  departmentId,
+}: {
+  signal?: AbortSignal;
+  departmentId?: number;
 } = {}) {
-  const url = department
-    ? `${API_BASE}/api/users?department=${encodeURIComponent(department)}`
+  const url = departmentId
+    ? `${API_BASE}/api/users?department_id=${encodeURIComponent(String(departmentId))}`
     : `${API_BASE}/api/users`;
   const res = await fetch(url, {
     method: "GET",
@@ -429,4 +457,50 @@ export async function createDepartment({
     throw new Error(errorMessage);
   }
   return await res.json();
+}
+
+
+export async function updateDepartment({
+  signal,
+  departmentId,
+  departmentData,
+}: {
+  signal?: AbortSignal;
+  departmentId: number;
+  departmentData: { name?: string; description?: string };
+}) {
+  const res = await fetch(`${API_BASE}/api/departments/${departmentId}`, {
+    method: "PUT",
+    credentials: "include",
+    headers: getAuthHeaders(),
+    signal,
+    body: JSON.stringify(departmentData),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const errorMessage = extractErrorMessage(errorData) || `HTTP ${res.status}`;
+    throw new Error(errorMessage);
+  }
+  return await res.json();
+}
+
+export async function deleteDepartment({
+  signal,
+  departmentId,
+}: {
+  signal?: AbortSignal;
+  departmentId: number;
+}) {
+  const res = await fetch(`${API_BASE}/api/departments/${departmentId}`, {
+    method: "DELETE",
+    credentials: "include",
+    headers: getAuthHeaders(),
+    signal,
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const errorMessage = extractErrorMessage(errorData) || `HTTP ${res.status}`;
+    throw new Error(errorMessage);
+  }
+  return true;
 }

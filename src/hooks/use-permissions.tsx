@@ -114,10 +114,18 @@ export function useCanEditAnyUser(): boolean {
  */
 export function useCanManageDepartments(): boolean {
   const user = useUserStore((s) => s.user);
-  if (!user?.position_name) return false;
-  
-  const allowedPositions = ["admin", "председатель", "заместитель председателя", "председатель студсовета", "секретарь"];
-  return allowedPositions.includes(user.position_name);
+  const positionName = user?.position_name?.trim().toLowerCase() || "";
+  if (!positionName) return false;
+
+  return (
+    positionName === "admin" ||
+    positionName === "админ" ||
+    positionName === "секретарь" ||
+    positionName === "председатель" ||
+    positionName === "председатель студсовета" ||
+    positionName.startsWith("заместитель председателя") ||
+    positionName.startsWith("зам. председателя")
+  );
 }
 
 // Export clear function for logout
