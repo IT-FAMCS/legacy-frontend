@@ -12,6 +12,7 @@ export type UserInfo = {
   position_id: number;
   position_name?: string | null;
   department?: string | null;
+  departments?: { id: number; name: string }[];
   telegram?: string | null;
   is_active: boolean;
   is_deactivated: boolean;

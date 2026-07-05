@@ -6,6 +6,7 @@ import { LoginPage } from "./pages/user/login";
 import { RegisterPage } from "./pages/user/register";
 import { AccountList } from "./pages/account-list/list";
 import { PositionsList } from "./pages/positions/list";
+import { DepartmentsList } from "./pages/departments/list";
 import { CardPage } from "./pages/card/page";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -45,7 +46,19 @@ const router = createBrowserRouter([
       },
       {
         path: "/accounts",
-        element: <AccountList />,
+        element: (
+          <ProtectedRoute>
+            <AccountList />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/departments",
+        element: (
+          <ProtectedRoute>
+            <DepartmentsList />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/positions",
