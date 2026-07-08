@@ -6,7 +6,7 @@ import Button from "../../components/Button";
 import { MultiSelect } from "../../components/MultiSelect";
 import { getPositions } from "../../api/user";
 import { deleteCard, getCard, getCardHistory, updateCard, type ActivityLogEntry } from "../../api/category";
-import { useCanDeleteCards, useCanEditCards } from "../../hooks/use-permissions";
+import { useCanDeleteCards, useCanEditCards, useCanViewCardActivity } from "../../hooks/use-permissions";
 import { MarkdownRenderer } from "../../components/MarkdownRenderer";
 import racoonLoading from "../../assets/images/racoon-loading.gif";
 import { handleMarkdownHotkey } from "../../utils/markdown-hotkeys";
@@ -32,11 +32,14 @@ const HISTORY_ACTION_LABEL: Record<ActivityLogEntry["action"], string> = {
   delete: "Удаление",
 };
 
-function CardHistory({ cardId }: { cardId: number }) {
+function CardHistory({ cardId, canView }: { cardId: number; canView: boolean }) {
   const { data: entries = [] } = useQuery({
     queryKey: ["card-history", cardId],
     queryFn: ({ signal }) => getCardHistory({ signal, cardId }),
+    enabled: canView,
   });
+
+  if (!canView) return null;
 
   return (
     <div style={{ backgroundColor: "white", borderRadius: "10px", padding: "20px", marginTop: "20px" }}>
@@ -84,6 +87,7 @@ export function CardPage() {
   const setSuccess = useErrorStore((s) => s.setSuccess);
   const canEditCards = useCanEditCards();
   const canDeleteCards = useCanDeleteCards();
+  const canViewCardActivity = useCanViewCardActivity();
   const numericCardId = Number(cardId);
 
   const { data: positions = [] } = useQuery({
@@ -329,7 +333,7 @@ export function CardPage() {
 
             <MarkdownRenderer content={content || ""} onTaskToggle={canEditCards ? handleTaskToggle : undefined} />
 
-            <CardHistory cardId={numericCardId} />
+            <CardHistory cardId={numericCardId} canView={canViewCardActivity} />
           </>
         )}
       </div>
