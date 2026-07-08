@@ -168,3 +168,33 @@ export async function deleteCard({
   await ensureOk(res);
   return true;
 }
+
+export type ActivityLogEntry = {
+  id: number;
+  user_id: number;
+  user_login: string | null;
+  user_name: string | null;
+  action: "create" | "update" | "delete";
+  entity_type: string;
+  entity_id: number | null;
+  entity_title: string | null;
+  details: string | null;
+  created_at: string;
+};
+
+export async function getCardHistory({
+  signal,
+  cardId,
+}: {
+  signal?: AbortSignal;
+  cardId: number;
+}) {
+  const res = await fetch(`${CARDS_PATH}/${cardId}/history`, {
+    method: "GET",
+    credentials: "include",
+    headers: getAuthHeaders(),
+    signal,
+  });
+  await ensureOk(res);
+  return (await res.json()) as ActivityLogEntry[];
+}

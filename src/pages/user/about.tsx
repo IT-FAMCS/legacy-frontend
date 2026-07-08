@@ -5,9 +5,10 @@ import { useErrorStore } from "../../stores/error";
 import { EditUser } from "./edit";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { logout, getVisitHistory, getUserByLogin, changeOwnPassword } from "../../api/user";
+import { logout, getVisitHistory, getUserByLogin, changeOwnPassword, getUserCardActivity } from "../../api/user";
+import type { ActivityLogEntry } from "../../api/category";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCanEditAnyUser } from "../../hooks/use-permissions";
+import { useCanEditAnyUser, useCanViewCardActivity } from "../../hooks/use-permissions";
 
 type Visit = {
   id: number;
@@ -27,6 +28,59 @@ type PasswordForm = {
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
+};
+
+const ACTIVITY_ACTION_LABEL: Record<ActivityLogEntry["action"], string> = {
+  create: "Добавил(а) карточку",
+  update: "Изменил(а) карточку",
+  delete: "Удалил(а) карточку",
+};
+
+const CardActivity = ({ userLogin, canView, targetUserId, currentUserId }: VisitHistoryProps) => {
+  const { data: entries = [] } = useQuery({
+    queryKey: ["activity", "cards", userLogin || "me", targetUserId ?? currentUserId],
+    queryFn: ({ signal }) => getUserCardActivity({ signal, userId: targetUserId }),
+    enabled: canView,
+  });
+
+  return (
+    <div style={{
+      backgroundColor: "white",
+      borderRadius: "10px",
+      padding: "20px",
+      marginTop: "20px",
+    }}>
+      <h3 style={{ fontSize: "1.5rem", marginBottom: "16px", color: "var(--сolor-dark-grayish-blue)" }}>
+        Активность по карточкам
+      </h3>
+      {entries.length > 0 ? (
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
+              <th style={{ padding: "10px", textAlign: "left" }}>Действие</th>
+              <th style={{ padding: "10px", textAlign: "left" }}>Изменения</th>
+              <th style={{ padding: "10px", textAlign: "left" }}>Когда</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((entry: ActivityLogEntry) => (
+              <tr key={entry.id} style={{ borderBottom: "1px solid #ccc" }}>
+                <td style={{ padding: "10px" }}>
+                  {ACTIVITY_ACTION_LABEL[entry.action]} «{entry.entity_title || "—"}»
+                </td>
+                <td style={{ padding: "10px", color: "#666" }}>{entry.details || "—"}</td>
+                <td style={{ padding: "10px" }}>
+                  {new Date(entry.created_at).toLocaleString("ru-RU")}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p style={{ color: "#666", fontStyle: "italic" }}>Активность отсутствует</p>
+      )}
+    </div>
+  );
 };
 
 const VisitHistory = ({ userLogin, canView, targetUserId, currentUserId }: VisitHistoryProps) => {
@@ -169,6 +223,7 @@ export function AboutUser() {
   const params = useParams<{ login?: string }>();
   const queryClient = useQueryClient();
   const canEditAnyUser = useCanEditAnyUser();
+  const canViewCardActivity = useCanViewCardActivity();
 
   const logoutMutation = useMutation({
     mutationFn: () => logout(),
@@ -227,6 +282,8 @@ export function AboutUser() {
           <p><strong>Должность:</strong> {user?.position_name || "-"}</p>
           <p><strong>Telegram:</strong> {user?.telegram || "-"}</p>
           <p><strong>Статус:</strong> {user?.is_active && !user?.is_deactivated ? "Активен" : "Деактивирован"}</p>
+          <p><strong>Последний вход:</strong> {user?.last_login ? new Date(user.last_login).toLocaleString("ru-RU") : "-"}</p>
+          <p><strong>Пароль менялся:</strong> {user?.password_changed_at ? new Date(user.password_changed_at).toLocaleString("ru-RU") : "неизвестно"}</p>
         </div>
 
         <div style={{
@@ -273,6 +330,15 @@ export function AboutUser() {
         <VisitHistory
           userLogin={params.login}
           canView={!!(isOwnProfile || canViewOthersHistory)}
+          targetUserId={targetUser?.id}
+          currentUserId={currentUser?.id}
+        />
+      )}
+
+      {canViewCardActivity && (
+        <CardActivity
+          userLogin={params.login}
+          canView={canViewCardActivity}
           targetUserId={targetUser?.id}
           currentUserId={currentUser?.id}
         />

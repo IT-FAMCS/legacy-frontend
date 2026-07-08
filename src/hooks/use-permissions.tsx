@@ -82,22 +82,35 @@ export function useCanEditCards(): boolean {
   );
 }
 
+function isAdminChairOrDeputy(positionName: string | null | undefined): boolean {
+  const name = positionName?.toLowerCase() || "";
+  return (
+    name === "admin" ||
+    name === "админ" ||
+    name === "председатель" ||
+    name === "председатель студсовета" ||
+    name.startsWith("заместитель председателя") ||
+    name.startsWith("зам. председателя")
+  );
+}
+
 /**
  * Hook to check if current user can delete cards
  */
 export function useCanDeleteCards(): boolean {
   const { can_delete_cards } = usePermissions();
   const user = useUserStore((s) => s.user);
-  const positionName = user?.position_name?.toLowerCase() || "";
-  return (
-    can_delete_cards ||
-    positionName === "admin" ||
-    positionName === "админ" ||
-    positionName === "председатель" ||
-    positionName === "председатель студсовета" ||
-    positionName.startsWith("заместитель председателя") ||
-    positionName.startsWith("зам. председателя")
-  );
+  return can_delete_cards || isAdminChairOrDeputy(user?.position_name);
+}
+
+/**
+ * Hook to check if current user can view a user's card activity log
+ * (create/edit/delete). Narrower than can_edit_any_user on purpose — this is
+ * an oversight tool for admin/председатель/заместители only.
+ */
+export function useCanViewCardActivity(): boolean {
+  const user = useUserStore((s) => s.user);
+  return isAdminChairOrDeputy(user?.position_name);
 }
 
 /**

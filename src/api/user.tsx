@@ -403,6 +403,31 @@ export async function getVisitHistory({
 // getUserVisitHistory removed - using getVisitHistory for current user
 // Backend would need endpoint like /api/visits/cards?user_id=X for other users
 
+export async function getUserCardActivity({
+  signal,
+  userId,
+}: {
+  signal?: AbortSignal;
+  userId?: number;
+}) {
+  const url = userId !== undefined
+    ? `${API_BASE}/api/activity/cards?user_id=${userId}`
+    : `${API_BASE}/api/activity/cards`;
+
+  const res = await fetch(url, {
+    method: "GET",
+    credentials: "include",
+    headers: getAuthHeaders(),
+    signal,
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const errorMessage = extractErrorMessage(errorData) || `HTTP ${res.status}`;
+    throw new Error(errorMessage);
+  }
+  return await res.json();
+}
+
 export async function getUserByLogin({
   signal,
   login,

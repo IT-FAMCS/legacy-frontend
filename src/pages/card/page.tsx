@@ -5,7 +5,7 @@ import { useErrorStore } from "../../stores/error";
 import Button from "../../components/Button";
 import { MultiSelect } from "../../components/MultiSelect";
 import { getPositions } from "../../api/user";
-import { deleteCard, getCard, updateCard } from "../../api/category";
+import { deleteCard, getCard, getCardHistory, updateCard, type ActivityLogEntry } from "../../api/category";
 import { useCanDeleteCards, useCanEditCards } from "../../hooks/use-permissions";
 import { MarkdownRenderer } from "../../components/MarkdownRenderer";
 import racoonLoading from "../../assets/images/racoon-loading.gif";
@@ -24,6 +24,49 @@ function toggleTaskInMarkdown(markdown: string, taskIndex: number, checked: bool
       return `${match[1]}${checked ? "x" : " "}${match[3]}`;
     })
     .join("\n");
+}
+
+const HISTORY_ACTION_LABEL: Record<ActivityLogEntry["action"], string> = {
+  create: "Создание",
+  update: "Изменение",
+  delete: "Удаление",
+};
+
+function CardHistory({ cardId }: { cardId: number }) {
+  const { data: entries = [] } = useQuery({
+    queryKey: ["card-history", cardId],
+    queryFn: ({ signal }) => getCardHistory({ signal, cardId }),
+  });
+
+  return (
+    <div style={{ backgroundColor: "white", borderRadius: "10px", padding: "20px", marginTop: "20px" }}>
+      <h3 style={{ fontSize: "18px", marginBottom: "12px" }}>История изменений</h3>
+      {entries.length > 0 ? (
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
+              <th style={{ padding: "10px", textAlign: "left" }}>Кто</th>
+              <th style={{ padding: "10px", textAlign: "left" }}>Действие</th>
+              <th style={{ padding: "10px", textAlign: "left" }}>Изменения</th>
+              <th style={{ padding: "10px", textAlign: "left" }}>Когда</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((entry) => (
+              <tr key={entry.id} style={{ borderBottom: "1px solid #ccc" }}>
+                <td style={{ padding: "10px" }}>{entry.user_name || entry.user_login || "—"}</td>
+                <td style={{ padding: "10px" }}>{HISTORY_ACTION_LABEL[entry.action]}</td>
+                <td style={{ padding: "10px", color: "#666" }}>{entry.details || "—"}</td>
+                <td style={{ padding: "10px" }}>{new Date(entry.created_at).toLocaleString("ru-RU")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p style={{ color: "#666", fontStyle: "italic" }}>История изменений пуста</p>
+      )}
+    </div>
+  );
 }
 
 export function CardPage() {
@@ -285,6 +328,8 @@ export function CardPage() {
             )}
 
             <MarkdownRenderer content={content || ""} onTaskToggle={canEditCards ? handleTaskToggle : undefined} />
+
+            <CardHistory cardId={numericCardId} />
           </>
         )}
       </div>
