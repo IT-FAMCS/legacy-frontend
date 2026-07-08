@@ -5,6 +5,7 @@ import { login, getUser } from "../../api/user";
 import { useUserStore } from "../../stores/user";
 import { useErrorStore } from "../../stores/error";
 import Button from "../../components/Button";
+import { ErrorBanner } from "../../components/ErrorBanner";
 import background from "../../assets/images/title-wrapper-bg.png";
 
 export function LoginPage() {
@@ -12,7 +13,10 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const setUser = useUserStore((s) => s.setUserInfo);
+  const error = useErrorStore((s) => s.error);
+  const success = useErrorStore((s) => s.success);
   const setError = useErrorStore((s) => s.setError);
+  const setSuccess = useErrorStore((s) => s.setSuccess);
   const queryClient = useQueryClient();
 
   const loginMutation = useMutation({
@@ -42,70 +46,73 @@ export function LoginPage() {
   };
 
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      minHeight: "100vh",
-      padding: "20px",
-      background: `url(${background})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-    }}>
-      <h2 style={{ marginBottom: "24px", fontSize: "2rem", color: "white", textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>Вход в систему</h2>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "16px",
-          width: "100%",
-          maxWidth: "400px",
-          padding: "32px",
-          backgroundColor: "rgba(255, 255, 255, 0.95)",
-          borderRadius: "10px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <label htmlFor="login" style={{ fontWeight: 600 }}>Логин</label>
-          <input
-            id="login"
-            type="text"
-            value={loginValue}
-            onChange={(e) => setLoginValue(e.target.value)}
-            style={{
-              padding: "12px",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-              fontSize: "16px",
-            }}
+    <>
+      <ErrorBanner error={error} success={success} onClose={() => { setError(null); setSuccess(null); }} />
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100vh",
+        padding: "20px",
+        background: `url(${background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}>
+        <h2 style={{ marginBottom: "24px", fontSize: "2rem", color: "white", textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>Вход в систему</h2>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+            width: "100%",
+            maxWidth: "400px",
+            padding: "32px",
+            backgroundColor: "rgba(255, 255, 255, 0.95)",
+            borderRadius: "10px",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <label htmlFor="login" style={{ fontWeight: 600 }}>Логин</label>
+            <input
+              id="login"
+              type="text"
+              value={loginValue}
+              onChange={(e) => setLoginValue(e.target.value)}
+              style={{
+                padding: "12px",
+                borderRadius: "8px",
+                border: "1px solid #ccc",
+                fontSize: "16px",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <label htmlFor="password" style={{ fontWeight: 600 }}>Пароль</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{
+                padding: "12px",
+                borderRadius: "8px",
+                border: "1px solid #ccc",
+                fontSize: "16px",
+              }}
+            />
+          </div>
+          <Button
+            label={loginMutation.isPending ? "Вход..." : "Войти"}
+            fillColor
+            full
+            type="submit"
+            style={{ border: "none", marginTop: "8px" }}
           />
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <label htmlFor="password" style={{ fontWeight: 600 }}>Пароль</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{
-              padding: "12px",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-              fontSize: "16px",
-            }}
-          />
-        </div>
-        <Button
-          label={loginMutation.isPending ? "Вход..." : "Войти"}
-          fillColor
-          full
-          type="submit"
-          style={{ border: "none", marginTop: "8px" }}
-        />
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   );
 }
