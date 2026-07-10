@@ -13,6 +13,7 @@ const Button = (
     iconSize = 25,
     ariaLabel,
     onClick,
+    disabled = false,
     full,
     fillColor,
     style,
@@ -42,11 +43,12 @@ const Button = (
     lineHeight: 1,
     whiteSpace: 'nowrap',
     width: full ? '100%' : undefined,
-    cursor: 'pointer',
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    opacity: disabled ? 0.5 : 1,
     transition: 'all 0.2s ease',
     ...style,
-    ...(isHovered && hoverStyle),
-    ...(isActive && activeStyle)
+    ...(isHovered && !disabled && hoverStyle),
+    ...(isActive && !disabled && activeStyle)
   };
 
   const buttonContent = (
@@ -80,10 +82,11 @@ const Button = (
   return (
     <Component
       className={className}
-      {...(Component === 'button' ? {type} : {})}
-      onClick={onClick}
+      {...(Component === 'button' ? {type, disabled} : {})}
+      onClick={disabled ? undefined : onClick}
       title={isLabelHidden ? label : undefined}
       aria-label={isLabelHidden ? label : undefined}
+      aria-disabled={disabled || undefined}
       style={commonStyles}
       {...interactionProps}
     >

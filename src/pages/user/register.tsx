@@ -194,7 +194,10 @@ export function RegisterPage() {
         paddingBottom: "40px",
         marginTop: "var(--header-height)",
       }}>
-        <h2 style={{ marginBottom: "24px", fontSize: "2rem" }}>Регистрация пользователя</h2>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", maxWidth: "800px", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
+          <h2 style={{ fontSize: "2rem" }}>Регистрация пользователя</h2>
+          <Button label="Массовая регистрация из файла →" fillColor style={{ border: "none" }} onClick={() => navigate("/register/bulk")} />
+        </div>
         <div
           style={{
             display: "grid",

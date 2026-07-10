@@ -4,6 +4,7 @@ import HomePage from "./pages/home/home-page";
 import { AboutUser } from "./pages/user/about";
 import { LoginPage } from "./pages/user/login";
 import { RegisterPage } from "./pages/user/register";
+import { RegisterBulkPage } from "./pages/user/register-bulk";
 import { AccountList } from "./pages/account-list/list";
 import { PositionsList } from "./pages/positions/list";
 import { DepartmentsList } from "./pages/departments/list";
@@ -85,6 +86,10 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <RegisterPage />,
+  },
+  {
+    path: "/register/bulk",
+    element: <RegisterBulkPage />,
   }
 ]);
 

@@ -237,6 +237,42 @@ export async function registerUser({
   return await res.json();
 }
 
+export type BulkUserRegisterData = {
+  login: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  middle_name?: string;
+  birth_date?: string;
+  course?: string;
+  group?: string;
+  position: string;
+  department_ids?: number[];
+  telegram?: string;
+};
+
+export async function registerUsersBulk({
+  signal,
+  users,
+}: {
+  signal?: AbortSignal;
+  users: BulkUserRegisterData[];
+}) {
+  const res = await fetch(`${API_BASE}/api/register/bulk`, {
+    method: "POST",
+    credentials: "include",
+    headers: getAuthHeaders(),
+    signal,
+    body: JSON.stringify({ users }),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const errorMessage = extractErrorMessage(errorData) || `HTTP ${res.status}`;
+    throw new Error(errorMessage);
+  }
+  return await res.json();
+}
+
 export async function getPositions({ signal }: { signal?: AbortSignal } = {}) {
   const res = await fetch(`${API_BASE}/api/positions`, {
     method: "GET",

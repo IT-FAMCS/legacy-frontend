@@ -8,6 +8,7 @@ export type ButtonProps = {
   iconSize?: number;
   ariaLabel?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
+  disabled?: boolean;
   full?: boolean;
   fillColor?: boolean;
   style?: React.CSSProperties;
