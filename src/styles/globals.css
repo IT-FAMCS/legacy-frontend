@@ -170,3 +170,69 @@ button:active {
 ::-webkit-scrollbar-thumb:hover {
   background: #5a5cc0;
 }
+
+/* Header: single-row layout on desktop, collapses into a dropdown panel
+   below the (fixed-height) header bar on narrow screens. Header height must
+   stay constant across breakpoints — every page offsets its content by
+   var(--header-height), so the nav collapses into a panel instead of
+   growing the bar itself. */
+.header-burger {
+  display: none;
+}
+
+.header-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 860px) {
+  .header-burger {
+    display: inline-flex;
+  }
+
+  .header-nav {
+    display: none;
+  }
+
+  .header-nav.header-nav-open {
+    display: flex;
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    background-color: #686ACF;
+    padding: 12px 20px 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 999;
+  }
+
+  .header-nav.header-nav-open > * {
+    width: 100%;
+  }
+}
+
+/* Generic wrapper for tables that may overflow a narrow viewport — scrolls
+   the table horizontally instead of squeezing columns unreadably or
+   breaking the page layout. */
+.table-scroll {
+  overflow-x: auto;
+}
+
+/* Two-column form grids (registration, edit modals, position editor) —
+   collapse to one column on narrow screens instead of squeezing both
+   columns to the point inputs become unusable. */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}

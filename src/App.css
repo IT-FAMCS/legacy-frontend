@@ -5,3 +5,12 @@
   background-color: inherit;
   font-family: Jost, sans-serif;
 }
+
+/* Flex items default to min-width: auto, which refuses to shrink below the
+   intrinsic width of their content (e.g. a wide table) — that silently
+   defeats every overflow-x:auto scroll wrapper on the page and blows out
+   the whole layout on narrow viewports. .App only ever has one child (the
+   router's current page), so this is safe globally. */
+.App > * {
+  min-width: 0;
+}

@@ -113,52 +113,54 @@ export function DepartmentsList() {
         )}
       </div>
 
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          backgroundColor: "var(--color-alabaster-grey)",
-          borderRadius: "10px",
-          overflow: "hidden",
-        }}
-      >
-        <thead>
-          <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
-            <th style={{ padding: "12px", textAlign: "left" }}>Название</th>
-            <th style={{ padding: "12px", textAlign: "left" }}>Описание</th>
-            <th style={{ padding: "12px", textAlign: "left" }}>Создан</th>
-            {canManageDepartments && <th style={{ padding: "12px", textAlign: "center" }}>Действия</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {departments.map((department: Department) => (
-            <tr key={department.id} style={{ borderBottom: "1px solid #ccc" }}>
-              <td style={{ padding: "12px", fontWeight: 600 }}>{department.name}</td>
-              <td style={{ padding: "12px" }}>{department.description || "-"}</td>
-              <td style={{ padding: "12px" }}>
-                {department.created_at ? new Date(department.created_at).toLocaleDateString("ru-RU") : "-"}
-              </td>
-              {canManageDepartments && (
-                <td style={{ padding: "12px", textAlign: "center" }}>
-                  <Button
-                    label="Редактировать"
-                    fillColor
-                    style={{ border: "none", padding: "6px 12px", fontSize: "14px" }}
-                    onClick={() => handleEditClick(department)}
-                  />
+      <div className="table-scroll">
+        <table
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            backgroundColor: "var(--color-alabaster-grey)",
+            borderRadius: "10px",
+            overflow: "hidden",
+          }}
+        >
+          <thead>
+            <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
+              <th style={{ padding: "12px", textAlign: "left" }}>Название</th>
+              <th style={{ padding: "12px", textAlign: "left" }}>Описание</th>
+              <th style={{ padding: "12px", textAlign: "left" }}>Создан</th>
+              {canManageDepartments && <th style={{ padding: "12px", textAlign: "center" }}>Действия</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {departments.map((department: Department) => (
+              <tr key={department.id} style={{ borderBottom: "1px solid #ccc" }}>
+                <td style={{ padding: "12px", fontWeight: 600 }}>{department.name}</td>
+                <td style={{ padding: "12px" }}>{department.description || "-"}</td>
+                <td style={{ padding: "12px" }}>
+                  {department.created_at ? new Date(department.created_at).toLocaleDateString("ru-RU") : "-"}
                 </td>
-              )}
-            </tr>
-          ))}
-          {departments.length === 0 && (
-            <tr>
-              <td colSpan={canManageDepartments ? 4 : 3} style={{ padding: "20px", textAlign: "center", color: "#666" }}>
-                Отделы пока не добавлены
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+                {canManageDepartments && (
+                  <td style={{ padding: "12px", textAlign: "center" }}>
+                    <Button
+                      label="Редактировать"
+                      fillColor
+                      style={{ border: "none", padding: "6px 12px", fontSize: "14px" }}
+                      onClick={() => handleEditClick(department)}
+                    />
+                  </td>
+                )}
+              </tr>
+            ))}
+            {departments.length === 0 && (
+              <tr>
+                <td colSpan={canManageDepartments ? 4 : 3} style={{ padding: "20px", textAlign: "center", color: "#666" }}>
+                  Отделы пока не добавлены
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {isAddOpen && <AddDepartmentModal setIsOpen={setIsAddOpen} />}
 

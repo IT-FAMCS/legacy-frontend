@@ -11,11 +11,12 @@ export function ModalWrapper({
     <div
       style={{
         position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: "100vw",
-        height: "100vh",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "16px",
+        boxSizing: "border-box",
         zIndex: 100,
         backgroundColor: "rgba(0,0,0,0.5)",
       }}
@@ -25,16 +26,15 @@ export function ModalWrapper({
     >
       <div
         style={{
-          position: "absolute",
+          width: "100%",
+          maxWidth: "600px",
+          maxHeight: "85vh",
           overflowY: "auto",
-          width: "600px",
-          height: "350px",
-          top: "calc(50% - 175px)",
-          left: "calc(50% - 300px)",
           borderRadius: "10px",
           color: "white",
           backgroundColor: "rgb(0, 0, 0, 0.7)",
           padding: "40px 20px",
+          boxSizing: "border-box",
         }}
         onClick={
           (e) => e.stopPropagation()

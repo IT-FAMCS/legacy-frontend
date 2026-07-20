@@ -153,11 +153,7 @@ export function EditUser({
         }}
       >
         <h3 style={{ margin: 0, fontSize: "1.5rem" }}>Редактирование пользователя</h3>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "12px",
-        }}>
+        <div className="form-grid-2" style={{ gap: "12px" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
             <label style={{ fontSize: "14px", fontWeight: 600 }}>Фамилия</label>
             <input

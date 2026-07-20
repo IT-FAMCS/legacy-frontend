@@ -54,28 +54,30 @@ const CardActivity = ({ userLogin, canView, targetUserId, currentUserId }: Visit
         Активность по карточкам
       </h3>
       {entries.length > 0 ? (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
-              <th style={{ padding: "10px", textAlign: "left" }}>Действие</th>
-              <th style={{ padding: "10px", textAlign: "left" }}>Изменения</th>
-              <th style={{ padding: "10px", textAlign: "left" }}>Когда</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry: ActivityLogEntry) => (
-              <tr key={entry.id} style={{ borderBottom: "1px solid #ccc" }}>
-                <td style={{ padding: "10px" }}>
-                  {ACTIVITY_ACTION_LABEL[entry.action]} «{entry.entity_title || "—"}»
-                </td>
-                <td style={{ padding: "10px", color: "#666" }}>{entry.details || "—"}</td>
-                <td style={{ padding: "10px" }}>
-                  {new Date(entry.created_at).toLocaleString("ru-RU")}
-                </td>
+        <div className="table-scroll">
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
+                <th style={{ padding: "10px", textAlign: "left" }}>Действие</th>
+                <th style={{ padding: "10px", textAlign: "left" }}>Изменения</th>
+                <th style={{ padding: "10px", textAlign: "left" }}>Когда</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {entries.map((entry: ActivityLogEntry) => (
+                <tr key={entry.id} style={{ borderBottom: "1px solid #ccc" }}>
+                  <td style={{ padding: "10px" }}>
+                    {ACTIVITY_ACTION_LABEL[entry.action]} «{entry.entity_title || "—"}»
+                  </td>
+                  <td style={{ padding: "10px", color: "#666" }}>{entry.details || "—"}</td>
+                  <td style={{ padding: "10px" }}>
+                    {new Date(entry.created_at).toLocaleString("ru-RU")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p style={{ color: "#666", fontStyle: "italic" }}>Активность отсутствует</p>
       )}
@@ -101,27 +103,29 @@ const VisitHistory = ({ userLogin, canView, targetUserId, currentUserId }: Visit
         История просмотра карточек
       </h3>
       {cardVisits.length > 0 ? (
-        <table style={{
-          width: "100%",
-          borderCollapse: "collapse",
-        }}>
-          <thead>
-            <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
-              <th style={{ padding: "10px", textAlign: "left" }}>Название карточки</th>
-              <th style={{ padding: "10px", textAlign: "left" }}>Дата просмотра</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cardVisits.map((visit: Visit) => (
-              <tr key={visit.id} style={{ borderBottom: "1px solid #ccc" }}>
-                <td style={{ padding: "10px" }}>{visit.item_name}</td>
-                <td style={{ padding: "10px" }}>
-                  {new Date(visit.visited_at).toLocaleString("ru-RU")}
-                </td>
+        <div className="table-scroll">
+          <table style={{
+            width: "100%",
+            borderCollapse: "collapse",
+          }}>
+            <thead>
+              <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
+                <th style={{ padding: "10px", textAlign: "left" }}>Название карточки</th>
+                <th style={{ padding: "10px", textAlign: "left" }}>Дата просмотра</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {cardVisits.map((visit: Visit) => (
+                <tr key={visit.id} style={{ borderBottom: "1px solid #ccc" }}>
+                  <td style={{ padding: "10px" }}>{visit.item_name}</td>
+                  <td style={{ padding: "10px" }}>
+                    {new Date(visit.visited_at).toLocaleString("ru-RU")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p style={{ color: "#666", fontStyle: "italic" }}>История просмотров пуста</p>
       )}
@@ -253,6 +257,8 @@ export function AboutUser() {
 
   return (
     <div style={{
+      width: "100%",
+      boxSizing: "border-box",
       display: "flex",
       flexDirection: "column",
       gap: "16px",
@@ -282,7 +288,7 @@ export function AboutUser() {
           <p><strong>Должность:</strong> {user?.position_name || "-"}</p>
           <p><strong>Telegram:</strong> {user?.telegram || "-"}</p>
           <p><strong>Статус:</strong> {user?.is_active && !user?.is_deactivated ? "Активен" : "Деактивирован"}</p>
-          <p><strong>Последний вход:</strong> {user?.last_login ? new Date(user.last_login).toLocaleString("ru-RU") : "-"}</p>
+          <p><strong>Последний визит:</strong> {user?.last_seen_at ? new Date(user.last_seen_at).toLocaleString("ru-RU") : "-"}</p>
           <p><strong>Пароль менялся:</strong> {user?.password_changed_at ? new Date(user.password_changed_at).toLocaleString("ru-RU") : "неизвестно"}</p>
         </div>
 

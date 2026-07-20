@@ -199,10 +199,8 @@ export function RegisterPage() {
           <Button label="Массовая регистрация из файла →" fillColor style={{ border: "none" }} onClick={() => navigate("/register/bulk")} />
         </div>
         <div
+          className="form-grid-2"
           style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "16px",
             width: "100%",
             maxWidth: "800px",
             padding: "32px",

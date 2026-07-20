@@ -272,6 +272,8 @@ export function RegisterBulkPage() {
     <>
       <ErrorBanner error={error} success={success} onClose={() => { setError(null); setSuccess(null); }} />
       <div style={{
+        width: "100%",
+        boxSizing: "border-box",
         padding: "20px",
         maxWidth: "1100px",
         margin: "0 auto",

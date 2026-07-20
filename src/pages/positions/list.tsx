@@ -168,6 +168,8 @@ export function PositionsList() {
           justifyContent: "space-between",
           alignItems: "center",
           marginBottom: "24px",
+          flexWrap: "wrap",
+          gap: "12px",
         }}
       >
         <h2 style={{ fontSize: "2rem" }}>Должности</h2>
@@ -181,6 +183,7 @@ export function PositionsList() {
         )}
       </div>
 
+      <div className="table-scroll">
       <table
         style={{
           width: "100%",
@@ -273,6 +276,7 @@ export function PositionsList() {
           ))}
         </tbody>
       </table>
+      </div>
 
       {(isCreateOpen || editingPosition) && formData && (
         <ModalWrapper
@@ -345,9 +349,8 @@ export function PositionsList() {
             </div>
 
             <div
+              className="form-grid-2"
               style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
                 gap: "12px",
                 marginTop: "12px",
               }}

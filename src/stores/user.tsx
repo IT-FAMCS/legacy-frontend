@@ -17,6 +17,7 @@ export type UserInfo = {
   is_active: boolean;
   is_deactivated: boolean;
   last_login?: string | null;
+  last_seen_at?: string | null;
   password_changed_at?: string | null;
   // Position flags from backend for permission checks
   can_manage_positions?: boolean;

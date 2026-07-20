@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, type KeyboardEvent } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, useBlocker } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useErrorStore } from "../../stores/error";
 import Button from "../../components/Button";
@@ -45,26 +45,28 @@ function CardHistory({ cardId, canView }: { cardId: number; canView: boolean }) 
     <div style={{ backgroundColor: "white", borderRadius: "10px", padding: "20px", marginTop: "20px" }}>
       <h3 style={{ fontSize: "18px", marginBottom: "12px" }}>История изменений</h3>
       {entries.length > 0 ? (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
-              <th style={{ padding: "10px", textAlign: "left" }}>Кто</th>
-              <th style={{ padding: "10px", textAlign: "left" }}>Действие</th>
-              <th style={{ padding: "10px", textAlign: "left" }}>Изменения</th>
-              <th style={{ padding: "10px", textAlign: "left" }}>Когда</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry) => (
-              <tr key={entry.id} style={{ borderBottom: "1px solid #ccc" }}>
-                <td style={{ padding: "10px" }}>{entry.user_name || entry.user_login || "—"}</td>
-                <td style={{ padding: "10px" }}>{HISTORY_ACTION_LABEL[entry.action]}</td>
-                <td style={{ padding: "10px", color: "#666" }}>{entry.details || "—"}</td>
-                <td style={{ padding: "10px" }}>{new Date(entry.created_at).toLocaleString("ru-RU")}</td>
+        <div className="table-scroll">
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
+                <th style={{ padding: "10px", textAlign: "left" }}>Кто</th>
+                <th style={{ padding: "10px", textAlign: "left" }}>Действие</th>
+                <th style={{ padding: "10px", textAlign: "left" }}>Изменения</th>
+                <th style={{ padding: "10px", textAlign: "left" }}>Когда</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {entries.map((entry) => (
+                <tr key={entry.id} style={{ borderBottom: "1px solid #ccc" }}>
+                  <td style={{ padding: "10px" }}>{entry.user_name || entry.user_login || "—"}</td>
+                  <td style={{ padding: "10px" }}>{HISTORY_ACTION_LABEL[entry.action]}</td>
+                  <td style={{ padding: "10px", color: "#666" }}>{entry.details || "—"}</td>
+                  <td style={{ padding: "10px" }}>{new Date(entry.created_at).toLocaleString("ru-RU")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p style={{ color: "#666", fontStyle: "italic" }}>История изменений пуста</p>
       )}
@@ -126,6 +128,38 @@ export function CardPage() {
       }
     };
   }, []);
+
+  // Guard against losing in-progress edits: any in-app navigation away from
+  // this page (nav links, back button, browser back/forward) while editing
+  // is blocked and confirmed first.
+  const blocker = useBlocker(isEdit);
+
+  useEffect(() => {
+    if (blocker.state !== "blocked") return;
+    if (window.confirm("Вы точно хотите выйти? Несохранённые изменения будут потеряны.")) {
+      blocker.proceed();
+    } else {
+      blocker.reset();
+    }
+  }, [blocker]);
+
+  // Closing/reloading the tab bypasses the router entirely, so it needs its
+  // own guard — browsers ignore the custom message and show their own.
+  useEffect(() => {
+    if (!isEdit) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isEdit]);
+
+  const handleCancelEdit = () => {
+    if (window.confirm("Вы точно хотите выйти? Несохранённые изменения будут потеряны.")) {
+      setIsEdit(false);
+    }
+  };
 
   const updateMutation = useMutation({
     mutationFn: (data: {
@@ -235,7 +269,7 @@ export function CardPage() {
   }
 
   return (
-    <div style={{ padding: "20px", maxWidth: "1220px", margin: "0 auto", marginTop: "var(--header-height)" }}>
+    <div style={{ width: "100%", boxSizing: "border-box", padding: "20px", maxWidth: "1220px", margin: "0 auto", marginTop: "var(--header-height)" }}>
       <div style={{ marginBottom: "20px" }}>
         <Button label="← Назад" fillColor style={{ border: "none" }} onClick={() => navigate(-1)} />
       </div>
@@ -310,7 +344,7 @@ export function CardPage() {
 
             <div style={{ display: "flex", gap: "12px", marginTop: "16px", flexWrap: "wrap" }}>
               <Button label="Сохранить" fillColor style={{ border: "none", backgroundColor: "#4CAF50" }} onClick={handleSave} />
-              <Button label="Отмена" fillColor style={{ border: "none" }} onClick={() => setIsEdit(false)} />
+              <Button label="Отмена" fillColor style={{ border: "none" }} onClick={handleCancelEdit} />
             </div>
           </>
         ) : (

@@ -278,7 +278,7 @@ export function AccountList() {
         <h2 style={{ fontSize: "2rem" }}>
           {showInactive ? "Деактивированные пользователи" : "Все пользователи"}
         </h2>
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
           <select
             value={departmentFilter}
             onChange={(e) => setDepartmentFilter(e.target.value)}
@@ -315,6 +315,7 @@ export function AccountList() {
         </div>
       </div>
 
+      <div className="table-scroll">
       <table
         style={{
           width: "100%",
@@ -417,6 +418,7 @@ export function AccountList() {
           ))}
         </tbody>
       </table>
+      </div>
 
       {editingUser && formData && (
         <ModalWrapper
@@ -492,9 +494,8 @@ export function AccountList() {
 
             {/* User Data Section */}
             <div
+              className="form-grid-2"
               style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
                 gap: "12px",
               }}
             >
