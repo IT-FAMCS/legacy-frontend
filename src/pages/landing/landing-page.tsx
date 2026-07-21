@@ -97,7 +97,7 @@ export function LandingPage() {
     <div style={{
       display: "flex",
       justifyContent: "center",
-      alignItems: "flex-end",
+      alignItems: "safe flex-end",
       background: `url(${background})`,
       backgroundSize: "cover",
       backgroundPosition: "center",

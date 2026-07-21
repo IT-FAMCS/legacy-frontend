@@ -1,4 +1,5 @@
 import type { Position } from "../types/Position";
+import type { ActivityLogEntry } from "./category";
 import { readErrorResponse, extractErrorMessage } from "../utils/api-error";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
@@ -445,7 +446,7 @@ export async function getUserCardActivity({
 }: {
   signal?: AbortSignal;
   userId?: number;
-}) {
+}): Promise<ActivityLogEntry[]> {
   const url = userId !== undefined
     ? `${API_BASE}/api/activity/cards?user_id=${userId}`
     : `${API_BASE}/api/activity/cards`;

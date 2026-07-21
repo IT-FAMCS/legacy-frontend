@@ -9,6 +9,7 @@ import { logout, getVisitHistory, getUserByLogin, changeOwnPassword, getUserCard
 import type { ActivityLogEntry } from "../../api/category";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCanEditAnyUser, useCanViewCardActivity } from "../../hooks/use-permissions";
+import { usePagedList } from "../../hooks/use-paged-list";
 
 type Visit = {
   id: number;
@@ -42,6 +43,7 @@ const CardActivity = ({ userLogin, canView, targetUserId, currentUserId }: Visit
     queryFn: ({ signal }) => getUserCardActivity({ signal, userId: targetUserId }),
     enabled: canView,
   });
+  const { visibleItems, hasMore, nextStepLabel, showMore } = usePagedList(entries);
 
   return (
     <div style={{
@@ -54,30 +56,37 @@ const CardActivity = ({ userLogin, canView, targetUserId, currentUserId }: Visit
         Активность по карточкам
       </h3>
       {entries.length > 0 ? (
-        <div className="table-scroll">
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
-                <th style={{ padding: "10px", textAlign: "left" }}>Действие</th>
-                <th style={{ padding: "10px", textAlign: "left" }}>Изменения</th>
-                <th style={{ padding: "10px", textAlign: "left" }}>Когда</th>
-              </tr>
-            </thead>
-            <tbody>
-              {entries.map((entry: ActivityLogEntry) => (
-                <tr key={entry.id} style={{ borderBottom: "1px solid #ccc" }}>
-                  <td style={{ padding: "10px" }}>
-                    {ACTIVITY_ACTION_LABEL[entry.action]} «{entry.entity_title || "—"}»
-                  </td>
-                  <td style={{ padding: "10px", color: "#666" }}>{entry.details || "—"}</td>
-                  <td style={{ padding: "10px" }}>
-                    {new Date(entry.created_at).toLocaleString("ru-RU")}
-                  </td>
+        <>
+          <div className="table-scroll">
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
+                  <th style={{ padding: "10px", textAlign: "left" }}>Действие</th>
+                  <th style={{ padding: "10px", textAlign: "left" }}>Изменения</th>
+                  <th style={{ padding: "10px", textAlign: "left" }}>Когда</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {visibleItems.map((entry: ActivityLogEntry) => (
+                  <tr key={entry.id} style={{ borderBottom: "1px solid #ccc" }}>
+                    <td style={{ padding: "10px" }}>
+                      {ACTIVITY_ACTION_LABEL[entry.action]} «{entry.entity_title || "—"}»
+                    </td>
+                    <td style={{ padding: "10px", color: "#666" }}>{entry.details || "—"}</td>
+                    <td style={{ padding: "10px" }}>
+                      {new Date(entry.created_at).toLocaleString("ru-RU")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {hasMore && (
+            <div style={{ marginTop: "12px", textAlign: "center" }}>
+              <Button label={`Показать ещё (${nextStepLabel})`} fillColor style={{ border: "none" }} onClick={showMore} />
+            </div>
+          )}
+        </>
       ) : (
         <p style={{ color: "#666", fontStyle: "italic" }}>Активность отсутствует</p>
       )}

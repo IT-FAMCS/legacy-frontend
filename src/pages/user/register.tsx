@@ -164,9 +164,10 @@ export function RegisterPage() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "safe center",
           minHeight: "calc(100vh - var(--header-height))",
           padding: "20px",
+          boxSizing: "border-box",
         }}>
           <h2 style={{ marginBottom: "24px", fontSize: "2rem", color: "#f44336" }}>Доступ запрещён</h2>
           <p style={{ fontSize: "1.2rem", color: "#666" }}>У вас нет прав для регистрации пользователей</p>
@@ -188,7 +189,7 @@ export function RegisterPage() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "safe center",
         minHeight: "calc(100vh - var(--header-height))",
         padding: "20px",
         paddingBottom: "40px",

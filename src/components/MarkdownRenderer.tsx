@@ -512,6 +512,9 @@ function isHorizontalRule(line: string): boolean {
   return /^\s{0,3}((\*\s*){3,}|(-\s*){3,}|(_\s*){3,})$/.test(line);
 }
 
+const SPOILER_OPEN_RE = /^\s{0,3}:::spoiler(?:\s+(.*))?$/;
+const SPOILER_CLOSE_RE = /^\s{0,3}:::\s*$/;
+
 function isBlockStart(lines: string[], index: number): boolean {
   const line = lines[index];
 
@@ -519,6 +522,7 @@ function isBlockStart(lines: string[], index: number): boolean {
     /^\s{0,3}#{1,6}\s+/.test(line) ||
     /^\s{0,3}(```|~~~)/.test(line) ||
     /^\s{0,3}>/.test(line) ||
+    SPOILER_OPEN_RE.test(line) ||
     parseListMatch(line) !== null ||
     isHorizontalRule(line) ||
     isTableStart(lines, index)
@@ -750,6 +754,32 @@ function parseBlocks(lines: string[], keyPrefix: string, options: ParseOptions):
     if (isHorizontalRule(line)) {
       blocks.push(<hr key={blockKey} />);
       index += 1;
+      blockIndex += 1;
+      continue;
+    }
+
+    const spoilerMatch = SPOILER_OPEN_RE.exec(line);
+
+    if (spoilerMatch) {
+      const summaryText = spoilerMatch[1]?.trim() || "Подробнее";
+      const innerLines: string[] = [];
+      index += 1;
+
+      while (index < lines.length && !SPOILER_CLOSE_RE.test(lines[index])) {
+        innerLines.push(lines[index]);
+        index += 1;
+      }
+
+      if (index < lines.length) {
+        index += 1; // skip the closing ":::"
+      }
+
+      blocks.push(
+        <details className="markdown-spoiler" key={blockKey}>
+          <summary>{parseInline(summaryText, `${blockKey}-summary`)}</summary>
+          {parseBlocks(innerLines, `${blockKey}-spoiler`, options)}
+        </details>,
+      );
       blockIndex += 1;
       continue;
     }

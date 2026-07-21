@@ -7,6 +7,7 @@ import { MultiSelect } from "../../components/MultiSelect";
 import { getPositions } from "../../api/user";
 import { deleteCard, getCard, getCardHistory, updateCard, type ActivityLogEntry } from "../../api/category";
 import { useCanDeleteCards, useCanEditCards, useCanViewCardActivity } from "../../hooks/use-permissions";
+import { usePagedList } from "../../hooks/use-paged-list";
 import { MarkdownRenderer } from "../../components/MarkdownRenderer";
 import racoonLoading from "../../assets/images/racoon-loading.gif";
 import { handleMarkdownHotkey } from "../../utils/markdown-hotkeys";
@@ -38,6 +39,7 @@ function CardHistory({ cardId, canView }: { cardId: number; canView: boolean }) 
     queryFn: ({ signal }) => getCardHistory({ signal, cardId }),
     enabled: canView,
   });
+  const { visibleItems, hasMore, nextStepLabel, showMore } = usePagedList(entries);
 
   if (!canView) return null;
 
@@ -45,28 +47,35 @@ function CardHistory({ cardId, canView }: { cardId: number; canView: boolean }) 
     <div style={{ backgroundColor: "white", borderRadius: "10px", padding: "20px", marginTop: "20px" }}>
       <h3 style={{ fontSize: "18px", marginBottom: "12px" }}>История изменений</h3>
       {entries.length > 0 ? (
-        <div className="table-scroll">
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
-                <th style={{ padding: "10px", textAlign: "left" }}>Кто</th>
-                <th style={{ padding: "10px", textAlign: "left" }}>Действие</th>
-                <th style={{ padding: "10px", textAlign: "left" }}>Изменения</th>
-                <th style={{ padding: "10px", textAlign: "left" }}>Когда</th>
-              </tr>
-            </thead>
-            <tbody>
-              {entries.map((entry) => (
-                <tr key={entry.id} style={{ borderBottom: "1px solid #ccc" }}>
-                  <td style={{ padding: "10px" }}>{entry.user_name || entry.user_login || "—"}</td>
-                  <td style={{ padding: "10px" }}>{HISTORY_ACTION_LABEL[entry.action]}</td>
-                  <td style={{ padding: "10px", color: "#666" }}>{entry.details || "—"}</td>
-                  <td style={{ padding: "10px" }}>{new Date(entry.created_at).toLocaleString("ru-RU")}</td>
+        <>
+          <div className="table-scroll">
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
+                  <th style={{ padding: "10px", textAlign: "left" }}>Кто</th>
+                  <th style={{ padding: "10px", textAlign: "left" }}>Действие</th>
+                  <th style={{ padding: "10px", textAlign: "left" }}>Изменения</th>
+                  <th style={{ padding: "10px", textAlign: "left" }}>Когда</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {visibleItems.map((entry) => (
+                  <tr key={entry.id} style={{ borderBottom: "1px solid #ccc" }}>
+                    <td style={{ padding: "10px" }}>{entry.user_name || entry.user_login || "—"}</td>
+                    <td style={{ padding: "10px" }}>{HISTORY_ACTION_LABEL[entry.action]}</td>
+                    <td style={{ padding: "10px", color: "#666" }}>{entry.details || "—"}</td>
+                    <td style={{ padding: "10px" }}>{new Date(entry.created_at).toLocaleString("ru-RU")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {hasMore && (
+            <div style={{ marginTop: "12px", textAlign: "center" }}>
+              <Button label={`Показать ещё (${nextStepLabel})`} fillColor style={{ border: "none" }} onClick={showMore} />
+            </div>
+          )}
+        </>
       ) : (
         <p style={{ color: "#666", fontStyle: "italic" }}>История изменений пуста</p>
       )}
@@ -171,6 +180,7 @@ export function CardPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["card", cardId] });
       queryClient.invalidateQueries({ queryKey: ["cards"] });
+      queryClient.invalidateQueries({ queryKey: ["card-history", cardId] });
       setIsEdit(false);
       setSuccess("Карточка сохранена");
     },
@@ -206,6 +216,7 @@ export function CardPage() {
         await updateCard({ cardId: numericCardId, cardData: { content: nextContent } });
         queryClient.invalidateQueries({ queryKey: ["card", cardId] });
         queryClient.invalidateQueries({ queryKey: ["cards"] });
+        queryClient.invalidateQueries({ queryKey: ["card-history", cardId] });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Ошибка при обновлении чекбокса");
       }
@@ -230,8 +241,13 @@ export function CardPage() {
     updateMutation.mutate({
       title,
       content,
-      access_positions: selectedPositions.length > 0 ? selectedPositions.join(",") : undefined,
-      access_logins: accessLogins || undefined,
+      // Always send these two, even empty — the backend only applies fields
+      // that are actually present in the request body (exclude_unset), so
+      // sending `undefined` here (dropped entirely by JSON.stringify) would
+      // silently leave a previously-set restriction in place instead of
+      // clearing it when the user removes all positions/logins.
+      access_positions: selectedPositions.join(","),
+      access_logins: accessLogins,
     });
   };
 
@@ -325,7 +341,12 @@ export function CardPage() {
 | --- | ---: |
 | Значение | 10 |
 
-\`код\` или блок между тремя обратными кавычками`}
+\`код\` или блок между тремя обратными кавычками
+
+:::spoiler Заголовок сворачиваемого блока
+Скрытый текст — раскрывается по клику на заголовок.
+Поддерживает любой markdown внутри.
+:::`}
               </div>
             </details>
 
