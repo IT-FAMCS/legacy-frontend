@@ -1,12 +1,20 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
 import visibilityIcon from '../../assets/icons/eye.svg';
 import background from "../../assets/images/title-wrapper-bg.png";
+import { DancingRaccoon } from '../../components/DancingRaccoon';
 import { useNavigate } from 'react-router';
 
 gsap.registerPlugin(ScrambleTextPlugin);
+
+// Easter egg: click the "НАСЛЕДИЕ АКТИВА" subtitle 5 times in a row (within
+// 2s of each other) to summon a dancing raccoon for a few seconds. A random
+// dance style each time, just for variety.
+const RACCOON_DANCE_STYLES = ["disco", "groove", "twist"] as const;
+const RACCOON_CLICKS_REQUIRED = 5;
+const RACCOON_CLICK_WINDOW_MS = 2000;
 
 export function LandingPage() {
   const navigate = useNavigate();
@@ -15,6 +23,28 @@ export function LandingPage() {
   const titleRef = useRef<HTMLDivElement>(null);
   const subTitleRef = useRef<HTMLDivElement>(null);
   const toggleTitle = useRef(false);
+  const raccoonClickCountRef = useRef(0);
+  const raccoonLastClickAtRef = useRef(0);
+  const raccoonHideTimerRef = useRef<number | null>(null);
+  const [raccoonDanceStyle, setRaccoonDanceStyle] = useState<(typeof RACCOON_DANCE_STYLES)[number] | null>(null);
+
+  const handleTitleClick = () => {
+    const now = Date.now();
+    if (now - raccoonLastClickAtRef.current > RACCOON_CLICK_WINDOW_MS) {
+      raccoonClickCountRef.current = 0;
+    }
+    raccoonLastClickAtRef.current = now;
+    raccoonClickCountRef.current += 1;
+
+    if (raccoonClickCountRef.current >= RACCOON_CLICKS_REQUIRED) {
+      raccoonClickCountRef.current = 0;
+      const style = RACCOON_DANCE_STYLES[Math.floor(Math.random() * RACCOON_DANCE_STYLES.length)];
+      const durationMs = 5000 + Math.random() * 2000; // 5-7s, per the ask
+      setRaccoonDanceStyle(style);
+      if (raccoonHideTimerRef.current) window.clearTimeout(raccoonHideTimerRef.current);
+      raccoonHideTimerRef.current = window.setTimeout(() => setRaccoonDanceStyle(null), durationMs);
+    }
+  };
     
   const visibilityIconRotation = () => {
     gsap.to(visibilityIconRef.current,  {
@@ -162,17 +192,22 @@ export function LandingPage() {
         width: "100%",
         paddingBottom: "100px",
       }}>
-        <h2 ref={subTitleRef} style={{
-          fontWeight: "500",
-          textAlign: "center",
-          justifyContent: "flex-end",
-          fontSize: "max(7vw, 55px)",
-          paddingInline: "6vw",
-          lineHeight: "1.2",
-          wordBreak: "break-word",
-          margin: "0",
-          color: "#ffffff",
-        }}></h2>
+        <h2
+          ref={subTitleRef}
+          onClick={handleTitleClick}
+          style={{
+            fontWeight: "500",
+            textAlign: "center",
+            justifyContent: "flex-end",
+            fontSize: "max(7vw, 55px)",
+            paddingInline: "6vw",
+            lineHeight: "1.2",
+            wordBreak: "break-word",
+            margin: "0",
+            color: "#ffffff",
+            cursor: "pointer",
+          }}
+        ></h2>
         <h1 ref={titleRef} style={{
           fontStyle: "italic",
           color: "var(--color-gold-crest)",
@@ -183,6 +218,8 @@ export function LandingPage() {
         }}></h1>
       </div>
       </div>
+
+      {raccoonDanceStyle && <DancingRaccoon variant={raccoonDanceStyle} />}
     </div>
   );
 }

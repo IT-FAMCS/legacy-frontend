@@ -236,3 +236,83 @@ button:active {
     grid-template-columns: 1fr;
   }
 }
+
+/* Landing page easter egg: a raccoon dance party, summoned by clicking the
+   scrambled subtitle 5 times in a row (see DancingRaccoon.tsx). The raccoon
+   is a hand-drawn SVG with separate groups per body part (head, ears, arms,
+   legs, tail), each animated on its own keyframes below — a real multi-part
+   dance instead of one image being bounced/spun/swayed as a whole. The
+   outer wrapper's centering transform is a plain (non-animated) inline
+   style, so it's unaffected by these per-part animations. */
+@keyframes raccoon-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.raccoon-appear {
+  animation: raccoon-fade-in 0.3s ease-out;
+}
+
+svg.raccoon .part {
+  transform-box: view-box;
+}
+
+/* ---- disco: headband, alternating arm-point ---- */
+.variant-disco .arm-l { transform-origin: 60px 118px; animation: disco-arm-l 0.8s ease-in-out infinite; }
+.variant-disco .arm-r { transform-origin: 140px 118px; animation: disco-arm-r 0.8s ease-in-out infinite; }
+.variant-disco .leg-l { transform-origin: 87px 168px; animation: disco-leg-l 0.8s ease-in-out infinite; }
+.variant-disco .leg-r { transform-origin: 113px 168px; animation: disco-leg-r 0.8s ease-in-out infinite; }
+.variant-disco .head  { transform-origin: 100px 106px; animation: disco-head 0.4s ease-in-out infinite; }
+.variant-disco .tail  { transform-origin: 150px 150px; animation: disco-tail 0.3s ease-in-out infinite; }
+.variant-disco .torso { transform-origin: 100px 195px; animation: disco-torso 0.4s ease-in-out infinite; }
+
+@keyframes disco-arm-l { 0%, 100% { transform: rotate(140deg); } 50% { transform: rotate(10deg); } }
+@keyframes disco-arm-r { 0%, 100% { transform: rotate(10deg); } 50% { transform: rotate(-140deg); } }
+@keyframes disco-leg-l { 0%, 100% { transform: translateX(-4px); } 50% { transform: translateX(4px); } }
+@keyframes disco-leg-r { 0%, 100% { transform: translateX(4px); } 50% { transform: translateX(-4px); } }
+@keyframes disco-head  { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+@keyframes disco-tail  { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+@keyframes disco-torso { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+/* ---- groove: squash-and-stretch bounce, tongue out ---- */
+.variant-groove .torso { transform-origin: 100px 195px; animation: groove-torso 0.5s ease-in-out infinite; }
+.variant-groove .head  { transform-origin: 100px 106px; animation: groove-head 0.5s ease-in-out infinite; }
+.variant-groove .ear-l { transform-origin: 70px 44px; animation: groove-ear-l 0.5s ease-in-out infinite; }
+.variant-groove .ear-r { transform-origin: 130px 44px; animation: groove-ear-r 0.5s ease-in-out infinite; }
+.variant-groove .arm-l { transform-origin: 60px 118px; animation: groove-arm-l 0.5s ease-in-out infinite; }
+.variant-groove .arm-r { transform-origin: 140px 118px; animation: groove-arm-r 0.5s ease-in-out infinite; }
+.variant-groove .leg-l { transform-origin: 87px 168px; animation: groove-leg 0.5s ease-in-out infinite; }
+.variant-groove .leg-r { transform-origin: 113px 168px; animation: groove-leg 0.5s ease-in-out infinite; }
+.variant-groove .tail  { transform-origin: 150px 150px; animation: groove-tail 0.5s ease-in-out infinite; }
+
+@keyframes groove-torso { 0%, 100% { transform: scale(1, 1) translateY(0); } 50% { transform: scale(1.08, 0.9) translateY(10px); } }
+@keyframes groove-head  { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(8px) rotate(-6deg); } }
+@keyframes groove-ear-l { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-15deg); } }
+@keyframes groove-ear-r { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(15deg); } }
+@keyframes groove-arm-l { 0%, 100% { transform: rotate(-15deg); } 50% { transform: rotate(35deg); } }
+@keyframes groove-arm-r { 0%, 100% { transform: rotate(15deg); } 50% { transform: rotate(-35deg); } }
+@keyframes groove-leg   { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.85); } }
+@keyframes groove-tail  { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
+
+/* ---- twist: sunglasses + bowtie, torso/head counter-rotate ---- */
+.variant-twist .torso { transform-origin: 100px 175px; animation: twist-torso 0.7s ease-in-out infinite; }
+.variant-twist .head  { transform-origin: 100px 106px; animation: twist-head 0.7s ease-in-out infinite; }
+.variant-twist .arm-l { transform-origin: 60px 118px; animation: twist-arm-l 0.7s ease-in-out infinite; }
+.variant-twist .arm-r { transform-origin: 140px 118px; animation: twist-arm-r 0.7s ease-in-out infinite; }
+.variant-twist .leg-l { transform-origin: 87px 168px; animation: twist-leg-l 0.7s ease-in-out infinite; }
+.variant-twist .leg-r { transform-origin: 113px 168px; animation: twist-leg-r 0.7s ease-in-out infinite; }
+.variant-twist .tail  { transform-origin: 150px 150px; animation: twist-tail 1.4s ease-in-out infinite; }
+
+@keyframes twist-torso { 0%, 100% { transform: rotate(-10deg) translateX(-6px); } 50% { transform: rotate(10deg) translateX(6px); } }
+@keyframes twist-head  { 0%, 100% { transform: rotate(8deg); } 50% { transform: rotate(-8deg); } }
+@keyframes twist-arm-l { 0%, 100% { transform: rotate(20deg); } 50% { transform: rotate(-20deg); } }
+@keyframes twist-arm-r { 0%, 100% { transform: rotate(-20deg); } 50% { transform: rotate(20deg); } }
+@keyframes twist-leg-l { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
+@keyframes twist-leg-r { 0%, 100% { transform: rotate(12deg); } 50% { transform: rotate(-12deg); } }
+@keyframes twist-tail  { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  svg.raccoon .part {
+    animation: none !important;
+  }
+}
