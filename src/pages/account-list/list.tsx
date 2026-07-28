@@ -43,7 +43,7 @@ type User = {
   last_seen_at?: string | null;
 };
 
-type SortKey = "name" | "course" | "group" | "position";
+type SortKey = "name" | "course" | "group" | "position" | "lastSeen";
 
 function sortValueOf(user: User, key: SortKey): string {
   switch (key) {
@@ -55,6 +55,10 @@ function sortValueOf(user: User, key: SortKey): string {
       return user.group || "";
     case "position":
       return user.position_name || "";
+    case "lastSeen":
+      // ISO 8601 strings sort lexicographically in chronological order —
+      // no need for a Date() conversion just to compare them.
+      return user.last_seen_at || "";
   }
 }
 
@@ -256,7 +260,15 @@ export function AccountList() {
     }
   };
 
-  const sortIndicator = (key: SortKey) => (sortKey === key ? (sortDir === "asc" ? " ▲" : " ▼") : "");
+  const sortIcon = (key: SortKey) => {
+    const isActive = sortKey === key;
+    const icon = isActive ? (sortDir === "asc" ? "▲" : "▼") : "⇅";
+    return (
+      <span style={{ marginLeft: "6px", opacity: isActive ? 1 : 0.5, fontSize: "12px" }}>
+        {icon}
+      </span>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -378,7 +390,7 @@ export function AccountList() {
               style={{ padding: "12px", textAlign: "left", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
               onClick={() => handleSort("name")}
             >
-              ФИО{sortIndicator("name")}
+              ФИО{sortIcon("name")}
             </th>
             <th style={{ padding: "12px", textAlign: "left" }}>Логин</th>
             <th style={{ padding: "12px", textAlign: "left" }}>Отдел</th>
@@ -386,22 +398,29 @@ export function AccountList() {
               style={{ padding: "12px", textAlign: "left", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
               onClick={() => handleSort("course")}
             >
-              Курс{sortIndicator("course")}
+              Курс{sortIcon("course")}
             </th>
             <th
               style={{ padding: "12px", textAlign: "left", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
               onClick={() => handleSort("group")}
             >
-              Группа{sortIndicator("group")}
+              Группа{sortIcon("group")}
             </th>
             <th
               style={{ padding: "12px", textAlign: "left", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
               onClick={() => handleSort("position")}
             >
-              Должность{sortIndicator("position")}
+              Должность{sortIcon("position")}
             </th>
             <th style={{ padding: "12px", textAlign: "left" }}>Telegram</th>
-            {canViewLastSeen && <th style={{ padding: "12px", textAlign: "left" }}>Последний визит</th>}
+            {canViewLastSeen && (
+              <th
+                style={{ padding: "12px", textAlign: "left", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
+                onClick={() => handleSort("lastSeen")}
+              >
+                Последний визит{sortIcon("lastSeen")}
+              </th>
+            )}
             <th style={{ padding: "12px", textAlign: "left" }}>Статус</th>
             <th style={{ padding: "12px", textAlign: "center" }}>Действия</th>
           </tr>
