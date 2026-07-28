@@ -206,6 +206,7 @@ export function LandingPage() {
             margin: "0",
             color: "#ffffff",
             cursor: "pointer",
+            userSelect: "none",
           }}
         ></h2>
         <h1 ref={titleRef} style={{
@@ -215,6 +216,7 @@ export function LandingPage() {
           fontWeight: "700",
           lineHeight: "1",
           margin: "0",
+          userSelect: "none",
         }}></h1>
       </div>
       </div>
