@@ -7,6 +7,7 @@ import { getDepartments, updateDepartment } from "../../api/user";
 import { useCanManageDepartments } from "../../hooks/use-permissions";
 import { useErrorStore } from "../../stores/error";
 import racoonLoading from "../../assets/images/racoon-loading.gif";
+import { formatDate } from "../../utils/date";
 
 type Department = {
   id: number;
@@ -137,7 +138,7 @@ export function DepartmentsList() {
                 <td style={{ padding: "12px", fontWeight: 600 }}>{department.name}</td>
                 <td style={{ padding: "12px" }}>{department.description || "-"}</td>
                 <td style={{ padding: "12px" }}>
-                  {department.created_at ? new Date(department.created_at).toLocaleDateString("ru-RU") : "-"}
+                  {formatDate(department.created_at)}
                 </td>
                 {canManageDepartments && (
                   <td style={{ padding: "12px", textAlign: "center" }}>

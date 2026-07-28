@@ -11,6 +11,7 @@ import { usePagedList } from "../../hooks/use-paged-list";
 import { MarkdownRenderer } from "../../components/MarkdownRenderer";
 import racoonLoading from "../../assets/images/racoon-loading.gif";
 import { handleMarkdownHotkey } from "../../utils/markdown-hotkeys";
+import { formatDateTime } from "../../utils/date";
 
 function toggleTaskInMarkdown(markdown: string, taskIndex: number, checked: boolean): string {
   let currentTaskIndex = -1;
@@ -64,7 +65,7 @@ function CardHistory({ cardId, canView }: { cardId: number; canView: boolean }) 
                     <td style={{ padding: "10px" }}>{entry.user_name || entry.user_login || "—"}</td>
                     <td style={{ padding: "10px" }}>{HISTORY_ACTION_LABEL[entry.action]}</td>
                     <td style={{ padding: "10px", color: "#666" }}>{entry.details || "—"}</td>
-                    <td style={{ padding: "10px" }}>{new Date(entry.created_at).toLocaleString("ru-RU")}</td>
+                    <td style={{ padding: "10px" }}>{formatDateTime(entry.created_at)}</td>
                   </tr>
                 ))}
               </tbody>

@@ -18,6 +18,7 @@ import { MultiSelect } from "../../components/MultiSelect";
 import type { Position } from "../../types/Position";
 import { useNavigate } from "react-router";
 import racoonLoading from "../../assets/images/racoon-loading.gif";
+import { formatDateTime } from "../../utils/date";
 
 type Department = {
   id: number;
@@ -471,7 +472,7 @@ export function AccountList() {
               </td>
               {canViewLastSeen && (
                 <td style={{ padding: "12px", whiteSpace: "nowrap" }}>
-                  {user.last_seen_at ? new Date(user.last_seen_at).toLocaleString("ru-RU") : "-"}
+                  {formatDateTime(user.last_seen_at)}
                 </td>
               )}
               <td style={{ padding: "12px" }}>

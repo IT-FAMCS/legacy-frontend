@@ -10,6 +10,7 @@ import type { ActivityLogEntry } from "../../api/category";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCanEditAnyUser, useCanViewCardActivity } from "../../hooks/use-permissions";
 import { usePagedList } from "../../hooks/use-paged-list";
+import { formatDateTime } from "../../utils/date";
 
 type Visit = {
   id: number;
@@ -74,7 +75,7 @@ const CardActivity = ({ userLogin, canView, targetUserId, currentUserId }: Visit
                     </td>
                     <td style={{ padding: "10px", color: "#666" }}>{entry.details || "—"}</td>
                     <td style={{ padding: "10px" }}>
-                      {new Date(entry.created_at).toLocaleString("ru-RU")}
+                      {formatDateTime(entry.created_at)}
                     </td>
                   </tr>
                 ))}
@@ -128,7 +129,7 @@ const VisitHistory = ({ userLogin, canView, targetUserId, currentUserId }: Visit
                 <tr key={visit.id} style={{ borderBottom: "1px solid #ccc" }}>
                   <td style={{ padding: "10px" }}>{visit.item_name}</td>
                   <td style={{ padding: "10px" }}>
-                    {new Date(visit.visited_at).toLocaleString("ru-RU")}
+                    {formatDateTime(visit.visited_at)}
                   </td>
                 </tr>
               ))}
@@ -297,8 +298,8 @@ export function AboutUser() {
           <p><strong>Должность:</strong> {user?.position_name || "-"}</p>
           <p><strong>Telegram:</strong> {user?.telegram || "-"}</p>
           <p><strong>Статус:</strong> {user?.is_active && !user?.is_deactivated ? "Активен" : "Деактивирован"}</p>
-          <p><strong>Последний визит:</strong> {user?.last_seen_at ? new Date(user.last_seen_at).toLocaleString("ru-RU") : "-"}</p>
-          <p><strong>Пароль менялся:</strong> {user?.password_changed_at ? new Date(user.password_changed_at).toLocaleString("ru-RU") : "неизвестно"}</p>
+          <p><strong>Последний визит:</strong> {formatDateTime(user?.last_seen_at)}</p>
+          <p><strong>Пароль менялся:</strong> {formatDateTime(user?.password_changed_at, "неизвестно")}</p>
         </div>
 
         <div style={{
