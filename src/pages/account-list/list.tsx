@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useErrorStore } from "../../stores/error";
 import {
@@ -11,7 +11,7 @@ import {
   activateUser,
 } from "../../api/user";
 import { useUserStore } from "../../stores/user";
-import { useCanEditAnyUser } from "../../hooks/use-permissions";
+import { useCanEditAnyUser, useCanViewCardActivity } from "../../hooks/use-permissions";
 import Button from "../../components/Button";
 import { ModalWrapper } from "../../components/modal";
 import { MultiSelect } from "../../components/MultiSelect";
@@ -40,7 +40,32 @@ type User = {
   position_name: string | null;
   is_active: boolean;
   is_deactivated: boolean;
+  last_seen_at?: string | null;
 };
+
+type SortKey = "name" | "course" | "group" | "position";
+
+function sortValueOf(user: User, key: SortKey): string {
+  switch (key) {
+    case "name":
+      return `${user.last_name} ${user.first_name} ${user.middle_name || ""}`.trim();
+    case "course":
+      return user.course || "";
+    case "group":
+      return user.group || "";
+    case "position":
+      return user.position_name || "";
+  }
+}
+
+function compareSortValues(a: string, b: string): number {
+  const aNum = Number(a);
+  const bNum = Number(b);
+  if (a !== "" && b !== "" && !Number.isNaN(aNum) && !Number.isNaN(bNum)) {
+    return aNum - bNum;
+  }
+  return a.localeCompare(b, "ru");
+}
 
 type UserFormData = {
   first_name: string;
@@ -60,11 +85,14 @@ export function AccountList() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [formData, setFormData] = useState<UserFormData | null>(null);
   const [departmentFilter, setDepartmentFilter] = useState<string>("");
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const setError = useErrorStore((s) => s.setError);
   const setSuccess = useErrorStore((s) => s.setSuccess);
   const currentUser = useUserStore((s) => s.user);
   const queryClient = useQueryClient();
+  const canViewLastSeen = useCanViewCardActivity();
   const navigate = useNavigate();
 
   // Check permissions using position flags from backend
@@ -210,6 +238,25 @@ export function AccountList() {
     return user.is_active && !user.is_deactivated;
   });
 
+  const sortedUsers = useMemo(() => {
+    if (!filteredUsers || !sortKey) return filteredUsers;
+    const sorted = [...filteredUsers].sort((a, b) => {
+      const cmp = compareSortValues(sortValueOf(a, sortKey), sortValueOf(b, sortKey));
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+    return sorted;
+  }, [filteredUsers, sortKey, sortDir]);
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((dir) => (dir === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+  };
+
+  const sortIndicator = (key: SortKey) => (sortKey === key ? (sortDir === "asc" ? " ▲" : " ▼") : "");
 
   if (isLoading) {
     return (
@@ -327,17 +374,40 @@ export function AccountList() {
       >
         <thead>
           <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
-            <th style={{ padding: "12px", textAlign: "left" }}>ФИО</th>
+            <th
+              style={{ padding: "12px", textAlign: "left", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
+              onClick={() => handleSort("name")}
+            >
+              ФИО{sortIndicator("name")}
+            </th>
             <th style={{ padding: "12px", textAlign: "left" }}>Логин</th>
             <th style={{ padding: "12px", textAlign: "left" }}>Отдел</th>
-            <th style={{ padding: "12px", textAlign: "left" }}>Должность</th>
+            <th
+              style={{ padding: "12px", textAlign: "left", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
+              onClick={() => handleSort("course")}
+            >
+              Курс{sortIndicator("course")}
+            </th>
+            <th
+              style={{ padding: "12px", textAlign: "left", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
+              onClick={() => handleSort("group")}
+            >
+              Группа{sortIndicator("group")}
+            </th>
+            <th
+              style={{ padding: "12px", textAlign: "left", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
+              onClick={() => handleSort("position")}
+            >
+              Должность{sortIndicator("position")}
+            </th>
             <th style={{ padding: "12px", textAlign: "left" }}>Telegram</th>
+            {canViewLastSeen && <th style={{ padding: "12px", textAlign: "left" }}>Последний визит</th>}
             <th style={{ padding: "12px", textAlign: "left" }}>Статус</th>
             <th style={{ padding: "12px", textAlign: "center" }}>Действия</th>
           </tr>
         </thead>
         <tbody>
-          {filteredUsers?.map((user: User) => (
+          {sortedUsers?.map((user: User) => (
             <tr
               key={user.id}
               style={{
@@ -363,8 +433,28 @@ export function AccountList() {
                   ? user.departments.map((dept) => dept.name).join(", ")
                   : user.department || "-"}
               </td>
+              <td style={{ padding: "12px" }}>{user.course || "-"}</td>
+              <td style={{ padding: "12px" }}>{user.group || "-"}</td>
               <td style={{ padding: "12px" }}>{user.position_name || "-"}</td>
-              <td style={{ padding: "12px" }}>{user.telegram || "-"}</td>
+              <td style={{ padding: "12px" }}>
+                {user.telegram ? (
+                  <a
+                    href={`https://t.me/${user.telegram.replace(/^@/, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#686ACF", textDecoration: "underline" }}
+                  >
+                    {user.telegram}
+                  </a>
+                ) : (
+                  "-"
+                )}
+              </td>
+              {canViewLastSeen && (
+                <td style={{ padding: "12px", whiteSpace: "nowrap" }}>
+                  {user.last_seen_at ? new Date(user.last_seen_at).toLocaleString("ru-RU") : "-"}
+                </td>
+              )}
               <td style={{ padding: "12px" }}>
                 <span
                   style={{
