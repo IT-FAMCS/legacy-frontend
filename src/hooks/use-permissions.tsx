@@ -82,7 +82,7 @@ export function useCanEditCards(): boolean {
   );
 }
 
-function isAdminChairOrDeputy(positionName: string | null | undefined): boolean {
+export function isAdminChairOrDeputy(positionName: string | null | undefined): boolean {
   const name = positionName?.toLowerCase() || "";
   return (
     name === "admin" ||
@@ -111,6 +111,17 @@ export function useCanDeleteCards(): boolean {
 export function useCanViewCardActivity(): boolean {
   const user = useUserStore((s) => s.user);
   return isAdminChairOrDeputy(user?.position_name);
+}
+
+/**
+ * Hook to check if current user can leave margin comments on cards.
+ * Pure Position flag, no hardcoded name fallback — unlike the other checks
+ * above, this permission is meant to be fully editable from the Positions
+ * page, not partially locked to code.
+ */
+export function useCanCommentCards(): boolean {
+  const { can_comment_cards } = usePermissions();
+  return can_comment_cards;
 }
 
 /**

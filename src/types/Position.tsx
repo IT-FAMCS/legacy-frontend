@@ -9,6 +9,7 @@ export type Position = {
   can_delete_cards: boolean;
   can_edit_any_user: boolean;
   can_manage_positions: boolean;
+  can_comment_cards: boolean;
   created_at: string;
 };
 
@@ -40,6 +41,7 @@ export type PositionCreate = {
   can_delete_cards?: boolean;
   can_edit_any_user?: boolean;
   can_manage_positions?: boolean;
+  can_comment_cards?: boolean;
 };
 
 export type PositionUpdate = Partial<PositionCreate>;

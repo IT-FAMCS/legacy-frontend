@@ -23,6 +23,7 @@ type PositionFormData = {
   can_delete_cards: boolean;
   can_edit_any_user: boolean;
   can_manage_positions: boolean;
+  can_comment_cards: boolean;
 };
 
 export function PositionsList() {
@@ -98,6 +99,7 @@ export function PositionsList() {
       can_delete_cards: position.can_delete_cards,
       can_edit_any_user: position.can_edit_any_user,
       can_manage_positions: position.can_manage_positions,
+      can_comment_cards: position.can_comment_cards,
     });
   };
 
@@ -113,6 +115,7 @@ export function PositionsList() {
       can_delete_cards: false,
       can_edit_any_user: false,
       can_manage_positions: false,
+      can_comment_cards: false,
     });
     setIsCreateOpen(true);
   };
@@ -206,6 +209,7 @@ export function PositionsList() {
               Пользователи
             </th>
             <th style={{ padding: "12px", textAlign: "center" }}>Должности</th>
+            <th style={{ padding: "12px", textAlign: "center" }}>Комментарии</th>
             {canManagePositions && (
               <th style={{ padding: "12px", textAlign: "center" }}>Действия</th>
             )}
@@ -239,6 +243,9 @@ export function PositionsList() {
               </td>
               <td style={{ padding: "12px", textAlign: "center" }}>
                 {position.can_manage_positions ? "✓" : "—"}
+              </td>
+              <td style={{ padding: "12px", textAlign: "center" }}>
+                {position.can_comment_cards ? "✓" : "—"}
               </td>
               {canManagePositions && (
                 <td
@@ -494,6 +501,26 @@ export function PositionsList() {
                   }
                 />
                 Управление должностями
+              </label>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  fontSize: "14px",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={formData.can_comment_cards}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      can_comment_cards: e.target.checked,
+                    })
+                  }
+                />
+                Комментарии к карточкам
               </label>
             </div>
 

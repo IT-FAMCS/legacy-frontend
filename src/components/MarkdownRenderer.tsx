@@ -1,5 +1,6 @@
 import { Fragment, useMemo, type ReactNode } from "react";
 import "../styles/markdown.css";
+import { DepartmentUserList } from "./DepartmentUserList";
 
 type MarkdownRendererProps = {
   content: string;
@@ -514,6 +515,7 @@ function isHorizontalRule(line: string): boolean {
 
 const SPOILER_OPEN_RE = /^\s{0,3}:::spoiler(?:\s+(.*))?$/;
 const SPOILER_CLOSE_RE = /^\s{0,3}:::\s*$/;
+const USERS_BLOCK_RE = /^\s{0,3}:::users(?:\s+(.*))?$/;
 
 function isBlockStart(lines: string[], index: number): boolean {
   const line = lines[index];
@@ -523,6 +525,7 @@ function isBlockStart(lines: string[], index: number): boolean {
     /^\s{0,3}(```|~~~)/.test(line) ||
     /^\s{0,3}>/.test(line) ||
     SPOILER_OPEN_RE.test(line) ||
+    USERS_BLOCK_RE.test(line) ||
     parseListMatch(line) !== null ||
     isHorizontalRule(line) ||
     isTableStart(lines, index)
@@ -754,6 +757,35 @@ function parseBlocks(lines: string[], keyPrefix: string, options: ParseOptions):
     if (isHorizontalRule(line)) {
       blocks.push(<hr key={blockKey} />);
       index += 1;
+      blockIndex += 1;
+      continue;
+    }
+
+    const usersMatch = USERS_BLOCK_RE.exec(line);
+
+    if (usersMatch) {
+      const departmentNames = (usersMatch[1] || "")
+        .split(",")
+        .map((name) => name.trim())
+        .filter(Boolean);
+
+      blocks.push(
+        departmentNames.length > 0 ? (
+          <DepartmentUserList key={blockKey} departmentNames={departmentNames} />
+        ) : (
+          <p className="markdown-department-list-empty" key={blockKey}>
+            Не указан отдел: используйте <code>:::users Название отдела</code>.
+          </p>
+        ),
+      );
+      index += 1;
+      // No inner content to parse, so no closing ":::" is required — but
+      // tolerate one anyway (mirroring :::spoiler's open/close shape, which
+      // is the pattern people will reach for out of habit) so it doesn't
+      // show up as stray literal text.
+      if (index < lines.length && SPOILER_CLOSE_RE.test(lines[index])) {
+        index += 1;
+      }
       blockIndex += 1;
       continue;
     }

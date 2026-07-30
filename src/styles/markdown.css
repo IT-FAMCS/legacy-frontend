@@ -237,6 +237,50 @@
   }
 }
 
+/* `:::users Название отдела` block (see DepartmentUserList.tsx) — a live
+   snapshot of a department's roster embedded in card content. Reuses
+   .markdown-table-wrapper/table styling above for the actual table so it
+   looks like every other table in a card; only the title/empty states below
+   are specific to this block. */
+.markdown-content .markdown-department-list {
+  margin: 0 0 1em;
+}
+
+.markdown-content .markdown-department-list-title {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #515463;
+}
+
+.markdown-content .markdown-department-list-warning {
+  font-weight: 400;
+  color: #b26a00;
+}
+
+.markdown-content .markdown-department-list-empty {
+  margin: 0 0 1em;
+  color: #888;
+  font-style: italic;
+}
+
+.markdown-content .markdown-department-list-link {
+  color: #4d50b8;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+  cursor: pointer;
+}
+
+.markdown-content .markdown-department-list-link:hover {
+  text-decoration-thickness: 2px;
+}
+
+.markdown-content .markdown-department-list th.markdown-department-list-sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
 .markdown-content .markdown-task-item input[type="checkbox"]:not(:read-only) {
   cursor: pointer;
 }
@@ -252,4 +296,76 @@
   .markdown-editor-layout {
     grid-template-columns: 1fr;
   }
+}
+
+/* Margin-comments rail on the card page (admin/председатель/зам-only
+   feature, see CardComments.tsx) — a narrow fixed-width sidebar next to the
+   content, collapsing to a stacked single column (rail becomes a plain list
+   below the content) under the breakpoint, since the compose trigger itself
+   is desktop-only anyway. */
+.card-comments-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .card-comments-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card-comments-content {
+  position: relative;
+  min-width: 0;
+}
+
+.card-comments-rail {
+  position: relative;
+  min-width: 0;
+}
+
+.card-comment-highlight {
+  position: absolute;
+  background: rgba(212, 175, 55, 0.28);
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+.card-comment-card {
+  background: white;
+  border: 1px solid #d8d8df;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.card-comment-card blockquote {
+  margin: 0 0 8px;
+  padding: 0.15rem 0.7rem;
+  border-left: 3px solid #686acf;
+  color: #515463;
+  background: rgba(104, 106, 207, 0.08);
+  font-size: 12.5px;
+  max-height: 4.5em;
+  overflow: hidden;
+}
+
+.card-comment-meta {
+  margin-top: 8px;
+  color: #888;
+  font-size: 12px;
+}
+
+.card-comment-resolved-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #e3f5e6;
+  color: #2e7d32;
+  font-size: 12px;
 }

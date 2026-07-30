@@ -4,11 +4,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useErrorStore } from "../../stores/error";
 import Button from "../../components/Button";
 import { MultiSelect } from "../../components/MultiSelect";
-import { getPositions } from "../../api/user";
+import { getPositions, getDepartments } from "../../api/user";
 import { deleteCard, getCard, getCardHistory, updateCard, type ActivityLogEntry } from "../../api/category";
-import { useCanDeleteCards, useCanEditCards, useCanViewCardActivity } from "../../hooks/use-permissions";
+import { useCanCommentCards, useCanDeleteCards, useCanEditCards, useCanViewCardActivity } from "../../hooks/use-permissions";
 import { usePagedList } from "../../hooks/use-paged-list";
 import { MarkdownRenderer } from "../../components/MarkdownRenderer";
+import { CardComments } from "../../components/CardComments";
 import racoonLoading from "../../assets/images/racoon-loading.gif";
 import { handleMarkdownHotkey } from "../../utils/markdown-hotkeys";
 import { formatDateTime } from "../../utils/date";
@@ -100,6 +101,7 @@ export function CardPage() {
   const canEditCards = useCanEditCards();
   const canDeleteCards = useCanDeleteCards();
   const canViewCardActivity = useCanViewCardActivity();
+  const canCommentCards = useCanCommentCards();
   const numericCardId = Number(cardId);
 
   const { data: positions = [] } = useQuery({
@@ -111,6 +113,11 @@ export function CardPage() {
     value: pos.name,
     label: pos.name,
   }));
+
+  const { data: departments = [] } = useQuery<{ id: number; name: string }[]>({
+    queryKey: ["departments"],
+    queryFn: ({ signal }) => getDepartments({ signal }),
+  });
 
   const { data: cardData, isLoading } = useQuery({
     queryKey: ["card", cardId],
@@ -347,8 +354,17 @@ export function CardPage() {
 :::spoiler Заголовок сворачиваемого блока
 Скрытый текст — раскрывается по клику на заголовок.
 Поддерживает любой markdown внутри.
-:::`}
+:::
+
+:::users Название отдела
+Список пользователей отдела (можно несколько через запятую) — подставляется
+автоматически и всегда актуален, вручную никого перечислять не нужно.`}
               </div>
+              {departments.length > 0 && (
+                <div style={{ marginTop: "8px", fontSize: "13px", color: "#666" }}>
+                  Доступные отделы: {departments.map((d) => d.name).join(", ")}
+                </div>
+              )}
             </details>
 
             <div style={{ marginTop: "20px", padding: "16px", backgroundColor: "white", borderRadius: "8px" }}>
@@ -387,7 +403,12 @@ export function CardPage() {
               </div>
             )}
 
-            <MarkdownRenderer content={content || ""} onTaskToggle={canEditCards ? handleTaskToggle : undefined} />
+            <CardComments
+              cardId={numericCardId}
+              canComment={canCommentCards}
+              content={content || ""}
+              onTaskToggle={canEditCards ? handleTaskToggle : undefined}
+            />
 
             <CardHistory cardId={numericCardId} canView={canViewCardActivity} />
           </>

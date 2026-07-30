@@ -16,6 +16,7 @@ export function getPositionFlags(positionName: string | null | undefined, positi
   can_edit_cards: boolean;
   can_delete_cards: boolean;
   can_edit_any_user: boolean;
+  can_comment_cards: boolean;
 } {
   if (!positionName) {
     return {
@@ -26,11 +27,12 @@ export function getPositionFlags(positionName: string | null | undefined, positi
       can_edit_cards: false,
       can_delete_cards: false,
       can_edit_any_user: false,
+      can_comment_cards: false,
     };
   }
 
   const position = positions.find(p => p.name === positionName);
-  
+
   if (!position) {
     // Default flags for unknown positions
     return {
@@ -41,6 +43,7 @@ export function getPositionFlags(positionName: string | null | undefined, positi
       can_edit_cards: false,
       can_delete_cards: false,
       can_edit_any_user: false,
+      can_comment_cards: false,
     };
   }
 
@@ -52,6 +55,7 @@ export function getPositionFlags(positionName: string | null | undefined, positi
     can_edit_cards: position.can_edit_cards,
     can_delete_cards: position.can_delete_cards,
     can_edit_any_user: position.can_edit_any_user,
+    can_comment_cards: position.can_comment_cards,
   };
 }
 
