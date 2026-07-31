@@ -18,6 +18,7 @@ type ListMatch = {
   indent: number;
   ordered: boolean;
   marker: string;
+  number: number | null;
   content: string;
 };
 
@@ -88,11 +89,17 @@ function parseListMatch(line: string): ListMatch | null {
   }
 
   const marker = match[2];
+  const ordered = /^\d/.test(marker);
 
   return {
     indent: countIndent(match[1]),
-    ordered: /^\d/.test(marker),
+    ordered,
     marker,
+    // The literal number the author wrote (e.g. "5." -> 5), not a running
+    // count — rendered via <li value> below so a list interrupted by a
+    // heading/paragraph keeps the author's own numbering instead of every
+    // new <ol> silently restarting at 1.
+    number: ordered ? parseInt(marker, 10) : null,
     content: match[3],
   };
 }
@@ -630,7 +637,11 @@ function parseList(
     const taskIndex = taskMatch ? options.taskIndexRef.current++ : -1;
 
     items.push(
-      <li className={isTask ? "markdown-task-item" : undefined} key={itemKey}>
+      <li
+        className={isTask ? "markdown-task-item" : undefined}
+        key={itemKey}
+        value={itemMatch.number ?? undefined}
+      >
         {taskMatch && (
           <input
             type="checkbox"
