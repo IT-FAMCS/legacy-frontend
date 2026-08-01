@@ -1,4 +1,5 @@
 import { readErrorResponse } from "../utils/api-error";
+import { apiFetch } from "../utils/api-fetch";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 const CARDS_PATH = `${API_BASE}/api/cards`;
@@ -40,7 +41,7 @@ export async function getCardComments({
   signal?: AbortSignal;
   cardId: number;
 }) {
-  const res = await fetch(`${CARDS_PATH}/${cardId}/comments`, {
+  const res = await apiFetch(`${CARDS_PATH}/${cardId}/comments`, {
     method: "GET",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -61,7 +62,7 @@ export async function createCardComment({
   quotedText: string;
   body: string;
 }) {
-  const res = await fetch(`${CARDS_PATH}/${cardId}/comments`, {
+  const res = await apiFetch(`${CARDS_PATH}/${cardId}/comments`, {
     method: "POST",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -81,7 +82,7 @@ export async function updateCardComment({
   commentId: number;
   resolved: boolean;
 }) {
-  const res = await fetch(`${COMMENTS_PATH}/${commentId}`, {
+  const res = await apiFetch(`${COMMENTS_PATH}/${commentId}`, {
     method: "PATCH",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -99,7 +100,7 @@ export async function deleteCardComment({
   signal?: AbortSignal;
   commentId: number;
 }) {
-  const res = await fetch(`${COMMENTS_PATH}/${commentId}`, {
+  const res = await apiFetch(`${COMMENTS_PATH}/${commentId}`, {
     method: "DELETE",
     credentials: "include",
     headers: getAuthHeaders(),

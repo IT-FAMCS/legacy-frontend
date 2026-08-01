@@ -1,6 +1,7 @@
 import type { Position } from "../types/Position";
 import type { ActivityLogEntry } from "./category";
 import { readErrorResponse, extractErrorMessage } from "../utils/api-error";
+import { apiFetch } from "../utils/api-fetch";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
@@ -20,6 +21,8 @@ export async function login({
   signal?: AbortSignal;
   loginData: { login: string; password: string };
 }) {
+  // Plain fetch, not apiFetch — a 401 here means "wrong password", not "your
+  // session expired", and must NOT trigger the auto-logout/redirect below.
   const res = await fetch(`${API_BASE}/api/login`, {
     method: "POST",
     credentials: "include",
@@ -43,7 +46,7 @@ export async function login({
 
 export async function logout() {
   localStorage.removeItem("jwt_token");
-  const res = await fetch(`${API_BASE}/api/logout`, {
+  const res = await apiFetch(`${API_BASE}/api/logout`, {
     method: "POST",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -57,7 +60,7 @@ export async function logout() {
 }
 
 export async function getUser({ signal }: { signal?: AbortSignal } = {}) {
-  const res = await fetch(`${API_BASE}/api/user/me`, {
+  const res = await apiFetch(`${API_BASE}/api/user/me`, {
     method: "GET",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -110,7 +113,7 @@ export async function editUser({
     }
   }
   
-  const res = await fetch(`${API_BASE}/api/user/change/${encodeURIComponent(targetLogin)}`, {
+  const res = await apiFetch(`${API_BASE}/api/user/change/${encodeURIComponent(targetLogin)}`, {
     method: "PUT",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -135,7 +138,7 @@ export async function changeUserPassword({
   newPassword: string;
 }) {
   // Backend expects PUT /api/user/change-password/{login} with password in body
-  const res = await fetch(`${API_BASE}/api/user/change-password/${encodeURIComponent(login)}`, {
+  const res = await apiFetch(`${API_BASE}/api/user/change-password/${encodeURIComponent(login)}`, {
     method: "PUT",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -162,7 +165,7 @@ export async function changeOwnPassword({
   currentPassword: string;
   newPassword: string;
 }) {
-  const res = await fetch(`${API_BASE}/api/user/me/change-password`, {
+  const res = await apiFetch(`${API_BASE}/api/user/me/change-password`, {
     method: "PUT",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -190,7 +193,7 @@ export async function getUsers({
   const url = departmentId
     ? `${API_BASE}/api/users?department_id=${encodeURIComponent(String(departmentId))}`
     : `${API_BASE}/api/users`;
-  const res = await fetch(url, {
+  const res = await apiFetch(url, {
     method: "GET",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -223,7 +226,7 @@ export async function registerUser({
     telegram?: string;
   };
 }) {
-  const res = await fetch(`${API_BASE}/api/register`, {
+  const res = await apiFetch(`${API_BASE}/api/register`, {
     method: "POST",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -259,7 +262,7 @@ export async function registerUsersBulk({
   signal?: AbortSignal;
   users: BulkUserRegisterData[];
 }) {
-  const res = await fetch(`${API_BASE}/api/register/bulk`, {
+  const res = await apiFetch(`${API_BASE}/api/register/bulk`, {
     method: "POST",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -275,7 +278,7 @@ export async function registerUsersBulk({
 }
 
 export async function getPositions({ signal }: { signal?: AbortSignal } = {}) {
-  const res = await fetch(`${API_BASE}/api/positions`, {
+  const res = await apiFetch(`${API_BASE}/api/positions`, {
     method: "GET",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -306,7 +309,7 @@ export async function createPosition({
     can_manage_positions?: boolean;
   };
 }) {
-  const res = await fetch(`${API_BASE}/api/positions`, {
+  const res = await apiFetch(`${API_BASE}/api/positions`, {
     method: "POST",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -338,7 +341,7 @@ export async function updatePosition({
     can_manage_positions: boolean;
   }>;
 }) {
-  const res = await fetch(`${API_BASE}/api/positions/${positionId}`, {
+  const res = await apiFetch(`${API_BASE}/api/positions/${positionId}`, {
     method: "PUT",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -358,7 +361,7 @@ export async function deletePosition({
   signal?: AbortSignal;
   positionId: number;
 }) {
-  const res = await fetch(`${API_BASE}/api/positions/${positionId}`, {
+  const res = await apiFetch(`${API_BASE}/api/positions/${positionId}`, {
     method: "DELETE",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -378,7 +381,7 @@ export async function deactivateUser({
   signal?: AbortSignal;
   login: string;
 }) {
-  const res = await fetch(`${API_BASE}/api/users/${encodeURIComponent(login)}/deactivate`, {
+  const res = await apiFetch(`${API_BASE}/api/users/${encodeURIComponent(login)}/deactivate`, {
     method: "PUT",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -397,7 +400,7 @@ export async function activateUser({
   signal?: AbortSignal;
   login: string;
 }) {
-  const res = await fetch(`${API_BASE}/api/users/${encodeURIComponent(login)}/activate`, {
+  const res = await apiFetch(`${API_BASE}/api/users/${encodeURIComponent(login)}/activate`, {
     method: "PUT",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -423,7 +426,7 @@ export async function getVisitHistory({
     ? `${API_BASE}/api/visits/${type}?user_id=${userId}`
     : `${API_BASE}/api/visits/${type}`;
     
-  const res = await fetch(url, {
+  const res = await apiFetch(url, {
     method: "GET",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -451,7 +454,7 @@ export async function getUserCardActivity({
     ? `${API_BASE}/api/activity/cards?user_id=${userId}`
     : `${API_BASE}/api/activity/cards`;
 
-  const res = await fetch(url, {
+  const res = await apiFetch(url, {
     method: "GET",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -482,7 +485,7 @@ export async function getUserByLogin({
 
 export async function getDepartments({ signal }: { signal?: AbortSignal } = {}) {
   // Backend has dedicated /api/departments endpoint
-  const res = await fetch(`${API_BASE}/api/departments`, {
+  const res = await apiFetch(`${API_BASE}/api/departments`, {
     method: "GET",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -506,7 +509,7 @@ export async function createDepartment({
     description?: string;
   };
 }) {
-  const res = await fetch(`${API_BASE}/api/departments`, {
+  const res = await apiFetch(`${API_BASE}/api/departments`, {
     method: "POST",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -531,7 +534,7 @@ export async function updateDepartment({
   departmentId: number;
   departmentData: { name?: string; description?: string };
 }) {
-  const res = await fetch(`${API_BASE}/api/departments/${departmentId}`, {
+  const res = await apiFetch(`${API_BASE}/api/departments/${departmentId}`, {
     method: "PUT",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -553,7 +556,7 @@ export async function deleteDepartment({
   signal?: AbortSignal;
   departmentId: number;
 }) {
-  const res = await fetch(`${API_BASE}/api/departments/${departmentId}`, {
+  const res = await apiFetch(`${API_BASE}/api/departments/${departmentId}`, {
     method: "DELETE",
     credentials: "include",
     headers: getAuthHeaders(),

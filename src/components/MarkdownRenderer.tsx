@@ -391,6 +391,19 @@ function parseInline(text: string, keyPrefix: string): ReactNode[] {
     }
 
     if (char === "<") {
+      // Explicit line break, e.g. inside a table cell — cells are confined
+      // to one line of source (see splitTableRow), so the "\n" -> <br>
+      // handling above never applies there; this is the only way to force
+      // a break inside a cell. Not a general raw-HTML escape hatch (see the
+      // file-level note on that) — just this one fixed, safe token.
+      const brMatch = /^<br\s*\/?>/i.exec(text.slice(index));
+
+      if (brMatch) {
+        pushNode(<br key={nodeKey} />);
+        index += brMatch[0].length;
+        continue;
+      }
+
       const closingIndex = text.indexOf(">", index + 1);
 
       if (closingIndex !== -1) {

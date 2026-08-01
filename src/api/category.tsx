@@ -1,5 +1,6 @@
 import type { Category, Card } from "../types/Category";
 import { readErrorResponse } from "../utils/api-error";
+import { apiFetch } from "../utils/api-fetch";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 const CATEGORIES_PATH = `${API_BASE}/api/categories`;
@@ -21,7 +22,7 @@ async function ensureOk(res: Response) {
 }
 
 export async function getCategories({ signal }: { signal?: AbortSignal } = {}) {
-  const res = await fetch(CATEGORIES_PATH, {
+  const res = await apiFetch(CATEGORIES_PATH, {
     method: "GET",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -38,7 +39,7 @@ export async function createCategory({
   signal?: AbortSignal;
   categoryData: { name: string; description?: string };
 }) {
-  const res = await fetch(CATEGORIES_PATH, {
+  const res = await apiFetch(CATEGORIES_PATH, {
     method: "POST",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -58,7 +59,7 @@ export async function updateCategory({
   categoryId: number;
   categoryData: { name: string; description?: string };
 }) {
-  const res = await fetch(`${CATEGORIES_PATH}/${categoryId}`, {
+  const res = await apiFetch(`${CATEGORIES_PATH}/${categoryId}`, {
     method: "PUT",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -76,7 +77,7 @@ export async function deleteCategory({
   signal?: AbortSignal;
   categoryId: number;
 }) {
-  const res = await fetch(`${CATEGORIES_PATH}/${categoryId}`, {
+  const res = await apiFetch(`${CATEGORIES_PATH}/${categoryId}`, {
     method: "DELETE",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -93,7 +94,7 @@ export async function getCard({
   signal?: AbortSignal;
   cardId: number;
 }) {
-  const res = await fetch(`${CARDS_PATH}/${cardId}`, {
+  const res = await apiFetch(`${CARDS_PATH}/${cardId}`, {
     method: "GET",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -112,7 +113,7 @@ export async function updateCard({
   cardId: number;
   cardData: { title?: string; content?: string; category_id?: number; access_positions?: string; access_logins?: string };
 }) {
-  const res = await fetch(`${CARDS_PATH}/${cardId}`, {
+  const res = await apiFetch(`${CARDS_PATH}/${cardId}`, {
     method: "PUT",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -130,7 +131,7 @@ export async function createCard({
   signal?: AbortSignal;
   cardData: { title: string; content?: string; category_id: number; access_positions?: string; access_logins?: string };
 }) {
-  const res = await fetch(`${CARDS_PATH}`, {
+  const res = await apiFetch(`${CARDS_PATH}`, {
     method: "POST",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -142,7 +143,7 @@ export async function createCard({
 }
 
 export async function getCards({ signal }: { signal?: AbortSignal } = {}) {
-  const res = await fetch(`${CARDS_PATH}`, {
+  const res = await apiFetch(`${CARDS_PATH}`, {
     method: "GET",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -159,7 +160,7 @@ export async function deleteCard({
   signal?: AbortSignal;
   cardId: number;
 }) {
-  const res = await fetch(`${CARDS_PATH}/${cardId}`, {
+  const res = await apiFetch(`${CARDS_PATH}/${cardId}`, {
     method: "DELETE",
     credentials: "include",
     headers: getAuthHeaders(),
@@ -189,7 +190,7 @@ export async function getCardHistory({
   signal?: AbortSignal;
   cardId: number;
 }) {
-  const res = await fetch(`${CARDS_PATH}/${cardId}/history`, {
+  const res = await apiFetch(`${CARDS_PATH}/${cardId}/history`, {
     method: "GET",
     credentials: "include",
     headers: getAuthHeaders(),
