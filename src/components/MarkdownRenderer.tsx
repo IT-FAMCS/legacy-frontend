@@ -496,6 +496,31 @@ function splitTableRow(line: string): string[] {
   return cells;
 }
 
+const CELL_BREAK_RE = /<br\s*\/?>/i;
+
+// Pipe-table cells are confined to one line of source, so lists/checkboxes
+// can never appear as their own physical lines the way isBlockStart()
+// expects — the author's only way to fit more than one "line" in a cell is
+// <br>. Splitting on it and re-running the real block parser (not just
+// parseInline) is what lets "- item<br>- [ ] task" become an actual <ul>
+// with a real checkbox instead of showing the raw markdown as plain text.
+//
+// Deliberately isolated ParseOptions (fresh taskIndexRef, no onTaskToggle):
+// checkboxes inside a cell render read-only. The reason isn't laziness —
+// toggleTaskInMarkdown() in card/page.tsx finds "the Nth checkbox" by
+// scanning raw source lines that start with a list marker, which by
+// construction never matches a table row line. If cell checkboxes consumed
+// the *shared* taskIndexRef, every checkbox rendered after a table would
+// receive an index higher than what toggleTaskInMarkdown's scan assigns it,
+// silently toggling the wrong checkbox anywhere later in the card. Giving
+// cell checkboxes their own throwaway counter keeps the shared one — and
+// therefore every top-level checkbox's index — exactly as it was before.
+function parseCellContent(cell: string, keyPrefix: string): ReactNode {
+  const cellLines = cell.split(CELL_BREAK_RE);
+  const cellOptions: ParseOptions = { onTaskToggle: undefined, taskIndexRef: { current: 0 } };
+  return parseBlocks(cellLines, keyPrefix, cellOptions);
+}
+
 function parseTableAlignment(cell: string): TextAlignment | null {
   const normalized = cell.trim();
 
@@ -889,7 +914,7 @@ function parseBlocks(lines: string[], keyPrefix: string, options: ParseOptions):
                     key={`${blockKey}-header-${cellIndex}`}
                     style={{ textAlign: alignments[cellIndex] ?? "left" }}
                   >
-                    {parseInline(header, `${blockKey}-header-${cellIndex}`)}
+                    {parseCellContent(header, `${blockKey}-header-${cellIndex}`)}
                   </th>
                 ))}
               </tr>
@@ -902,7 +927,7 @@ function parseBlocks(lines: string[], keyPrefix: string, options: ParseOptions):
                       key={`${blockKey}-row-${rowIndex}-cell-${cellIndex}`}
                       style={{ textAlign: alignments[cellIndex] ?? "left" }}
                     >
-                      {parseInline(
+                      {parseCellContent(
                         cell,
                         `${blockKey}-row-${rowIndex}-cell-${cellIndex}`,
                       )}

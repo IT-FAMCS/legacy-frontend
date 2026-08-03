@@ -204,6 +204,22 @@
   border-bottom: 0;
 }
 
+/* Cell content now goes through the real block parser (lists, checkboxes —
+   see parseCellContent in MarkdownRenderer.tsx), which wraps even plain
+   single-line text in a <p>. Without this, every cell in every existing
+   table would gain that <p>'s 1em bottom margin on top of the cell's own
+   padding — same fix as .markdown-content > :first-child/:last-child above,
+   just scoped to each cell instead of the whole document. */
+.markdown-content th > *:first-child,
+.markdown-content td > *:first-child {
+  margin-top: 0;
+}
+
+.markdown-content th > *:last-child,
+.markdown-content td > *:last-child {
+  margin-bottom: 0;
+}
+
 .markdown-content th {
   background: #e8e8ef;
   font-weight: 700;
