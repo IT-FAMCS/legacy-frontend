@@ -1,0 +1,69 @@
+.trainee-entry {
+  min-height: 100dvh; display: grid; place-items: center; padding: 28px 16px;
+  box-sizing: border-box; background-size: cover; background-position: center;
+}
+.trainee-login-panel {
+  width: min(100%, 440px); padding: 30px; box-sizing: border-box; border-radius: 24px;
+  background: #fffffffa; box-shadow: 0 16px 60px #20204b40; text-align: center;
+}
+.trainee-login-panel h1, .trainee-main h1 { font-size: clamp(1.8rem, 4vw, 2.7rem); line-height: 1.2; margin: 8px 0 16px; color: #333557; }
+.trainee-muted { color: #636477; line-height: 1.7; }
+.trainee-eyebrow { color: #686acf; font-size: 12px; font-weight: 700; letter-spacing: .09em; margin-bottom: 10px; }
+.trainee-raccoon { display: block; flex-shrink: 0; object-fit: contain; animation: trainee-sway 3.4s ease-in-out infinite; transform-origin: 50% 90%; }
+.trainee-raccoon-large { margin: 0 auto 12px; width: 144px; height: 144px; }
+.trainee-invite { display: flex; align-items: center; justify-content: center; gap: 16px; width: 100%; padding: 10px 16px;
+  background: #f0efff; color: #4c4e9d; border: 1px solid #d6d5f2; border-radius: 14px; cursor: pointer; font: inherit; font-weight: 700; }
+.trainee-invite:hover, .trainee-invite:focus-visible { background: #e6e4ff; }
+.trainee-invite:hover .trainee-raccoon { animation: trainee-bounce .7s ease-in-out infinite; }
+.trainee-form { display: grid; gap: 12px; margin: 24px 0 20px; text-align: left; }
+.trainee-form label { font-weight: 600; }
+.trainee-form input { padding: 14px; font: inherit; width: 100%; box-sizing: border-box; border: 1px solid #c8c7dc; border-radius: 10px; }
+.trainee-form input:focus-visible { outline: 3px solid #686acf55; outline-offset: 2px; }
+.trainee-primary, .trainee-secondary { padding: 12px 18px; border-radius: 10px; font: inherit; font-weight: 600; cursor: pointer; }
+.trainee-primary { background: #686acf; color: #fff; border: 1px solid #686acf; }
+.trainee-primary:hover { background: #5456b5; }
+.trainee-secondary { background: #fff; color: #4c4e9d; border: 1px solid #c8c7dc; }
+.trainee-primary:disabled, .trainee-secondary:disabled { opacity: .6; cursor: wait; }
+.trainee-error { color: #a32a39; line-height: 1.5; }
+.trainee-notice { background: #f2f0ff; border: 1px solid #dbd7f6; color: #48496b; border-radius: 12px; padding: 14px; line-height: 1.6; }
+.trainee-back-link { display: inline-block; color: #5355ad; margin: 16px 0; text-underline-offset: 4px; }
+.trainee-shell { min-height: 100dvh; background: #f5f5fc; }
+.trainee-header { display: flex; align-items: center; gap: 24px; padding: 18px max(20px, calc((100vw - 1080px) / 2));
+  background: #686acf; color: #fff; flex-wrap: wrap; }
+.trainee-header a { color: #fff; }
+.trainee-brand { font-size: 22px; font-weight: 800; text-decoration: none; letter-spacing: .05em; }
+.trainee-badge { margin-left: auto; font-size: 13px; padding: 6px 12px; border-radius: 20px; background: #ffffff26; }
+.trainee-main { max-width: 1080px; margin: 0 auto; padding: 36px 20px 64px; box-sizing: border-box; }
+.trainee-welcome { display: flex; align-items: center; gap: 24px; margin-bottom: 36px; }
+.trainee-welcome .trainee-raccoon { margin: 0 0 0 auto; }
+.trainee-category { margin: 32px 0; }
+.trainee-category h2, .trainee-panel h2 { font-size: 24px; color: #333557; margin-bottom: 12px; }
+.trainee-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 18px; margin-top: 18px; }
+.trainee-card-link { display: flex; flex-direction: column; gap: 24px; padding: 24px; background: #fff; border-radius: 16px;
+  border: 1px solid #e4e3f1; color: #333557; text-decoration: none; transition: transform .2s, box-shadow .2s; }
+.trainee-card-link h3 { font-size: 20px; overflow-wrap: anywhere; }
+.trainee-card-link > span { margin-top: auto; font-size: 14px; color: #686acf; }
+.trainee-card-link:hover { transform: translateY(-3px); box-shadow: 0 8px 24px #33355712; }
+.trainee-panel { padding: clamp(20px, 4vw, 36px); border: 1px solid #e4e3f1; border-radius: 18px; background: #fff; }
+.trainee-article h1 { overflow-wrap: anywhere; }
+.trainee-article .markdown-content { margin-top: 28px; }
+.trainee-management { max-width: 840px; }
+.trainee-management > .trainee-muted { margin-bottom: 28px; }
+.trainee-code-output { display: block; padding: 20px 0; font-family: monospace; font-size: clamp(20px, 4vw, 30px); letter-spacing: .08em; overflow-wrap: anywhere; user-select: all; }
+.trainee-rotation { margin-top: 28px; padding-top: 20px; border-top: 1px solid #e4e3f1; }
+.trainee-rotation > p { color: #636477; line-height: 1.7; margin-bottom: 16px; }
+.trainee-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+@keyframes trainee-sway { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg) translateY(-3px); } }
+@keyframes trainee-bounce { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-6px) rotate(4deg); } }
+@media (max-width: 540px) {
+  .trainee-login-panel { padding: 24px 20px; }
+  .trainee-welcome { flex-direction: column-reverse; align-items: flex-start; }
+  .trainee-welcome .trainee-raccoon { margin: 0; width: 100px; height: 100px; }
+  .trainee-header { gap: 14px; padding: 16px; }
+  .trainee-brand { font-size: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trainee-raccoon, .trainee-invite:hover .trainee-raccoon { animation: none; }
+  .trainee-card-link { transition: none; }
+  .trainee-card-link:hover { transform: none; }
+}

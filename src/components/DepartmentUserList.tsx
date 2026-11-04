@@ -15,6 +15,8 @@ type DeptListUser = {
   group: string | null;
   telegram: string | null;
   position_name: string | null;
+  is_active: boolean;
+  is_deactivated: boolean;
   departments?: DeptListDepartment[];
 };
 
@@ -75,7 +77,10 @@ export function DepartmentUserList({ departmentNames }: { departmentNames: strin
     (name) => !(departments || []).some((d) => normalizeName(d.name) === normalizeName(name)),
   );
   const matchedIds = new Set(matchedDepartments.map((d) => d.id));
-  const filteredUsers = (users || []).filter((u) => (u.departments || []).some((d) => matchedIds.has(d.id)));
+  const filteredUsers = (users || []).filter((u) =>
+    u.is_active && !u.is_deactivated &&
+    (u.departments || []).some((d) => matchedIds.has(d.id)),
+  );
 
   const sortedUsers = useMemo(() => {
     if (!sortKey) return filteredUsers;

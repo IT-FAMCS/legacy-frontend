@@ -7,9 +7,11 @@ type MarkdownRendererProps = {
   className?: string;
   onTaskToggle?: (taskIndex: number, checked: boolean) => void;
   onWordDoubleClick?: (word: string) => void;
+  allowUserLists?: boolean;
 };
 
 type ParseOptions = {
+  allowUserLists?: boolean;
   onTaskToggle?: (taskIndex: number, checked: boolean) => void;
   taskIndexRef: { current: number };
 };
@@ -515,9 +517,9 @@ const CELL_BREAK_RE = /<br\s*\/?>/i;
 // silently toggling the wrong checkbox anywhere later in the card. Giving
 // cell checkboxes their own throwaway counter keeps the shared one — and
 // therefore every top-level checkbox's index — exactly as it was before.
-function parseCellContent(cell: string, keyPrefix: string): ReactNode {
+function parseCellContent(cell: string, keyPrefix: string, options: ParseOptions): ReactNode {
   const cellLines = cell.split(CELL_BREAK_RE);
-  const cellOptions: ParseOptions = { onTaskToggle: undefined, taskIndexRef: { current: 0 } };
+  const cellOptions: ParseOptions = { allowUserLists: options.allowUserLists, onTaskToggle: undefined, taskIndexRef: { current: 0 } };
   return parseBlocks(cellLines, keyPrefix, cellOptions);
 }
 
@@ -819,7 +821,9 @@ function parseBlocks(lines: string[], keyPrefix: string, options: ParseOptions):
         .filter(Boolean);
 
       blocks.push(
-        departmentNames.length > 0 ? (
+        options.allowUserLists === false ? (
+          <p className="markdown-department-list-empty" key={blockKey}>Список участников доступен сотрудникам.</p>
+        ) : departmentNames.length > 0 ? (
           <DepartmentUserList key={blockKey} departmentNames={departmentNames} />
         ) : (
           <p className="markdown-department-list-empty" key={blockKey}>
@@ -914,7 +918,7 @@ function parseBlocks(lines: string[], keyPrefix: string, options: ParseOptions):
                     key={`${blockKey}-header-${cellIndex}`}
                     style={{ textAlign: alignments[cellIndex] ?? "left" }}
                   >
-                    {parseCellContent(header, `${blockKey}-header-${cellIndex}`)}
+                    {parseCellContent(header, `${blockKey}-header-${cellIndex}`, options)}
                   </th>
                 ))}
               </tr>
@@ -930,6 +934,7 @@ function parseBlocks(lines: string[], keyPrefix: string, options: ParseOptions):
                       {parseCellContent(
                         cell,
                         `${blockKey}-row-${rowIndex}-cell-${cellIndex}`,
+                        options,
                       )}
                     </td>
                   ))}
@@ -997,14 +1002,16 @@ export function MarkdownRenderer({
   className = "",
   onTaskToggle,
   onWordDoubleClick,
+  allowUserLists = true,
 }: MarkdownRendererProps) {
   const renderedContent = useMemo(() => {
     const normalizedContent = content.replace(/\r\n?/g, "\n");
     return parseBlocks(normalizedContent.split("\n"), "markdown", {
       onTaskToggle,
+      allowUserLists,
       taskIndexRef: { current: 0 },
     });
-  }, [content, onTaskToggle]);
+  }, [content, onTaskToggle, allowUserLists]);
 
   const handleDoubleClick = () => {
     if (!onWordDoubleClick) return;

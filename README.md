@@ -1,5 +1,34 @@
 # React + TypeScript + Vite
 
+## Доступ стажёров
+
+- На `/login` кнопка «Я стажёр» с анимированным енотом открывает `/trainee/login`.
+- Вход по общему коду ведёт в `/trainee`: только разрешённые карточки, без
+  аккаунта, выхода, комментариев, истории и запросов данных участников.
+- Карточки читаются на `/trainee/card/:cardId`. Встроенные Markdown-списки
+  участников скрыты, включая вложенные списки/цитаты/спойлеры/таблицы.
+- `/trainee-access` — просмотр, копирование и генерация кода. Ссылка в шапке
+  доступна админу, председателю и замам; backend независимо проверяет права.
+- «Доступна стажёрам» в создании/редактировании карточки управляет видимостью.
+  Отсутствие ограничений для сотрудников само по себе не открывает карточку стажёрам.
+- Гостевой токен хранится отдельно в `localStorage.trainee_token`. Он действует
+  30 дней; смена кода отзывает старые токены. Проверка сессии при переходе,
+  возвращении на вкладку и раз в минуту; API проверяет каждый запрос.
+
+Проверки: `npm test`, `npm run lint`, `npm run build`.
+Браузерная проверка с настоящим API (Chrome и Node 20+):
+
+1. Из backend запустить `python tests/serve_trainee_smoke.py` (изолированная БД).
+2. Из frontend выполнить `npm run build`, затем
+   `node --experimental-websocket tests/browser-trainee-smoke.mjs`.
+3. Если Chrome установлен иначе, задать `CHROME_BIN`. Порты 4173, 8000 и 9225
+   должны быть свободны. Скриншоты сохраняются в `../.tools/browser` или
+   `SMOKE_ARTIFACT_DIR`. Завершить тестовый backend после проверки.
+
+Изображение `src/assets/images/trainee-raccoon.png` создано встроенным imagegen,
+без внешних изображений. Исходный промпт находится рядом в
+`trainee-raccoon.prompt.txt`; CSS-анимации учитывают `prefers-reduced-motion`.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

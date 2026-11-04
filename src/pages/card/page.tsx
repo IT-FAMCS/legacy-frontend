@@ -93,6 +93,7 @@ export function CardPage() {
   const [title, setTitle] = useState("");
   const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
   const [accessLogins, setAccessLogins] = useState("");
+  const [traineeAccess, setTraineeAccess] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const autosaveTimerRef = useRef<number | null>(null);
   const queryClient = useQueryClient();
@@ -135,6 +136,7 @@ export function CardPage() {
           : [],
       );
       setAccessLogins(cardData.access_logins || "");
+      setTraineeAccess(cardData.trainee_access ?? false);
     }
   }, [cardData]);
 
@@ -184,6 +186,7 @@ export function CardPage() {
       content?: string;
       access_positions?: string;
       access_logins?: string;
+      trainee_access?: boolean;
     }) => updateCard({ cardId: numericCardId, cardData: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["card", cardId] });
@@ -256,6 +259,7 @@ export function CardPage() {
       // clearing it when the user removes all positions/logins.
       access_positions: selectedPositions.join(","),
       access_logins: accessLogins,
+      trainee_access: traineeAccess,
     });
   };
 
@@ -374,6 +378,11 @@ export function CardPage() {
             <div style={{ marginTop: "20px", padding: "16px", backgroundColor: "white", borderRadius: "8px" }}>
               <h3 style={{ fontSize: "18px", marginBottom: "12px" }}>Настройки доступа</h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "10px", fontWeight: 600 }}>
+                  <input type="checkbox" checked={traineeAccess} onChange={e => setTraineeAccess(e.target.checked)} />
+                  Доступна стажёрам
+                </label>
+                <small style={{ color: "#666" }}>Разрешает чтение по общему коду, независимо от ограничений для сотрудников ниже.</small>
                 <MultiSelect options={positionOptions} selectedValues={selectedPositions} onChange={setSelectedPositions} placeholder="Выберите должности" label="Доступ для должностей" />
                 <small style={{ color: "#666", fontSize: "12px" }}>Оставьте пустым для доступа всем</small>
                 <div>

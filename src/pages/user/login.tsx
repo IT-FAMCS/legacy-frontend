@@ -7,6 +7,8 @@ import { useErrorStore } from "../../stores/error";
 import Button from "../../components/Button";
 import { ErrorBanner } from "../../components/ErrorBanner";
 import background from "../../assets/images/title-wrapper-bg.png";
+import { TraineeRaccoon } from "../../components/TraineeRaccoon";
+import { clearTraineeToken } from "../../utils/trainee-session";
 
 export function LoginPage() {
   const [loginValue, setLoginValue] = useState("");
@@ -26,6 +28,8 @@ export function LoginPage() {
       return await getUser();
     },
     onSuccess: (data) => {
+      clearTraineeToken();
+      queryClient.clear();
       setUser(data);
       queryClient.invalidateQueries({ queryKey: ["user"] });
       navigate("/home");
@@ -112,6 +116,9 @@ export function LoginPage() {
             type="submit"
             style={{ border: "none", marginTop: "8px" }}
           />
+          <button type="button" className="trainee-invite" onClick={() => navigate("/trainee/login")}>
+            <TraineeRaccoon /><span>Я стажёр</span><span aria-hidden="true">→</span>
+          </button>
         </form>
       </div>
     </>

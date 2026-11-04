@@ -12,6 +12,11 @@ import { CardPage } from "./pages/card/page";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { PublicRoute } from "./components/PublicRoute";
+import { TraineeRoute } from "./components/TraineeRoute";
+import { TraineeLoginPage } from "./pages/trainee/login";
+import { TraineeHomePage } from "./pages/trainee/home";
+import { TraineeCardPage } from "./pages/trainee/card";
+import { TraineeAccessPage } from "./pages/trainee/manage";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +26,10 @@ const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
+      {
+        path: "/trainee-access",
+        element: <ProtectedRoute><TraineeAccessPage /></ProtectedRoute>,
+      },
       {
         path: "/home",
         element: (
@@ -77,6 +86,18 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+    ],
+  },
+  {
+    path: "/trainee/login",
+    element: <TraineeLoginPage />,
+  },
+  {
+    path: "/trainee",
+    element: <TraineeRoute />,
+    children: [
+      { index: true, element: <TraineeHomePage /> },
+      { path: "card/:cardId", element: <TraineeCardPage /> },
     ],
   },
   {
