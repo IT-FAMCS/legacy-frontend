@@ -7,12 +7,14 @@ import {
   useCanManagePositions,
   useCanEditCategories,
   useCanRegisterUsers,
+  isAdminChairOrDeputy,
 } from "../hooks/use-permissions";
 import famcsIcon from "../assets/icons/famcs.svg";
 import profileIcon from "../assets/icons/profile.svg";
 
 const Header = () => {
   const isAuthenticated = useUserStore((s) => s.isAuthenticated);
+  const canManageTrainees = useUserStore((s) => isAdminChairOrDeputy(s.user?.position_name));
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   // Check permissions using position flags from backend via hooks
@@ -70,6 +72,10 @@ const Header = () => {
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <nav className={`header-nav${menuOpen ? " header-nav-open" : ""}`}>
+            {isAuthenticated && canManageTrainees && (
+              <Button label="Доступ стажёров" onClick={() => goTo("/trainee-access")}
+                style={{ border: "none" }} hoverStyle={{ scale: 1.08 }} />
+            )}
             {isAuthenticated && canEditCategories && (
               <Button
                 label="На главную"

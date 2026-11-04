@@ -111,7 +111,7 @@ export async function updateCard({
 }: {
   signal?: AbortSignal;
   cardId: number;
-  cardData: { title?: string; content?: string; category_id?: number; access_positions?: string; access_logins?: string };
+  cardData: { title?: string; content?: string; category_id?: number; access_positions?: string; access_logins?: string; trainee_access?: boolean };
 }) {
   const res = await apiFetch(`${CARDS_PATH}/${cardId}`, {
     method: "PUT",
@@ -129,7 +129,7 @@ export async function createCard({
   cardData,
 }: {
   signal?: AbortSignal;
-  cardData: { title: string; content?: string; category_id: number; access_positions?: string; access_logins?: string };
+  cardData: { title: string; content?: string; category_id: number; access_positions?: string; access_logins?: string; trainee_access?: boolean };
 }) {
   const res = await apiFetch(`${CARDS_PATH}`, {
     method: "POST",

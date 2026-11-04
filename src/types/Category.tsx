@@ -6,6 +6,7 @@ export type Card = {
   category_name?: string;
   access_positions: string | null;
   access_logins: string | null;
+  trainee_access: boolean;
   created_at: string;
 };
 
@@ -27,6 +28,7 @@ export type CardCreate = {
   category_id: number;
   access_positions?: string;
   access_logins?: string;
+  trainee_access?: boolean;
 };
 
 export type VisitHistory = {

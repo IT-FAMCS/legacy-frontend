@@ -22,6 +22,7 @@ export function AddCard({
   const [content, setContent] = useState("");
   const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
   const [accessLogins, setAccessLogins] = useState("");
+  const [traineeAccess, setTraineeAccess] = useState(false);
   const queryClient = useQueryClient();
   const setError = useErrorStore((s) => s.setError);
   const canEditCards = useCanEditCards();
@@ -61,6 +62,7 @@ export function AddCard({
         category_id: categoryId,
         access_positions: selectedPositions.length > 0 ? selectedPositions.join(",") : undefined,
         access_logins: accessLogins || undefined,
+        trainee_access: traineeAccess,
       } 
     });
   };
@@ -134,6 +136,11 @@ export function AddCard({
             </h4>
             
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: "10px", color: "white", fontWeight: 600 }}>
+                <input type="checkbox" checked={traineeAccess} onChange={e => setTraineeAccess(e.target.checked)} />
+                Доступна стажёрам
+              </label>
+              <small style={{ color: "rgba(255,255,255,0.8)" }}>Разрешает чтение по общему коду. По умолчанию карточку видят только участники с доступом.</small>
               <MultiSelect
                 options={positionOptions}
                 selectedValues={selectedPositions}

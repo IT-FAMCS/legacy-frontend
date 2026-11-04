@@ -83,7 +83,7 @@ export function useCanEditCards(): boolean {
 }
 
 export function isAdminChairOrDeputy(positionName: string | null | undefined): boolean {
-  const name = positionName?.toLowerCase() || "";
+  const name = positionName?.trim().toLowerCase() || "";
   return (
     name === "admin" ||
     name === "админ" ||
