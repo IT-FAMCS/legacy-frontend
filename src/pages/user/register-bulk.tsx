@@ -1,3 +1,4 @@
+import { contactError } from "../../utils/account-contact";
 import { useRef, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
@@ -22,11 +23,13 @@ const COLUMNS: ColumnDef[] = [
   { key: "group", label: "Группа", required: false },
   { key: "birth_date", label: "Дата рождения (ГГГГ-ММ-ДД)", required: false },
   { key: "telegram", label: "Telegram", required: false },
+  { key: "phone", label: "Телефон", required: false },
+  { key: "education_format", label: "Форма обучения", required: false },
 ];
 
 const EXAMPLE_ROWS = [
-  ["ivanov", "Passw0rd1", "Иванов", "Иван", "Иванович", "участник", "IT", "2", "ИТ-21", "2004-05-14", "@ivanov"],
-  ["petrova", "Passw0rd2", "Петрова", "Мария", "", "участник", "IT;SMM", "1", "ИТ-11", "", ""],
+  ["ivanov", "Passw0rd1", "Иванов", "Иван", "Иванович", "участник", "IT", "2", "ИТ-21", "2004-05-14", "@ivanov", "+375291234567", "бюджет"],
+  ["petrova", "Passw0rd2", "Петрова", "Мария", "", "участник", "IT;SMM", "1", "ИТ-11", "", "", "", ""],
 ];
 
 type ParsedRow = {
@@ -105,7 +108,7 @@ export function RegisterBulkPage() {
     const header = csvRows[0].map(normalizeHeader);
     const columnIndex: Record<string, number> = {};
     for (const col of COLUMNS) {
-      const idx = header.indexOf(normalizeHeader(col.label));
+      const idx = header.findIndex(value => value === normalizeHeader(col.label) || value === col.key);
       if (idx !== -1) columnIndex[col.key] = idx;
     }
 
@@ -141,6 +144,11 @@ export function RegisterBulkPage() {
       const group = get("group");
       const birthDate = get("birth_date");
       const telegram = get("telegram");
+      const phone = get("phone");
+      const educationFormat = get("education_format");
+      const phoneError = contactError(phone);
+      if (phoneError) errors.push(phoneError);
+      if (educationFormat && educationFormat !== "бюджет" && educationFormat !== "платное") errors.push("Форма обучения: бюджет или платное");
 
       if (!login) errors.push("не указан логин");
       else if (login.length < 3 || login.length > 50) errors.push("логин должен быть от 3 до 50 символов");
@@ -200,6 +208,8 @@ export function RegisterBulkPage() {
               group: group || undefined,
               birth_date: birthDateIso,
               telegram: telegram || undefined,
+              phone: phone || null,
+              education_format: educationFormat === "бюджет" || educationFormat === "платное" ? educationFormat : null,
             }
           : undefined;
 

@@ -1,3 +1,7 @@
+import { useWarningAccess, useWarningCounts } from "../../hooks/use-warning-access";
+import { WarningHistoryDialog } from "../../components/AccountWarnings";
+import { AccountContactFields } from "../../components/AccountContactFields";
+import { contactPayload, contactError } from "../../utils/account-contact";
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useErrorStore } from "../../stores/error";
@@ -37,6 +41,8 @@ type User = {
   group: string | null;
   birth_date: string | null;
   telegram: string | null;
+  phone?: string | null;
+  education_format?: "бюджет" | "платное" | null;
   position_id: number;
   position_name: string | null;
   is_active: boolean;
@@ -81,11 +87,16 @@ type UserFormData = {
   group: string;
   birth_date: string;
   telegram: string;
+    phone: string;
+    education_format: string;
   position: string;
   password?: string;
 };
 
 export function AccountList() {
+  const warningAccess = useWarningAccess();
+  const warningCounts = useWarningCounts(warningAccess.canView);
+  const [warningUser, setWarningUser] = useState<{id:number;name:string}|null>(null);
   const [showInactive, setShowInactive] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [formData, setFormData] = useState<UserFormData | null>(null);
@@ -134,6 +145,8 @@ export function AccountList() {
         group: string;
         department: string;
         telegram: string;
+    phone: string | null;
+    education_format: "бюджет" | "платное" | null;
         login?: string;
         position?: string;
       }>;
@@ -190,6 +203,8 @@ export function AccountList() {
         ? user.birth_date.split("T")[0].split(" ")[0]
         : "",
       telegram: user.telegram || "",
+      phone: user.phone || "",
+      education_format: user.education_format || "",
       position: user.position_name || "",
       password: "",
     });
@@ -198,6 +213,8 @@ export function AccountList() {
   const handleSave = () => {
     if (!editingUser) return;
 
+    const phoneError = contactError(formData!.phone);
+    if (phoneError) { setError(phoneError); return; }
     const updateData: Partial<{
       first_name: string;
       last_name: string;
@@ -207,6 +224,8 @@ export function AccountList() {
       group: string;
       department_ids: number[];
       telegram: string;
+    phone: string | null;
+    education_format: "бюджет" | "платное" | null;
       login?: string;
       position?: string;
     }> = {
@@ -222,6 +241,7 @@ export function AccountList() {
         ? `${formData.birth_date}T00:00:00`
         : undefined,
       telegram: formData?.telegram,
+      ...contactPayload(formData!),
       position: formData?.position,
     };
 
@@ -413,7 +433,10 @@ export function AccountList() {
             >
               Должность{sortIcon("position")}
             </th>
-            <th style={{ padding: "12px", textAlign: "left" }}>Telegram</th>
+            <th style={{ padding: "12px", textAlign: "left" }}>Телефон</th>
+<th style={{ padding: "12px", textAlign: "left" }}>Форма обучения</th>
+<th style={{ padding: "12px", textAlign: "left" }}>Telegram</th>
+            {warningAccess.canView && <th style={{padding:"12px",textAlign:"left"}}>Предупреждения</th>}
             {canViewLastSeen && (
               <th
                 style={{ padding: "12px", textAlign: "left", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
@@ -456,7 +479,9 @@ export function AccountList() {
               <td style={{ padding: "12px" }}>{user.course || "-"}</td>
               <td style={{ padding: "12px" }}>{user.group || "-"}</td>
               <td style={{ padding: "12px" }}>{user.position_name || "-"}</td>
-              <td style={{ padding: "12px" }}>
+              <td style={{ padding: "12px" }}>{user.phone ? <a href={`tel:${user.phone.replace(/[^+0-9]/g, "")}`}>{user.phone}</a> : "Не указан"}</td>
+<td style={{ padding: "12px" }}>{user.education_format || "Не указан"}</td>
+<td style={{ padding: "12px" }}>
                 {user.telegram ? (
                   <a
                     href={`https://t.me/${user.telegram.replace(/^@/, "")}`}
@@ -470,6 +495,12 @@ export function AccountList() {
                   "-"
                 )}
               </td>
+              {warningAccess.canView && <td style={{padding:"12px"}}>
+                <button className="warning-list-count" type="button" aria-label={`Предупреждения: ${user.last_name} ${user.first_name}`}
+                  onClick={()=>setWarningUser({id:user.id,name:`${user.last_name} ${user.first_name}`})}>
+                  {warningCounts.error ? "—" : warningCounts.isPending ? "…" : warningCounts.data?.[String(user.id)] || 0}
+                </button>
+              </td>}
               {canViewLastSeen && (
                 <td style={{ padding: "12px", whiteSpace: "nowrap" }}>
                   {formatDateTime(user.last_seen_at)}
@@ -529,6 +560,9 @@ export function AccountList() {
         </tbody>
       </table>
       </div>
+
+      {warningUser && warningAccess.canView && <WarningHistoryDialog userId={warningUser.id} name={warningUser.name}
+        canManage={warningAccess.canManage} onClose={()=>setWarningUser(null)} />}
 
       {editingUser && formData && (
         <ModalWrapper
@@ -782,7 +816,8 @@ export function AccountList() {
                   }}
                 />
               </div>
-              <div
+              <AccountContactFields phone={formData.phone} education_format={formData.education_format} onChange={value => setFormData({ ...formData, ...value })} />
+          <div
                 style={{ display: "flex", flexDirection: "column", gap: "4px" }}
               >
                 <label style={{ fontSize: "14px", fontWeight: 600 }}>

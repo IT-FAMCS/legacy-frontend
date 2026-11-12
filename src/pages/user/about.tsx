@@ -1,3 +1,5 @@
+import { AccountWarnings } from "../../components/AccountWarnings";
+import { ProfileEquipment } from "../../components/ProfileEquipment";
 import Button from "../../components/Button";
 import { ModalWrapper } from "../../components/modal";
 import { useUserStore } from "../../stores/user";
@@ -297,6 +299,8 @@ export function AboutUser() {
           <p><strong>Дата рождения:</strong> {user?.birth_date ? user.birth_date.split("T")[0] : "-"}</p>
           <p><strong>Должность:</strong> {user?.position_name || "-"}</p>
           <p><strong>Telegram:</strong> {user?.telegram || "-"}</p>
+          <p><strong>Телефон:</strong> {user?.phone ? <a href={`tel:${user.phone.replace(/[^+0-9]/g, "")}`}>{user.phone}</a> : "Не указан"}</p>
+          <p><strong>Форма обучения:</strong> {user?.education_format || "Не указан"}</p>
           <p><strong>Статус:</strong> {user?.is_active && !user?.is_deactivated ? "Активен" : "Деактивирован"}</p>
           <p><strong>Последний визит:</strong> {formatDateTime(user?.last_seen_at)}</p>
           <p><strong>Пароль менялся:</strong> {formatDateTime(user?.password_changed_at, "неизвестно")}</p>
@@ -338,6 +342,9 @@ export function AboutUser() {
           )}
         </div>
       </div>
+
+      {user?.id && <ProfileEquipment userId={user.id} />}
+      {user?.id && <AccountWarnings userId={user.id} name={`${user.last_name || ""} ${user.first_name || ""}`.trim()} />}
 
       {isEdit && <EditUser setIsEdit={setIsEdit} targetUser={targetUser} />}
       {isPasswordOpen && <OwnPasswordModal setIsOpen={setIsPasswordOpen} />}

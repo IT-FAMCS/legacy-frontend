@@ -93,6 +93,8 @@ export async function editUser({
     group: string;
     department_ids: number[];
     telegram: string;
+    phone: string | null;
+    education_format: "бюджет" | "платное" | null;
     login?: string;
     position?: string;
     is_active?: boolean;
@@ -224,6 +226,8 @@ export async function registerUser({
     position: string;
     department_ids?: number[];
     telegram?: string;
+    phone?: string | null;
+    education_format?: "бюджет" | "платное" | null;
   };
 }) {
   const res = await apiFetch(`${API_BASE}/api/register`, {
@@ -253,6 +257,8 @@ export type BulkUserRegisterData = {
   position: string;
   department_ids?: number[];
   telegram?: string;
+    phone?: string | null;
+    education_format?: "бюджет" | "платное" | null;
 };
 
 export async function registerUsersBulk({

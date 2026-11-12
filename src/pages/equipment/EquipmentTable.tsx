@@ -2,10 +2,10 @@ import { Link } from "react-router";
 import type { EquipmentItem } from "../../api/equipment";
 import { formatDateTime } from "../../utils/date";
 
-export function EquipmentTable({ items, canManage, pending, onTake, onEdit, onHistory }: {
-  items: EquipmentItem[]; canManage: boolean; pending: boolean;
+export function EquipmentTable({ items, canManage, canDelete = false, pending, onTake, onEdit, onHistory, onDelete }: {
+  items: EquipmentItem[]; canManage: boolean; canDelete?: boolean; pending: boolean;
   onTake: (item: EquipmentItem) => void; onEdit: (item: EquipmentItem) => void;
-  onHistory: (item: EquipmentItem) => void;
+  onHistory: (item: EquipmentItem) => void; onDelete?: (item:EquipmentItem)=>void;
 }) {
   return <div className="equipment-table-scroll"><table className="equipment-table">
     <caption className="equipment-sr-only">Аппаратура и её текущее местонахождение</caption>
@@ -21,6 +21,7 @@ export function EquipmentTable({ items, canManage, pending, onTake, onEdit, onHi
         <button type="button" className="equipment-button equipment-primary" disabled={pending} onClick={() => onTake(item)}>Взял предмет</button>
         <button type="button" className="equipment-button" onClick={() => onHistory(item)} aria-label={`История: ${item.name}`}>История</button>
         {canManage && <button type="button" className="equipment-button" disabled={pending} onClick={() => onEdit(item)}>Редактировать</button>}
+        {canDelete && <button type="button" className="equipment-button equipment-danger" disabled={pending} onClick={()=>onDelete?.(item)}>Удалить</button>}
       </div></td>
     </tr>)}</tbody>
   </table></div>;

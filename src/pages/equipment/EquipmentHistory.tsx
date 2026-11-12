@@ -5,7 +5,7 @@ import type { EquipmentEvent, EquipmentItem } from "../../api/equipment";
 import { formatDateTime } from "../../utils/date";
 import { EquipmentDialog } from "./EquipmentDialog";
 
-const labels = { created: "Добавление предмета", taken: "Взятие предмета", assigned: "Ручное изменение" };
+const labels = { created: "Добавление предмета", taken: "Взятие предмета", assigned: "Ручное изменение", deleted: "Удаление предмета" };
 export function EquipmentHistoryContent({ events }: { events: EquipmentEvent[] }) {
   if (!events.length) return <p>История пока пуста.</p>;
   return <div className="equipment-table-scroll"><table className="equipment-table equipment-history-table">

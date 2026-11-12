@@ -1,3 +1,5 @@
+import { AccountContactFields } from "../../components/AccountContactFields";
+import { contactPayload, contactError } from "../../utils/account-contact";
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router";
@@ -28,6 +30,8 @@ export function RegisterPage() {
     group: "",
     birth_date: "",
     telegram: "",
+    phone: "",
+    education_format: "",
     position: "",
   });
 
@@ -63,6 +67,8 @@ export function RegisterPage() {
       group?: string;
       birth_date?: string;
       telegram?: string;
+    phone?: string | null;
+    education_format?: "бюджет" | "платное" | null;
       position: string;
     }}) => {
       const headers: Record<string, string> = {
@@ -113,6 +119,8 @@ export function RegisterPage() {
   };
 
   const handleSubmit = () => {
+    const phoneError = contactError(formData!.phone);
+    if (phoneError) { setError(phoneError); return; }
     const errors: Record<string, string> = {};
     
     if (!formData.login.trim()) {
@@ -151,6 +159,7 @@ export function RegisterPage() {
         // Convert date to ISO format with time component
         birth_date: formData.birth_date ? `${formData.birth_date}T00:00:00` : undefined,
         telegram: formData.telegram || undefined,
+        ...contactPayload(formData),
         position: formData.position,
       },
     });
@@ -378,6 +387,7 @@ export function RegisterPage() {
               }}
             />
           </div>
+          <AccountContactFields phone={formData.phone} education_format={formData.education_format} onChange={value => setFormData({ ...formData, ...value })} />
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <label htmlFor="telegram" style={{ fontWeight: 600 }}>Telegram</label>
             <input

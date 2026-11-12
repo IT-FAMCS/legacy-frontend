@@ -8,11 +8,11 @@ export type EquipmentItem = {
   location: EquipmentLocation | null; taken_at: string | null; version: number;
 };
 export type EquipmentOptions = {
-  can_manage: boolean; default_location_id: number;
+  can_manage: boolean; can_delete: boolean; default_location_id: number;
   users: EquipmentUser[]; locations: EquipmentLocation[];
 };
 export type EquipmentEvent = {
-  id: number; action: "created" | "taken" | "assigned"; actor_name: string; actor_login: string;
+  id: number; action: "created" | "taken" | "assigned" | "deleted"; actor_name: string; actor_login: string;
   holder_name: string; holder_login: string | null; taken_at: string | null; recorded_at: string;
 };
 export type EquipmentInput = {
@@ -45,3 +45,5 @@ export const takeEquipment = (item: EquipmentItem) => request<EquipmentItem>(`/$
   method: "POST", body: JSON.stringify({ version: item.version }),
 });
 export const createEquipmentLocation = (name: string) => request<EquipmentLocation>("/locations", { method: "POST", body: JSON.stringify({ name }) });
+
+export const deleteEquipment = (item: EquipmentItem) => request<EquipmentItem>(`/${item.id}`, {method:"DELETE",body:JSON.stringify({version:item.version})});

@@ -178,7 +178,7 @@ try {
   assert.equal(await evaluate("document.querySelector('dialog').getBoundingClientRect().width <= innerWidth"), true, "History dialog fits phone viewport");
   assert.equal(await evaluate("document.querySelector('dialog').getBoundingClientRect().left > 0"), true, "History dialog is centered with a visible margin");
   await writeFile(join(artifacts, "equipment-history-mobile.png"), Buffer.from((await command("Page.captureScreenshot", {format:"png"})).data, "base64"));
-  await byText("Закрыть");
+  await click('dialog[open] [aria-label="Закрыть окно"]');
   assert.equal(await evaluate("document.documentElement.scrollWidth <= innerWidth"), true, "Inventory fits phone viewport");
   await writeFile(join(artifacts, "equipment-mobile.png"), Buffer.from((await command("Page.captureScreenshot", {format:"png"})).data, "base64"));
   assert.equal(runtimeErrors.length, 0, JSON.stringify(runtimeErrors));
