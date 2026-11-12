@@ -51,3 +51,34 @@
   .equipment-inline { flex-wrap: wrap; }
   .equipment-holder-choice { flex-direction: column; gap: 2px; }
 }
+
+/* Dialog surfaces share the app's navy / violet treatment. */
+.equipment-dialog {
+  padding: 28px; border: 1px solid #525376; border-radius: 22px; color-scheme: dark;
+  background: linear-gradient(145deg, #24283d, #171c2e);
+  box-shadow: 0 28px 90px #080b2073, 0 0 0 1px #b7afff0a inset;
+  overscroll-behavior: contain;
+}
+.equipment-dialog-heading { align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid #8587b52b; margin-bottom: 24px; }
+.equipment-dialog-heading h2 { font-size: 1.5rem; line-height: 1.35; letter-spacing: -.025em; color: #f5f3ff; }
+.equipment-dialog-close { flex-shrink: 0; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border-color: #72749b70; border-radius: 11px; font-size: 26px; }
+.equipment-dialog-close:hover:not(:disabled) { background: #8278d52b; border-color: #a79cf5; }
+.equipment-dialog-content { min-width: 0; }
+.equipment-dialog .equipment-form { gap: 14px; }
+.equipment-dialog .equipment-form :is(input, textarea) { background: #101627; border-color: #555d7b; border-radius: 10px; padding: 12px 14px; }
+.equipment-dialog .equipment-form fieldset { padding: 16px; border-color: #555d7b; border-radius: 12px; gap: 12px; }
+.equipment-dialog .equipment-form legend { padding: 0 6px; color: #d8d3ff; }
+.equipment-holder-options { overscroll-behavior: contain; scrollbar-gutter: stable; }
+.equipment-holder-choice { min-width: 0; transition: background-color 160ms ease, border-color 160ms ease; }
+.equipment-holder-choice:hover { background: #45445f; }
+.equipment-holder-choice[aria-pressed=true] { border-color: #aaa0ff; background: #51496b; }
+@media (max-width: 640px) { .equipment-dialog { padding: 20px 16px; border-radius: 18px; } }
+@media (prefers-reduced-motion: reduce) { .equipment-holder-choice { transition: none; } }
+
+.equipment-danger {color:#ffb4c1;border-color:#985469;background:rgb(160 66 89 / .12);}
+.equipment-danger:hover:not(:disabled) {color:#fff;background:#96445a;border-color:#bc657d;}
+.equipment-delete-name {font-size:1.2rem;font-weight:600;margin-bottom:14px;}
+
+.equipment-dialog-content > .equipment-actions {margin-top:20px;}
+.equipment-dialog:has(.equipment-delete-name) {max-width:600px;}
+.equipment-dialog:has(#warning-reason) {max-width:680px;}

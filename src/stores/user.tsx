@@ -14,6 +14,8 @@ export type UserInfo = {
   department?: string | null;
   departments?: { id: number; name: string }[];
   telegram?: string | null;
+  phone?: string | null;
+  education_format?: "бюджет" | "платное" | null;
   is_active: boolean;
   is_deactivated: boolean;
   last_login?: string | null;

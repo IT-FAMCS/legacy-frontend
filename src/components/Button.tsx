@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import Icon from './Icon.tsx';
 import type {ButtonProps} from "../types/Button.tsx";
 
@@ -24,8 +24,14 @@ const Button = (
   const Component = isLink ? 'a' : 'button';
   const borderStyle = isLink ? 'none' : '1px solid #FFFFFF';
 
-  const [isHovered, setIsHovered] = React.useState(false);
-  const [isActive, setIsActive] = React.useState(false);
+  // Limit interaction overrides to paint properties so controls keep their bounds.
+  const interactionStyles: Record<string, string | number> = {};
+  for (const [state, overrides] of [['hover', hoverStyle], ['active', activeStyle]] as const) {
+    for (const property of ['color', 'background', 'backgroundColor', 'borderColor', 'opacity', 'boxShadow'] as const) {
+      const value = overrides?.[property];
+      if (value !== undefined) interactionStyles[`--button-${state}-${property}`] = value;
+    }
+  }
 
   const commonStyles: React.CSSProperties = {
     display: 'inline-flex',
@@ -45,11 +51,16 @@ const Button = (
     width: full ? '100%' : undefined,
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.5 : 1,
-    transition: 'all 0.2s ease',
     ...style,
-    ...(isHovered && !disabled && hoverStyle),
-    ...(isActive && !disabled && activeStyle)
+    ...interactionStyles
   };
+
+  Object.assign(commonStyles, {
+    '--button-base-color': commonStyles.color,
+    '--button-base-background': style?.background ?? style?.backgroundColor ?? commonStyles.background ?? 'transparent',
+    '--button-base-borderColor': commonStyles.borderColor ?? (isLink ? 'transparent' : '#FFFFFF'),
+    '--button-base-boxShadow': commonStyles.boxShadow ?? 'none',
+  });
 
   const buttonContent = (
     <>
@@ -67,28 +78,15 @@ const Button = (
     </>
   )
 
-  const interactionProps = {
-    onMouseEnter: () => setIsHovered(true),
-    onMouseLeave: () => {
-      setIsHovered(false);
-      setIsActive(false);
-    },
-    onMouseDown: () => setIsActive(true),
-    onMouseUp: () => setIsActive(false),
-    onTouchStart: () => setIsActive(true),
-    onTouchEnd: () => setIsActive(false),
-  };
-
   return (
     <Component
-      className={className}
-      {...(Component === 'button' ? {type, disabled} : {})}
+      className={['ui-button', className].filter(Boolean).join(' ')}
+      {...(Component === 'button' ? {type, disabled} : {href: disabled ? undefined : href, tabIndex: disabled ? -1 : undefined})}
       onClick={disabled ? undefined : onClick}
       title={isLabelHidden ? label : undefined}
-      aria-label={isLabelHidden ? label : undefined}
+      aria-label={ariaLabel ?? (isLabelHidden ? label : undefined)}
       aria-disabled={disabled || undefined}
       style={commonStyles}
-      {...interactionProps}
     >
       {buttonContent}
     </Component>

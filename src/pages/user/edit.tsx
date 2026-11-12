@@ -1,3 +1,5 @@
+import { AccountContactFields } from "../../components/AccountContactFields";
+import { contactPayload, contactError } from "../../utils/account-contact";
 import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserStore } from "../../stores/user";
@@ -24,6 +26,8 @@ type User = {
   group: string | null;
   birth_date: string | null;
   telegram: string | null;
+  phone?: string | null;
+  education_format?: "бюджет" | "платное" | null;
   position_id: number;
   position_name: string | null;
   is_active: boolean;
@@ -53,6 +57,8 @@ export function EditUser({
     group: "",
     birth_date: "",
     telegram: "",
+    phone: "",
+    education_format: "",
     position: "",
   });
 
@@ -88,6 +94,8 @@ export function EditUser({
         // Parse birth_date properly - backend returns ISO format
         birth_date: (userToEdit as User).birth_date ? (userToEdit as User).birth_date!.split("T")[0].split(" ")[0] : "",
         telegram: (userToEdit as User).telegram || "",
+        phone: (userToEdit as User).phone || "",
+        education_format: (userToEdit as User).education_format || "",
         position: (userToEdit as User).position_name || "",
       });
     }
@@ -103,6 +111,8 @@ export function EditUser({
       group: string;
       department_ids: number[];
       telegram: string;
+    phone: string | null;
+    education_format: "бюджет" | "платное" | null;
       login?: string;
       position?: string;
     }>; login?: string }) => editUser(data),
@@ -123,6 +133,8 @@ export function EditUser({
   const handleSubmit = () => {
     if (!userToEdit) return;
     
+    const phoneError = contactError(formData!.phone);
+    if (phoneError) { setError(phoneError); return; }
     editMutation.mutate({
       userData: {
         login: userToEdit.login,
@@ -135,6 +147,7 @@ export function EditUser({
         // Convert date to ISO format with time component
         birth_date: formData.birth_date ? `${formData.birth_date}T00:00:00` : undefined,
         telegram: formData.telegram || undefined,
+        ...contactPayload(formData),
         position: formData.position || undefined,
       },
     });
@@ -281,6 +294,7 @@ export function EditUser({
               }}
             />
           </div>
+          <AccountContactFields phone={formData.phone} education_format={formData.education_format} onChange={value => setFormData({ ...formData, ...value })} />
           <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
             <label style={{ fontSize: "14px", fontWeight: 600 }}>Telegram</label>
             <input
