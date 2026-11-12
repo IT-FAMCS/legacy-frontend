@@ -72,6 +72,10 @@ const Header = () => {
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <nav className={`header-nav${menuOpen ? " header-nav-open" : ""}`}>
+            {isAuthenticated && (
+              <Button label="Оборудка" onClick={() => goTo("/equipment")}
+                style={{ border: "none" }} hoverStyle={{ scale: 1.08 }} />
+            )}
             {isAuthenticated && canManageTrainees && (
               <Button label="Доступ стажёров" onClick={() => goTo("/trainee-access")}
                 style={{ border: "none" }} hoverStyle={{ scale: 1.08 }} />

@@ -111,3 +111,39 @@ horizontal rules, bold, italic, strikethrough, and underlined text.
 Underline is a project extension and uses `++text++`. Raw HTML is intentionally
 rendered as text; links and images accept only safe web, mail, telephone, or
 relative URLs.
+
+
+## Оборудка
+
+Вкладка в основном меню: `/equipment`. Таблица показывает название, описание,
+держателя со ссылкой в профиль или место хранения, время взятия.
+«Взял предмет» и модальное окно «История» доступны всем вошедшим участникам.
+Добавление и ручные правки доступны руководству по серверному `options.can_manage`.
+Поиск держателя учитывает имя, логин и места; новое место добавляется в общий список.
+Смена пользователя без явной даты записывает текущее серверное время; при выборе места
+дата очищается. Существующий неактивный держатель остаётся видимым, но не предлагается
+для новых передач. При конфликте версии таблица обновляется, устаревшая форма закрывается.
+
+История сохраняет взятия, ручные передачи и исправления даты. Она доступна через кнопку
+в строке предмета, поддерживает Escape, ссылки в профили и горизонтальную прокрутку на телефоне.
+
+Проверки: `npm test`, `npm run build`, `npm run lint`.
+Для полноценного браузерного smoke нужен Chrome и свежий тестовый сервер бэкенда
+`tests/serve_equipment_smoke.py`. Соберите фронтенд с пустым `VITE_API_BASE_URL`
+(как в Docker, иначе локальный `.env` направит запросы на :8000):
+
+```bash
+VITE_API_BASE_URL= npm run build
+node --experimental-websocket tests/browser-equipment-smoke.mjs
+```
+
+На Windows для сборки с пустым API base:
+
+```powershell
+node -e "const r = require('node:child_process').spawnSync(process.execPath, ['node_modules/vite/bin/vite.js','build'], {stdio:'inherit',env:{...process.env,VITE_API_BASE_URL:''}}); process.exit(r.status ?? 1)"
+```
+
+Smoke проверяет создание, default storage, добавление места, ограничения UI,
+взятие участником, историю, поиск, ручную дату и мобильный экран. Перед повторным
+прогоном перезапустите фикстуру, чтобы получить чистую временную БД.
+Скриншоты: `../.tools/browser/equipment-*.png` (в git не включаются).

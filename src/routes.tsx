@@ -18,6 +18,8 @@ import { TraineeHomePage } from "./pages/trainee/home";
 import { TraineeCardPage } from "./pages/trainee/card";
 import { TraineeAccessPage } from "./pages/trainee/manage";
 
+import { EquipmentPage } from "./pages/equipment/page";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -26,6 +28,7 @@ const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
+      { path: "/equipment", element: <ProtectedRoute><EquipmentPage /></ProtectedRoute> },
       {
         path: "/trainee-access",
         element: <ProtectedRoute><TraineeAccessPage /></ProtectedRoute>,
