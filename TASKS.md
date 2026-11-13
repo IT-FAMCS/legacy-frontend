@@ -1,4 +1,4 @@
-﻿# Tasks frontend
+# Tasks frontend
 
 `src/features/tasks` supplies the shared board used by `/tasks` and department/event card tabs. It uses the task API from the matching backend `feat/card-tasks` branch. Both parts must be released together.
 
@@ -9,3 +9,5 @@ Check with `npm test`, `npm run lint`, `npm run build`. Browser test: run backen
 No Telegram integration is delivered; the backend task IDs and audited changes are ready for a future notification service.
 
 Profile tabs: Information, active assigned tasks, and card visits/activity. Existing history permissions remain enforced. Archive controls are labeled 'В архив' in both rows and the editor, and only chair/deputies receive them. Equipment lists and dialogs use light surfaces with violet accents.
+
+Telegram integration: own profile has a two-phase linking section. The editable Telegram contact field is not used for authorization. Backend configuration is required; no bot token or service key is embedded in Vite/browser variables. Event cards also have Responsibility zones, with lead/helper contacts, headcount/coverage, history and edit-permission-only clearing. These zones do not appear in profiles.

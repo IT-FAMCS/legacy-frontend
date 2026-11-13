@@ -1,3 +1,4 @@
+import { TelegramLink } from '../../components/TelegramLink';
 import { TasksBoard } from '../../features/tasks/TasksBoard';
 import { ProfileTabs, type ProfileTab } from './ProfileTabs';
 import './profile-tabs.css';
@@ -350,6 +351,7 @@ export function AboutUser() {
         </div>
       </div>
 
+      {user?.id && (isOwnProfile || user.id === currentUser?.id) && <TelegramLink />}
       {user?.id && <ProfileEquipment userId={user.id} />}
       {user?.id && <AccountWarnings userId={user.id} name={`${user.last_name || ""} ${user.first_name || ""}`.trim()} />}
 
