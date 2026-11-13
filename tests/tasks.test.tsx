@@ -1,4 +1,4 @@
-﻿import test from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
 import { groupTasks, filterTasks, isOverdue, rebaseDraft } from '../src/features/tasks/task-view';
 import type { Task } from '../src/api/tasks';
@@ -8,7 +8,7 @@ const general = { ...base, id: 2, event_card_id: null, event: null, department_c
 assert.deepEqual(Object.fromEntries(groupTasks([base, general], 'departments').map(g => [g.label, g.tasks.map(t => t.id)])), { IT: [1], 'Культура': [1], 'Без отдела': [2] });
 assert.deepEqual(groupTasks([base, general], 'events').map(g => [g.label, g.tasks.map(t => t.id)]), [['Посвящение', [1]], ['Без мероприятия', [2]]]);
 assert.deepEqual(groupTasks([base, general], 'general').flatMap(g => g.tasks.map(t => t.id)), [2]);
-assert.deepEqual(groupTasks([base, general], 'department-card').map(g => g.label), ['Посвящение', 'Общие задачи отдела']);
+assert.deepEqual(groupTasks([base, general], 'department-card').map(g => g.label), ['Посвящение', 'Общие таски отдела']);
 assert.deepEqual(filterTasks([base, general], { search: 'анна', status: 'open', assignee: '7' }).map(t => t.id), [1, 2]);
 assert.deepEqual(filterTasks([base, general], { search: 'культура', status: 'all', assignee: '' }).map(t => t.id), [1]);
 assert.deepEqual(filterTasks([base, { ...general, completed: true }], { search: '', status: 'done', assignee: '' }).map(t => t.id), [2]);

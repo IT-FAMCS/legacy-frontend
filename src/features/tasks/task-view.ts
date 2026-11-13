@@ -1,4 +1,4 @@
-﻿import type { Task } from '../../api/tasks';
+import type { Task } from '../../api/tasks';
 export type GroupMode = 'departments' | 'events' | 'general' | 'department-card' | 'event-card';
 export type TaskGroup = { key: string; label: string; tasks: Task[] };
 export type TaskFilters = { search: string; status: string; assignee: string };
@@ -32,10 +32,10 @@ export function groupTasks(tasks: Task[], mode: GroupMode): TaskGroup[] {
       if (!task.departments.length) add('none', 'Без отдела', task);
       for (const department of task.departments) add(String(department.id), department.title, task);
     } else if (mode === 'events' || mode === 'department-card') {
-      add(task.event ? String(task.event.id) : 'none', task.event?.title || (mode === 'department-card' ? 'Общие задачи отдела' : 'Без мероприятия'), task);
+      add(task.event ? String(task.event.id) : 'none', task.event?.title || (mode === 'department-card' ? 'Общие таски отдела' : 'Без мероприятия'), task);
     } else if (mode === 'general') {
-      if (!task.event && !task.departments.length) add('all', 'Общие задачи', task);
-    } else add('all', 'Задачи мероприятия', task);
+      if (!task.event && !task.departments.length) add('all', 'Общие таски', task);
+    } else add('all', 'Таски мероприятия', task);
   }
   return [...groups.values()].sort((a, b) => a.key === 'none' ? 1 : b.key === 'none' ? -1 : a.label.localeCompare(b.label, 'ru'));
 }

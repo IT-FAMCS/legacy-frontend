@@ -1,4 +1,4 @@
-﻿import { TasksBoard } from '../../features/tasks/TasksBoard';
+import { TasksBoard } from '../../features/tasks/TasksBoard';
 import { useState, useEffect, useRef, useCallback, type KeyboardEvent } from "react";
 import { useParams, useNavigate, useBlocker } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -309,7 +309,7 @@ export function CardPage() {
 
       {hasTasks && !isEdit && <div className="card-task-tabs" role="tablist" aria-label="Раздел карточки">
         <button id="card-info-tab" role="tab" aria-selected={!showTasks} aria-controls="card-info-panel" tabIndex={showTasks ? -1 : 0} onClick={() => setTaskCardId(null)} onKeyDown={event => { if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') { event.preventDefault(); setTaskCardId(numericCardId); document.getElementById('card-tasks-tab')?.focus(); } }}>Информация</button>
-        <button id="card-tasks-tab" role="tab" aria-selected={showTasks} aria-controls="card-tasks-panel" tabIndex={showTasks ? 0 : -1} onClick={() => setTaskCardId(numericCardId)} onKeyDown={event => { if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') { event.preventDefault(); setTaskCardId(null); document.getElementById('card-info-tab')?.focus(); } }}>Задачи</button>
+        <button id="card-tasks-tab" role="tab" aria-selected={showTasks} aria-controls="card-tasks-panel" tabIndex={showTasks ? 0 : -1} onClick={() => setTaskCardId(numericCardId)} onKeyDown={event => { if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') { event.preventDefault(); setTaskCardId(null); document.getElementById('card-info-tab')?.focus(); } }}>Таски</button>
       </div>}
       {showTasks && cardData && <div id="card-tasks-panel" role="tabpanel" aria-labelledby="card-tasks-tab"><TasksBoard key={cardData.id} context={cardData} /></div>}
       <div id="card-info-panel" role={hasTasks ? 'tabpanel' : undefined} aria-labelledby={hasTasks ? 'card-info-tab' : undefined} hidden={showTasks}>

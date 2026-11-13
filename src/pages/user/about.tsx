@@ -1,3 +1,6 @@
+import { TasksBoard } from '../../features/tasks/TasksBoard';
+import { ProfileTabs, type ProfileTab } from './ProfileTabs';
+import './profile-tabs.css';
 import { AccountWarnings } from "../../components/AccountWarnings";
 import { ProfileEquipment } from "../../components/ProfileEquipment";
 import Button from "../../components/Button";
@@ -41,7 +44,7 @@ const ACTIVITY_ACTION_LABEL: Record<ActivityLogEntry["action"], string> = {
 };
 
 const CardActivity = ({ userLogin, canView, targetUserId, currentUserId }: VisitHistoryProps) => {
-  const { data: entries = [] } = useQuery({
+  const { data: entries = [], isPending, error } = useQuery({
     queryKey: ["activity", "cards", userLogin || "me", targetUserId ?? currentUserId],
     queryFn: ({ signal }) => getUserCardActivity({ signal, userId: targetUserId }),
     enabled: canView,
@@ -58,12 +61,12 @@ const CardActivity = ({ userLogin, canView, targetUserId, currentUserId }: Visit
       <h3 style={{ fontSize: "1.5rem", marginBottom: "16px", color: "var(--сolor-dark-grayish-blue)" }}>
         Активность по карточкам
       </h3>
-      {entries.length > 0 ? (
+      {isPending ? <p role="status">Загружаем активность…</p> : error ? <p role="alert">{error.message}</p> : entries.length > 0 ? (
         <>
           <div className="table-scroll">
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
-                <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
+                <tr style={{ backgroundColor: "#f5f5fd", color: "#777b9d" }}>
                   <th style={{ padding: "10px", textAlign: "left" }}>Действие</th>
                   <th style={{ padding: "10px", textAlign: "left" }}>Изменения</th>
                   <th style={{ padding: "10px", textAlign: "left" }}>Когда</th>
@@ -98,7 +101,7 @@ const CardActivity = ({ userLogin, canView, targetUserId, currentUserId }: Visit
 };
 
 const VisitHistory = ({ userLogin, canView, targetUserId, currentUserId }: VisitHistoryProps) => {
-  const { data: cardVisits = [] } = useQuery({
+  const { data: cardVisits = [], isPending, error } = useQuery({
     queryKey: ["visits", "cards", userLogin || "me", targetUserId ?? currentUserId],
     queryFn: ({ signal }) => getVisitHistory({ signal, type: "cards", userId: targetUserId }),
     enabled: canView,
@@ -114,14 +117,14 @@ const VisitHistory = ({ userLogin, canView, targetUserId, currentUserId }: Visit
       <h3 style={{ fontSize: "1.5rem", marginBottom: "16px", color: "var(--сolor-dark-grayish-blue)" }}>
         История просмотра карточек
       </h3>
-      {cardVisits.length > 0 ? (
+      {isPending ? <p role="status">Загружаем историю просмотров…</p> : error ? <p role="alert">{error.message}</p> : cardVisits.length > 0 ? (
         <div className="table-scroll">
           <table style={{
             width: "100%",
             borderCollapse: "collapse",
           }}>
             <thead>
-              <tr style={{ backgroundColor: "#686ACF", color: "white" }}>
+              <tr style={{ backgroundColor: "#f5f5fd", color: "#777b9d" }}>
                 <th style={{ padding: "10px", textAlign: "left" }}>Название карточки</th>
                 <th style={{ padding: "10px", textAlign: "left" }}>Дата просмотра</th>
               </tr>
@@ -235,6 +238,7 @@ export function AboutUser() {
   const logoutAction = useUserStore((s) => s.logout);
   const [isEdit, setIsEdit] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<ProfileTab>("info");
   const navigate = useNavigate();
   const params = useParams<{ login?: string }>();
   const queryClient = useQueryClient();
@@ -266,6 +270,7 @@ export function AboutUser() {
   const canEditTargetUser = canEditAnyUser && !isOwnProfile && targetUser?.login !== currentUser?.login;
   const canEditSelf = false;
   const canViewOthersHistory = canEditAnyUser;
+  const canSeeVisits = isOwnProfile || (!!user?.id && user.id === currentUser?.id) || canViewOthersHistory;
 
   return (
     <div style={{
@@ -275,7 +280,7 @@ export function AboutUser() {
       flexDirection: "column",
       gap: "16px",
       padding: "24px",
-      maxWidth: "800px",
+      maxWidth: activeTab === "tasks" ? "1240px" : "900px",
       margin: "0 auto",
       marginTop: "var(--header-height)",
     }}>
@@ -283,6 +288,8 @@ export function AboutUser() {
         {isOwnProfile ? "Личный кабинет" : "Профиль пользователя"}
       </h2>
       
+      <ProfileTabs active={activeTab} onChange={setActiveTab} />
+      <div id="profile-info-panel" role="tabpanel" aria-labelledby="profile-info-tab" hidden={activeTab !== "info"}>
       <div style={{
         backgroundColor: "var(--color-alabaster-grey)",
         borderRadius: "10px",
@@ -346,13 +353,17 @@ export function AboutUser() {
       {user?.id && <ProfileEquipment userId={user.id} />}
       {user?.id && <AccountWarnings userId={user.id} name={`${user.last_name || ""} ${user.first_name || ""}`.trim()} />}
 
+      </div>
+      {activeTab === "tasks" && <div id="profile-tasks-panel" role="tabpanel" aria-labelledby="profile-tasks-tab">{user?.id ? <TasksBoard key={user.id} assigneeId={user.id} profileName={`${user.last_name || ""} ${user.first_name || ""}`.trim()} /> : <p role="status">Загружаем профиль…</p>}</div>}
       {isEdit && <EditUser setIsEdit={setIsEdit} targetUser={targetUser} />}
       {isPasswordOpen && <OwnPasswordModal setIsOpen={setIsPasswordOpen} />}
       
-      {(isOwnProfile || canViewOthersHistory) && (
+      {activeTab === "activity" && user?.id && <div id="profile-activity-panel" role="tabpanel" aria-labelledby="profile-activity-tab" className="profile-activity">
+      {!canSeeVisits && !canViewCardActivity && <p className="task-hint">История просмотров и активность этого пользователя недоступны для вашей роли.</p>}
+      {canSeeVisits && (
         <VisitHistory
           userLogin={params.login}
-          canView={!!(isOwnProfile || canViewOthersHistory)}
+          canView={!!canSeeVisits}
           targetUserId={targetUser?.id}
           currentUserId={currentUser?.id}
         />
@@ -366,6 +377,7 @@ export function AboutUser() {
           currentUserId={currentUser?.id}
         />
       )}
+      </div>}
     </div>
   );
 }

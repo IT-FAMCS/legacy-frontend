@@ -1,4 +1,4 @@
-﻿import { useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getTaskHistory, type Task } from '../../api/tasks';
 import { formatDateTime } from '../../utils/date';
 import { TaskDialog } from './TaskDialog';
@@ -13,11 +13,11 @@ function fieldValue(task: Task | null, key: string): string {
 }
 export function TaskHistory({ task, onClose }: { task: Task; onClose: () => void }) {
   const query = useQuery({ queryKey: ['task-history', task.id], queryFn: ({ signal }) => getTaskHistory(task.id, signal), staleTime: 0 });
-  return <TaskDialog title="История задачи" onClose={onClose}>
+  return <TaskDialog title="История таски" onClose={onClose}>
     <p className="task-history-title">{task.title}</p>
     {query.isPending ? <p role="status">Загружаем историю…</p> : query.isError ? <p role="alert" className="task-error">{query.error.message}</p> :
       <ol className="task-timeline">{query.data.map(entry => <li key={entry.id}>
-        <div className="task-timeline-heading"><strong>{entry.action === 'create' ? 'Создана задача' : entry.action === 'archive' ? 'Задача удалена в архив' : 'Изменена задача'}</strong><time dateTime={entry.created_at}>{formatDateTime(entry.created_at)}</time></div>
+        <div className="task-timeline-heading"><strong>{entry.action === 'create' ? 'Создана таска' : entry.action === 'archive' ? 'Таска перенесена в архив' : 'Изменена таска'}</strong><time dateTime={entry.created_at}>{formatDateTime(entry.created_at)}</time></div>
         <p className="task-hint">{entry.actor_name}</p>
         {entry.restricted ? <p>Подробности скрыты из-за ограничений доступа к связанным карточкам.</p> :
           <dl className="task-changes">{Object.entries(labels).filter(([key]) => !entry.before || JSON.stringify(entry.before[key as keyof Task]) !== JSON.stringify(entry.after?.[key as keyof Task])).map(([key, label]) =>

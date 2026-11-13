@@ -7,3 +7,5 @@ Views: departments, events, and general tasks; expandable tables, status/respons
 Check with `npm test`, `npm run lint`, `npm run build`. Browser test: run backend `tests/serve_tasks_smoke.py` with a fresh temporary DB, build frontend with `VITE_API_BASE_URL=http://127.0.0.1:4175`, then run `node --experimental-websocket tests/browser-tasks-smoke.mjs`. Screenshots go to `../.tools/browser` by default. Stop the fixture when done. Chrome may be selected with CHROME_BIN.
 
 No Telegram integration is delivered; the backend task IDs and audited changes are ready for a future notification service.
+
+Profile tabs: Information, active assigned tasks, and card visits/activity. Existing history permissions remain enforced. Archive controls are labeled 'В архив' in both rows and the editor, and only chair/deputies receive them. Equipment lists and dialogs use light surfaces with violet accents.

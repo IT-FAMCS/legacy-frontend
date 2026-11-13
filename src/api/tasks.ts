@@ -1,4 +1,4 @@
-﻿export type TaskCard = { id: number; title: string };
+export type TaskCard = { id: number; title: string };
 export type TaskUser = { id: number; name: string; login: string; active: boolean };
 export type Task = {
   id: number; title: string; description: string; deadline: string | null;
@@ -23,8 +23,8 @@ async function request<T>(path: string, method = 'GET', body?: unknown, signal?:
   return response.json();
 }
 export const getTaskOptions = (signal?: AbortSignal) => request<TaskOptions>('/options', 'GET', undefined, signal);
-export const getTasks = (cardId?: number, archived = false, signal?: AbortSignal) =>
-  request<Task[]>(`?archived=${archived}${cardId === undefined ? '' : '&card_id=' + cardId}`, 'GET', undefined, signal);
+export const getTasks = (cardId?: number, archived = false, signal?: AbortSignal, scope?: { assigneeId?: number; activeOnly?: boolean }) =>
+  request<Task[]>(`?archived=${archived}${cardId === undefined ? '' : '&card_id=' + cardId}${scope?.assigneeId === undefined ? '' : '&assignee_id=' + scope.assigneeId}${scope?.activeOnly ? '&active_only=true' : ''}`, 'GET', undefined, signal);
 export const createTask = (data: TaskInput) => request<Task>('', 'POST', data);
 export const updateTask = (id: number, data: Partial<TaskInput> & { version: number; completed?: boolean }) => request<Task>(`/${id}`, 'PATCH', data);
 export const archiveTask = (id: number, version: number) => request<Task>(`/${id}`, 'DELETE', { version });
