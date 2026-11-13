@@ -1,3 +1,4 @@
+import { ResponsibilityZones } from '../../features/zones/ResponsibilityZones';
 import { TasksBoard } from '../../features/tasks/TasksBoard';
 import { useState, useEffect, useRef, useCallback, type KeyboardEvent } from "react";
 import { useParams, useNavigate, useBlocker } from "react-router";
@@ -91,6 +92,7 @@ export function CardPage() {
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = useState(false);
   const [taskCardId, setTaskCardId] = useState<number | null>(null);
+  const [zoneCardId, setZoneCardId] = useState<number | null>(null);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
   const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
@@ -290,7 +292,10 @@ export function CardPage() {
   };
 
   const hasTasks = cardData?.category_name === 'Отделы и направления' || cardData?.category_name === 'Мероприятия';
-  const showTasks = hasTasks && !isEdit && taskCardId === numericCardId;
+  const showZones = cardData?.category_name === 'Мероприятия' && !isEdit && zoneCardId === numericCardId;
+  const showTasks = hasTasks && !isEdit && !showZones && taskCardId === numericCardId;
+  const sections = [{key:'info',label:'Информация'},{key:'tasks',label:'Таски'},...(cardData?.category_name === 'Мероприятия' ? [{key:'zones',label:'Зоны ответственности'}] : [])];
+  const selectSection = (key:string) => { setTaskCardId(key === 'tasks' ? numericCardId : null); setZoneCardId(key === 'zones' ? numericCardId : null); };
 
   if (isLoading) {
     return (
@@ -307,12 +312,10 @@ export function CardPage() {
         <Button label="← Назад" fillColor style={{ border: "none" }} onClick={() => navigate(-1)} />
       </div>
 
-      {hasTasks && !isEdit && <div className="card-task-tabs" role="tablist" aria-label="Раздел карточки">
-        <button id="card-info-tab" role="tab" aria-selected={!showTasks} aria-controls="card-info-panel" tabIndex={showTasks ? -1 : 0} onClick={() => setTaskCardId(null)} onKeyDown={event => { if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') { event.preventDefault(); setTaskCardId(numericCardId); document.getElementById('card-tasks-tab')?.focus(); } }}>Информация</button>
-        <button id="card-tasks-tab" role="tab" aria-selected={showTasks} aria-controls="card-tasks-panel" tabIndex={showTasks ? 0 : -1} onClick={() => setTaskCardId(numericCardId)} onKeyDown={event => { if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') { event.preventDefault(); setTaskCardId(null); document.getElementById('card-info-tab')?.focus(); } }}>Таски</button>
-      </div>}
+      {hasTasks && !isEdit && <div className="card-task-tabs" role="tablist" aria-label="Раздел карточки">{sections.map((section,index)=><button key={section.key} id={`card-${section.key}-tab`} role="tab" aria-controls={`card-${section.key}-panel`} aria-selected={section.key==='zones'?showZones:section.key==='tasks'?showTasks:!showTasks&&!showZones} tabIndex={(section.key==='zones'?showZones:section.key==='tasks'?showTasks:!showTasks&&!showZones)?0:-1} onClick={()=>selectSection(section.key)} onKeyDown={event=>{const next=event.key==='ArrowRight'?(index+1)%sections.length:event.key==='ArrowLeft'?(index+sections.length-1)%sections.length:-1;if(next<0)return;event.preventDefault();selectSection(sections[next].key);document.getElementById(`card-${sections[next].key}-tab`)?.focus();}}>{section.label}</button>)}</div>}
+      {showZones && <div id="card-zones-panel" role="tabpanel" aria-labelledby="card-zones-tab"><ResponsibilityZones key={numericCardId} cardId={numericCardId}/></div>}
       {showTasks && cardData && <div id="card-tasks-panel" role="tabpanel" aria-labelledby="card-tasks-tab"><TasksBoard key={cardData.id} context={cardData} /></div>}
-      <div id="card-info-panel" role={hasTasks ? 'tabpanel' : undefined} aria-labelledby={hasTasks ? 'card-info-tab' : undefined} hidden={showTasks}>
+      <div id="card-info-panel" role={hasTasks ? 'tabpanel' : undefined} aria-labelledby={hasTasks ? 'card-info-tab' : undefined} hidden={showTasks || showZones}>
       <div style={{ backgroundColor: "var(--color-alabaster-grey)", borderRadius: "10px", padding: "32px" }}>
         {isEdit ? (
           <>

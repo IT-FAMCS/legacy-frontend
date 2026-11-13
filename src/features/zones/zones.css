@@ -1,0 +1,27 @@
+.zone-board { color:#343650; padding:4px 0 24px; }
+.zone-counters { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-bottom:20px; }
+.zone-counters>div { background:white; border:1px solid #e5e5f2; border-radius:13px; padding:18px 20px; }
+.zone-counters span { display:block; font-size:12px; color:#8b8ea6; margin-bottom:7px; }
+.zone-counters strong { font-size:30px; }
+.zone-counters .zone-counter-closed { background:#f0f8f2; border-color:#dcebe0; color:#648970; }
+.zone-counters .zone-counter-open { background:#fff9ef; border-color:#f1e4cf; color:#af8a50; }
+.zone-toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+.zone-surface { background:white; border:1px solid #e5e5f2; border-radius:14px; overflow:hidden; }
+.zone-table { min-width:850px; border-collapse:collapse; width:100%; text-align:left; font-size:13px; }
+.zone-table thead { background:#f8f8fd; color:#8b8fa8; }
+.zone-table thead th { font-size:10px; text-transform:uppercase; letter-spacing:.06em; padding:13px 18px; }
+.zone-table td,.zone-table th[scope=row] { padding:18px; border-top:1px solid #ececf5; vertical-align:top; }
+.zone-table th[scope=row] { min-width:170px; max-width:280px; overflow-wrap:anywhere; }
+.zone-person { display:flex; flex-direction:column; gap:3px; margin-bottom:10px; min-width:130px; }
+.zone-person strong { font-size:12px; font-weight:550; }
+.zone-person a { color:#8584bd; font-size:12px; }
+.zone-person small,.zone-person>span { color:#9b9cb0; font-size:11px; }
+.zone-person-inactive { opacity:.6; }
+.zone-unfilled { color:#b29a76; font-size:12px; }
+.zone-required { display:block; color:#9b9db0; font-size:10px; margin-top:5px; white-space:nowrap; }
+.zone-status { border-radius:6px; padding:5px 8px; white-space:nowrap; font-size:11px; }
+.zone-closed { background:#edf7ef; color:#648b70; }
+.zone-open { background:#fcf5e9; color:#b19260; }
+.zone-form .task-picker-options { height:160px; }
+@media(max-width:600px) { .zone-counters { gap:8px; } .zone-counters>div { padding:14px 10px; } .zone-counters span { font-size:10px; } .zone-counters strong { font-size:25px; } .card-task-tabs { max-width:100%; } .card-task-tabs button { font-size:12px; padding:9px; } }
+.zone-board { --task-ink:#282943; --task-muted:#727487; --task-line:#e9e9f2; --task-purple:#686acf; }
