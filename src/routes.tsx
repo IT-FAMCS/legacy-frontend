@@ -1,3 +1,4 @@
+﻿import { TasksPage } from './features/tasks/TasksBoard';
 import { createBrowserRouter } from "react-router";
 import { LandingPage } from "./pages/landing/landing-page";
 import HomePage from "./pages/home/home-page";
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
+      { path: '/tasks', element: <ProtectedRoute><TasksPage /></ProtectedRoute> },
       { path: "/equipment", element: <ProtectedRoute><EquipmentPage /></ProtectedRoute> },
       {
         path: "/trainee-access",
@@ -99,6 +101,7 @@ const router = createBrowserRouter([
     path: "/trainee",
     element: <TraineeRoute />,
     children: [
+
       { index: true, element: <TraineeHomePage /> },
       { path: "card/:cardId", element: <TraineeCardPage /> },
     ],

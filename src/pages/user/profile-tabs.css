@@ -1,0 +1,13 @@
+﻿.profile-tabs { display:flex; width:fit-content; padding:4px; gap:4px; background:#e8e8f5; border-radius:12px; }
+.profile-tabs button { padding:11px 20px; border:0; border-radius:9px; background:transparent; color:#7b7e9b; font:inherit; font-size:14px; font-weight:650; cursor:pointer; }
+.profile-tabs button[aria-selected=true] { background:white; color:#6264b9; box-shadow:0 2px 8px #32325210; }
+.profile-tabs button:focus-visible { outline:3px solid #aaaaf0; outline-offset:2px; }
+#profile-tasks-panel .tasks-board { padding:16px 0 24px; }
+#profile-info-panel { width:100%; }
+.profile-activity table { font-size:13px; }
+.profile-activity th { font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
+.profile-activity tbody tr { border-color:#e9eaf4 !important; }
+.profile-activity h3 { font-size:19px !important; }
+.task-editor-archive { margin-right:auto; color:#7273b4; background:#f5f4ff; border-color:#dfdff3; }
+.task-archive-action { padding:5px 9px; border-radius:6px; background:#f2f1fc; color:#7575b1; white-space:nowrap; }
+@media(max-width:540px) { .profile-tabs { width:100%; } .profile-tabs button { flex:1; padding:11px 9px; font-size:13px; } }
