@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import Icon from "./Icon.tsx";
 import Button from "./Button.tsx";
 import { useUserStore } from "../stores/user";
@@ -72,6 +72,7 @@ const Header = () => {
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <nav className={`header-nav${menuOpen ? " header-nav-open" : ""}`}>
+            {isAuthenticated && <Button label="Задачи" onClick={() => goTo('/tasks')} style={{ border: 'none' }} hoverStyle={{ scale: 1.08 }} />}
             {isAuthenticated && (
               <Button label="Оборудка" onClick={() => goTo("/equipment")}
                 style={{ border: "none" }} hoverStyle={{ scale: 1.08 }} />
