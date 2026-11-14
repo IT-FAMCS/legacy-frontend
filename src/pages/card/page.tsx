@@ -382,7 +382,7 @@ export function CardPage() {
                   <input type="checkbox" checked={traineeAccess} onChange={e => setTraineeAccess(e.target.checked)} />
                   Доступна стажёрам
                 </label>
-                <small style={{ color: "#666" }}>Разрешает чтение по общему коду, независимо от ограничений для сотрудников ниже.</small>
+                <small style={{ color: "#666" }}>Разрешает чтение по общему коду, независимо от ограничений для актива ниже.</small>
                 <MultiSelect options={positionOptions} selectedValues={selectedPositions} onChange={setSelectedPositions} placeholder="Выберите должности" label="Доступ для должностей" />
                 <small style={{ color: "#666", fontSize: "12px" }}>Оставьте пустым для доступа всем</small>
                 <div>
