@@ -822,7 +822,7 @@ function parseBlocks(lines: string[], keyPrefix: string, options: ParseOptions):
 
       blocks.push(
         options.allowUserLists === false ? (
-          <p className="markdown-department-list-empty" key={blockKey}>Список участников доступен сотрудникам.</p>
+          <p className="markdown-department-list-empty" key={blockKey}>Список участников доступен активу.</p>
         ) : departmentNames.length > 0 ? (
           <DepartmentUserList key={blockKey} departmentNames={departmentNames} />
         ) : (
