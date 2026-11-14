@@ -8,7 +8,6 @@ import Button from "../../../../components/Button";
 import { useUserStore } from "../../../../stores/user";
 import { getCards } from "../../../../api/category";
 import { useCanEditCategories, useCanEditCards } from "../../../../hooks/use-permissions";
-import { MarkdownRenderer } from "../../../../components/MarkdownRenderer";
 
 type CategoryWrapperProps = {
   category: Category;
@@ -133,7 +132,7 @@ const CategoryWrapper = ({ category }: CategoryWrapperProps) => {
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
               }}>
-                <MarkdownRenderer content={card.title} />
+                {card.title}
               </h4>
               <p style={{
                 fontSize: "0.9rem",
@@ -147,7 +146,7 @@ const CategoryWrapper = ({ category }: CategoryWrapperProps) => {
                 flex: 1,
                 margin: 0,
               }}>
-                {card.content ? <MarkdownRenderer content={card.content} /> : "Нет содержимого"}
+                {card.content || "Нет содержимого"}
               </p>
               {(card.access_positions || card.access_logins) && (
                 <div style={{
