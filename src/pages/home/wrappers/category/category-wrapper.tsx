@@ -1,3 +1,4 @@
+import { MarkdownRenderer } from "../../../../components/MarkdownRenderer";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
@@ -146,7 +147,7 @@ const CategoryWrapper = ({ category }: CategoryWrapperProps) => {
                 flex: 1,
                 margin: 0,
               }}>
-                {card.content || "Нет содержимого"}
+                {card.content ? <MarkdownRenderer content={card.content} plainText /> : "Нет содержимого"}
               </p>
               {(card.access_positions || card.access_logins) && (
                 <div style={{

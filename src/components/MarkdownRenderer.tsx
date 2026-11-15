@@ -1,10 +1,11 @@
-import { Fragment, useMemo, type ReactNode } from "react";
+import { Fragment, isValidElement, useMemo, type ReactNode } from "react";
 import "../styles/markdown.css";
 import { DepartmentUserList } from "./DepartmentUserList";
 
 type MarkdownRendererProps = {
   content: string;
   className?: string;
+  plainText?: boolean;
   onTaskToggle?: (taskIndex: number, checked: boolean) => void;
   onWordDoubleClick?: (word: string) => void;
   allowUserLists?: boolean;
@@ -997,9 +998,25 @@ function parseBlocks(lines: string[], keyPrefix: string, options: ParseOptions):
   return blocks;
 }
 
+// Read text from the same parsed nodes used by the full card view.
+// Keep inline spans together and separate blocks so words do not run together.
+function previewText(node: ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(previewText).join("");
+  if (!isValidElement<{ children?: ReactNode; alt?: string }>(node)) return "";
+  if (node.type === DepartmentUserList) return "";
+  if (node.type === "img") return node.props.alt || "";
+  if (node.type === "br" || node.type === "hr") return " ";
+  const text = previewText(node.props.children);
+  const block = typeof node.type === "string" &&
+    /^(p|h[1-6]|li|ul|ol|blockquote|pre|div|details|summary|table|thead|tbody|tr|th|td)$/.test(node.type);
+  return block ? ` ${text} ` : text;
+}
+
 export function MarkdownRenderer({
   content,
   className = "",
+  plainText = false,
   onTaskToggle,
   onWordDoubleClick,
   allowUserLists = true,
@@ -1020,6 +1037,8 @@ export function MarkdownRenderer({
     const word = selectedText.match(/[\p{L}\p{N}_-]+/u)?.[0] || selectedText;
     onWordDoubleClick(word);
   };
+
+  if (plainText) return <>{previewText(renderedContent).replace(/\s+/g, " ").trim()}</>;
 
   return (
     <div className={`markdown-content ${className}`.trim()} onDoubleClick={handleDoubleClick}>
