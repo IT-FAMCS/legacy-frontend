@@ -140,7 +140,7 @@ export function AddCard({
                 <input type="checkbox" checked={traineeAccess} onChange={e => setTraineeAccess(e.target.checked)} />
                 Доступна стажёрам
               </label>
-              <small style={{ color: "rgba(255,255,255,0.8)" }}>Разрешает чтение по общему коду. По умолчанию карточку видят только участники с доступом.</small>
+              <small style={{ color: "rgba(255,255,255,0.8)" }}>Разрешает чтение по общему коду. По умолчанию карточку видят только представители актива с доступом.</small>
               <MultiSelect
                 options={positionOptions}
                 selectedValues={selectedPositions}

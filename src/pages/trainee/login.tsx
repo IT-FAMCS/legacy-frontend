@@ -49,7 +49,7 @@ export function TraineeLoginPage() {
           {login.isPending ? "Проверяем код…" : "Открыть базу знаний"}
         </button>
       </form>
-      <Link to="/login" className="trainee-back-link">Вход для участников</Link>
+      <Link to="/login" className="trainee-back-link">Вход для актива</Link>
     </section>
   </main>;
 }

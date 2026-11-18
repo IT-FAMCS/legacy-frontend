@@ -80,7 +80,7 @@ test("trainee markdown disables live member lists in paragraphs, spoilers, quote
     "| Люди |\n| --- |\n| :::users IT |",
   ]) {
     const html = renderToStaticMarkup(<MarkdownRenderer content={content} allowUserLists={false} />);
-    assert.match(html, /Список участников доступен сотрудникам/);
+    assert.match(html, /Список участников доступен активу/);
     assert.doesNotMatch(html, /private-member/);
   }
   const html = renderToStaticMarkup(<MarkdownRenderer content={"# Привет\n\n- [ ] Прочитать"} allowUserLists={false} />);

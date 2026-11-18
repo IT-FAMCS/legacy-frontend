@@ -133,9 +133,9 @@ try {
   assert.equal(await evaluate("document.querySelector('header').innerText.toLowerCase().includes('выйти')"), false);
   assert.equal(await evaluate("!!localStorage.getItem('trainee_token') && !localStorage.getItem('jwt_token')"), true);
   await click(".trainee-card-link");
-  await waitFor("document.body.innerText.includes('Список участников доступен сотрудникам')", "safe guest Markdown");
+  await waitFor("document.body.innerText.includes('Список участников доступен активу')", "safe guest Markdown");
   await command("Page.reload");
-  await waitFor("document.body.innerText.includes('Список участников доступен сотрудникам')", "session survives reload");
+  await waitFor("document.body.innerText.includes('Список участников доступен активу')", "session survives reload");
   const guestRequests = apiRequests.slice(guestStart);
   assert.equal(guestRequests.every(url => url.includes("/api/trainee/")), true, JSON.stringify(guestRequests));
   assert.equal(runtimeErrors.length, 0, JSON.stringify(runtimeErrors));

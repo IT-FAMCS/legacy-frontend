@@ -36,7 +36,7 @@ export function TraineeAccessPage() {
     <p>Управлять кодом могут только администратор, председатель и его заместители.</p></div>;
 
   return <div className="trainee-main trainee-management">
-    <p className="trainee-eyebrow">Приглашаем новых участников</p><h1>Доступ стажёров</h1>
+    <p className="trainee-eyebrow">Приглашаем в студактив</p><h1>Доступ стажёров</h1>
     <p className="trainee-muted">Общий код открывает стажёрам карточки с включённой настройкой «Доступна стажёрам».</p>
     <section className="trainee-panel">
       <h2>Код доступа</h2>
