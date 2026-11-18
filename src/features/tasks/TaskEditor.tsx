@@ -2,6 +2,7 @@ import { TaskApiError, getTask } from '../../api/tasks';
 import { rebaseDraft, taskInput } from './task-view';
 import { useState } from 'react';
 import type { Task, TaskInput, TaskOptions } from '../../api/tasks';
+import { TaskNotifications } from './TaskNotifications';
 import { TaskDialog } from './TaskDialog';
 export type CardContext = { id: number; title: string; category_name?: string };
 function Picker({ label, options, values, onChange }: { label: string; options: { id: number; label: string }[]; values: number[]; onChange: (ids: number[]) => void }) {
@@ -26,6 +27,7 @@ export function TaskEditor({ task, context, options, onSave, onClose, onArchive 
   const close = () => { if (!saving && (JSON.stringify(initial) === JSON.stringify(value) || window.confirm('Закрыть без сохранения изменений?'))) onClose(); };
   const users = [...options.users, ...(baseline?.assignees.filter(u => !options.users.some(o => o.id === u.id)) || [])];
   return <TaskDialog title={task ? 'Редактировать таску' : 'Новая таска'} onClose={close}>
+    {task && <><p className="task-hint">Автор: {task.creator_name}</p><TaskNotifications taskId={task.id} /></>}
     <form className="task-form" onSubmit={async event => { event.preventDefault(); setError(''); setSaving(true);
       try { await onSave({ ...value, title: value.title.trim() }, baseline?.version); }
       catch (reason) {

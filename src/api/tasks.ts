@@ -2,9 +2,9 @@ export type TaskCard = { id: number; title: string };
 export type TaskUser = { id: number; name: string; login: string; active: boolean };
 export type Task = {
   id: number; title: string; description: string; deadline: string | null;
-  created_at: string; updated_at: string; creator_id: number; event_card_id: number | null;
+  created_at: string; updated_at: string; creator_id: number; creator_name: string; event_card_id: number | null;
   event: TaskCard | null; departments: TaskCard[]; department_card_ids: number[];
-  assignees: TaskUser[]; assignee_ids: number[]; completed: boolean; archived: boolean; version: number;
+  assignees: TaskUser[]; assignee_ids: number[]; completed: boolean; can_change_status?: boolean; archived: boolean; version: number;
 };
 export type TaskOptions = { departments: TaskCard[]; events: TaskCard[]; users: TaskUser[]; can_delete: boolean };
 export type TaskInput = Pick<Task, 'title' | 'description' | 'deadline' | 'event_card_id' | 'department_card_ids' | 'assignee_ids'>;
@@ -20,6 +20,7 @@ async function request<T>(path: string, method = 'GET', body?: unknown, signal?:
     headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: body === undefined ? undefined : JSON.stringify(body) });
   if (!response.ok) throw new TaskApiError((await readErrorResponse(response)) || `Ошибка ${response.status}`, response.status);
+  if (response.status === 204) return undefined as T;
   return response.json();
 }
 export const getTaskOptions = (signal?: AbortSignal) => request<TaskOptions>('/options', 'GET', undefined, signal);
@@ -28,6 +29,12 @@ export const getTasks = (cardId?: number, archived = false, signal?: AbortSignal
 export const createTask = (data: TaskInput) => request<Task>('', 'POST', data);
 export const updateTask = (id: number, data: Partial<TaskInput> & { version: number; completed?: boolean }) => request<Task>(`/${id}`, 'PATCH', data);
 export const archiveTask = (id: number, version: number) => request<Task>(`/${id}`, 'DELETE', { version });
+export const deleteArchivedTask = (id: number, version: number) => request<void>(`/${id}/permanent`, 'DELETE', { version });
+const notificationsPath = (id?: number) => `${id === undefined ? '' : '/' + id}/preferences/notifications`;
+export const getTaskNotifications = (id?: number, signal?: AbortSignal) =>
+  request<{ enabled: boolean }>(notificationsPath(id), 'GET', undefined, signal);
+export const setTaskNotifications = (id: number | undefined, enabled: boolean) =>
+  request<{ enabled: boolean }>(notificationsPath(id), 'PUT', { enabled });
 export const getTaskHistory = (id: number, signal?: AbortSignal) => request<TaskHistoryEntry[]>(`/${id}/history`, 'GET', undefined, signal);
 
 

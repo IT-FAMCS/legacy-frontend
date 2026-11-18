@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router';
-import { TaskApiError, archiveTask, createTask, getTaskOptions, getTasks, updateTask, type Task } from '../../api/tasks';
+import { TaskApiError, archiveTask, createTask, deleteArchivedTask, getTaskOptions, getTasks, updateTask, type Task } from '../../api/tasks';
 import { formatDateTime } from '../../utils/date';
 import { TaskEditor, type CardContext } from './TaskEditor';
 import { TaskHistory } from './TaskHistory';
@@ -32,8 +32,21 @@ export function TasksBoard({ context, assigneeId, profileName }: { context?: Car
   const fail = (reason: Error) => { setNotice(''); setError(reason.message); void refresh(); };
   const create = useMutation({ mutationFn: createTask });
   const update = useMutation({ mutationFn: ({ task, data }: { task: Task; data: Parameters<typeof updateTask>[1] }) => updateTask(task.id, data) });
-  const archive = useMutation({ mutationFn: (task: Task) => archiveTask(task.id, task.version), onSuccess: () => { setRemoving(null); success('Таска перенесена в архив. История сохранена.'); }, onError: reason => { fail(reason); if (reason instanceof TaskApiError && reason.status === 409) setRemoving(null); } });
-  const busy = create.isPending || update.isPending || archive.isPending;
+  const remove = useMutation({
+    mutationFn: async (task: Task) => {
+      if (task.archived) await deleteArchivedTask(task.id, task.version);
+      else await archiveTask(task.id, task.version);
+    },
+    onSuccess: (_, task) => {
+      setRemoving(null);
+      success(task.archived ? 'Таска удалена навсегда.' : 'Таска перенесена в архив. История сохранена.');
+    },
+    onError: reason => {
+      fail(reason);
+      if (reason instanceof TaskApiError && [404, 409].includes(reason.status)) setRemoving(null);
+    },
+  });
+  const busy = create.isPending || update.isPending || remove.isPending;
   const allTasks = tasks.data || [];
   const effectiveMode = context ? context.category_name === 'Мероприятия' ? 'event-card' : 'department-card' : mode;
   const inView = effectiveMode === 'general' ? allTasks.filter(t => !t.event && !t.departments.length) : allTasks;
@@ -55,7 +68,7 @@ export function TasksBoard({ context, assigneeId, profileName }: { context?: Car
       <label><span>Статус</span><select value={status} onChange={e => setStatus(e.target.value)} aria-label="Статус"><option value="all">{assigneeId === undefined ? "Все статусы" : "Все действующие"}</option><option value="open">В работе</option>{assigneeId === undefined && <option value="done">Выполнены</option>}<option value="overdue">Просрочены</option></select></label>
       {assigneeId === undefined && <label><span>Ответственный</span><select value={assignee} onChange={e => setAssignee(e.target.value)} aria-label="Ответственный"><option value="">Все ответственные</option>{[...assignees.values()].sort((a, b) => a.name.localeCompare(b.name, 'ru')).map(u => <option key={u.id} value={u.id}>{u.name}</option>)}</select></label>}
       {assigneeId === undefined && <label className="task-archive-filter"><input type="checkbox" checked={archived} onChange={e => setArchived(e.target.checked)} /> Архив</label>}</div>
-    {options.data && !options.data.can_delete && !archived && <p className="task-hint">Переносить таски в архив могут председатель и заместители.</p>}
+    {options.data && !options.data.can_delete && !archived && <p className="task-hint">Переносить таски в архив могут администратор, председатель и заместители.</p>}
     {notice && <p role="status" className="task-notice">{notice}</p>}
     {(error || tasks.isError || options.isError) && <div role="alert" className="task-error">{error || tasks.error?.message || options.error?.message} <button className="task-link" onClick={() => { setError(''); void tasks.refetch(); void options.refetch(); }}>Обновить</button></div>}
     {tasks.isPending ? <p role="status" className="task-empty">Загружаем таски…</p> : !tasks.isError && groups.length === 0 ? <div className="task-empty"><span className="task-empty-mark" aria-hidden="true">✓</span><h2>{search || status !== 'all' || assignee ? 'Ничего не найдено' : archived ? 'В архиве пока нет тасок' : 'Здесь пока нет тасок'}</h2><p>{search || status !== 'all' || assignee ? 'Попробуйте изменить поиск или фильтры.' : assigneeId !== undefined ? 'Здесь появятся невыполненные таски, назначенные пользователю.' : 'Создайте первую таску — у каждого дела будет свой срок и ответственные.'}</p></div> :
@@ -67,16 +80,16 @@ export function TasksBoard({ context, assigneeId, profileName }: { context?: Car
               {task.description && <p className="task-description">{task.description}</p>}
               <div className="task-tags">{task.departments.map(dept => <span key={dept.id}>{dept.title}</span>)}{task.event && <span className="task-event-tag">{task.event.title}</span>}</div></td>
             <td><div className="task-assignees">{task.assignees.length ? task.assignees.map(user => <Link key={user.id} to={`/user/${encodeURIComponent(user.login)}`} title={user.active ? user.name : `${user.name} · аккаунт отключён`}><span className="task-avatar" aria-hidden="true">{user.name.slice(0, 1)}</span>{user.name}</Link>) : <span className="task-muted">Не назначены</span>}</div></td>
-            <td><time dateTime={task.created_at} className="task-date">{formatDateTime(task.created_at)}</time></td>
+            <td><time dateTime={task.created_at} className="task-date">{formatDateTime(task.created_at)}</time><div className="task-muted">Автор: {task.creator_name}</div></td>
             <td><span className={isOverdue(task) ? 'task-deadline task-overdue' : 'task-deadline'}>{deadlineLabel(task.deadline)}{isOverdue(task) && <small>Просрочено</small>}</span></td>
-            <td><label className={`task-status ${task.completed ? 'task-complete' : ''}`}><input type="checkbox" checked={task.completed} disabled={busy || task.archived} aria-label={`Выполнена: ${task.title}`} onChange={() => { update.mutate({ task, data: { version: task.version, completed: !task.completed } }, { onSuccess: () => success(task.completed ? 'Таска возвращена в работу' : 'Таска выполнена'), onError: fail }); }} />{task.completed ? 'Выполнена' : 'В работе'}</label></td>
-            <td><div className="task-row-actions"><button className="task-link" onClick={() => setHistory(task)}>История</button>{options.data?.can_delete && !task.archived && <button className="task-link task-archive-action" disabled={busy} onClick={() => setRemoving(task)}>В архив</button>}</div></td>
+            <td><label className={`task-status ${task.completed ? 'task-complete' : ''}`}><input type="checkbox" checked={task.completed} disabled={busy || task.archived || !task.can_change_status} title={!task.can_change_status ? 'Статус меняют автор и ответственные' : undefined} aria-label={`Выполнена: ${task.title}`} onChange={() => { update.mutate({ task, data: { version: task.version, completed: !task.completed } }, { onSuccess: () => success(task.completed ? 'Таска возвращена в работу' : 'Таска выполнена'), onError: fail }); }} />{task.completed ? 'Выполнена' : 'В работе'}</label></td>
+            <td><div className="task-row-actions"><button className="task-link" onClick={() => setHistory(task)}>История</button>{options.data?.can_delete && <button className="task-link task-archive-action" disabled={busy} onClick={() => { setError(''); setRemoving(task); }}>{task.archived ? 'Удалить навсегда' : 'В архив'}</button>}</div></td>
           </tr>)}</tbody></table></div></details>; })}</div>}
     {form && options.data && <TaskEditor key={form.task?.id || 'new'} task={form.task} context={context} options={options.data} onClose={() => setForm(null)} onArchive={options.data.can_delete && form.task ? latest => { setRemoving(latest); setForm(null); } : undefined}
       onSave={async (input, version) => { try { if (form.task) await update.mutateAsync({ task: form.task, data: { ...input, version: version ?? form.task.version } }); else await create.mutateAsync(input); setForm(null); success(form.task ? 'Изменения сохранены' : 'Таска создана'); } catch (reason) { void refresh(); throw reason; } }} />}
     {history && <TaskHistory task={history} onClose={() => setHistory(null)} />}
-    {removing && <TaskDialog title="Перенести таску в архив?" onClose={() => { if (!archive.isPending) setRemoving(null); }}><p>«{removing.title}» перейдёт в архив. История изменений сохранится.</p>
-      {error && <p role="alert" className="task-error">{error}</p>}<div className="task-form-footer"><button className="task-button" disabled={archive.isPending} onClick={() => setRemoving(null)}>Отмена</button><button className="task-button task-primary" disabled={archive.isPending} onClick={() => archive.mutate(removing)}>{archive.isPending ? 'Переносим…' : 'В архив'}</button></div></TaskDialog>}
+    {removing && <TaskDialog title={removing.archived ? 'Удалить таску навсегда?' : 'Перенести таску в архив?'} onClose={() => { if (!remove.isPending) setRemoving(null); }}><p>«{removing.title}» {removing.archived ? 'будет удалена вместе с историей изменений. Восстановить её будет невозможно.' : 'перейдёт в архив. История изменений сохранится.'}</p>
+      {error && <p role="alert" className="task-error">{error}</p>}<div className="task-form-footer"><button className="task-button" disabled={remove.isPending} onClick={() => setRemoving(null)}>Отмена</button><button className="task-button task-primary" disabled={remove.isPending} onClick={() => remove.mutate(removing)}>{remove.isPending ? 'Подождите…' : removing.archived ? 'Удалить навсегда' : 'В архив'}</button></div></TaskDialog>}
   </section>;
 }
 export function TasksPage() { return <TasksBoard />; }

@@ -110,3 +110,7 @@
    positions must not enlarge the mobile layout viewport beyond the table. */
 .task-table-scroll { position:relative; }
 .task-sr-only { left:0; top:0; }
+
+.task-notifications { margin: 12px 0; }
+.task-notifications label { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.task-notifications p { margin: 6px 0; font-size: .9em; }

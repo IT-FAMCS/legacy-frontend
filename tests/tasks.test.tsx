@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { groupTasks, filterTasks, isOverdue, rebaseDraft } from '../src/features/tasks/task-view';
-import type { Task } from '../src/api/tasks';
+import { archiveTask, deleteArchivedTask, getTaskNotifications, setTaskNotifications, type Task } from '../src/api/tasks';
 test('shared task grouping, filtering and local deadline boundaries', () => {
-const base: Task = { id: 1, title: 'План', description: '', deadline: '2026-11-12', created_at: '2026-11-01T00:00:00Z', updated_at: '2026-11-01T00:00:00Z', creator_id: 1, event_card_id: 20, event: { id: 20, title: 'Посвящение' }, department_card_ids: [10, 11], departments: [{ id: 10, title: 'IT' }, { id: 11, title: 'Культура' }], assignee_ids: [7], assignees: [{ id: 7, name: 'Анна', login: 'anna', active: true }], completed: false, archived: false, version: 1 };
+const base: Task = { id: 1, title: 'План', description: '', deadline: '2026-11-12', created_at: '2026-11-01T00:00:00Z', updated_at: '2026-11-01T00:00:00Z', creator_id: 1, creator_name: 'Анна', event_card_id: 20, event: { id: 20, title: 'Посвящение' }, department_card_ids: [10, 11], departments: [{ id: 10, title: 'IT' }, { id: 11, title: 'Культура' }], assignee_ids: [7], assignees: [{ id: 7, name: 'Анна', login: 'anna', active: true }], completed: false, archived: false, version: 1 };
 const general = { ...base, id: 2, event_card_id: null, event: null, department_card_ids: [], departments: [] };
 assert.deepEqual(Object.fromEntries(groupTasks([base, general], 'departments').map(g => [g.label, g.tasks.map(t => t.id)])), { IT: [1], 'Культура': [1], 'Без отдела': [2] });
 assert.deepEqual(groupTasks([base, general], 'events').map(g => [g.label, g.tasks.map(t => t.id)]), [['Посвящение', [1]], ['Без мероприятия', [2]]]);
@@ -25,4 +25,32 @@ test('conflict recovery reapplies only my changed fields and keeps other user up
   const draft = { ...original, title: 'Мой черновик' };
   const latest = { ...original, description: 'Новое описание другого участника', assignee_ids: [8] };
   assert.deepEqual(rebaseDraft(original, draft, latest), { title: 'Мой черновик', description: 'Новое описание другого участника', deadline: null, event_card_id: 3, department_card_ids: [1], assignee_ids: [8] });
+});
+
+
+test('task controls send versioned deletes and independently scoped preferences', async () => {
+  const original = globalThis.fetch;
+  const calls: unknown[] = [];
+  globalThis.fetch = async (url, init) => {
+    calls.push([String(url), init?.method, init?.body && JSON.parse(String(init.body))]);
+    return String(url).endsWith('/permanent')
+      ? new Response(null, { status: 204 })
+      : Response.json({ enabled: false });
+  };
+  try {
+    await archiveTask(3, 4);
+    await deleteArchivedTask(3, 5);
+    await getTaskNotifications();
+    await setTaskNotifications(undefined, false);
+    await getTaskNotifications(3);
+    await setTaskNotifications(3, true);
+    assert.deepEqual(calls, [
+      ['/api/tasks/3', 'DELETE', { version: 4 }],
+      ['/api/tasks/3/permanent', 'DELETE', { version: 5 }],
+      ['/api/tasks/preferences/notifications', 'GET', undefined],
+      ['/api/tasks/preferences/notifications', 'PUT', { enabled: false }],
+      ['/api/tasks/3/preferences/notifications', 'GET', undefined],
+      ['/api/tasks/3/preferences/notifications', 'PUT', { enabled: true }],
+    ]);
+  } finally { globalThis.fetch = original; }
 });

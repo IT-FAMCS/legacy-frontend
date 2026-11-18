@@ -185,6 +185,9 @@ try {
   await memberLogin('deputy');
   await navigate('/tasks');
   await waitFor("Array.from(document.querySelectorAll('.task-table tbody tr')).some(r=>r.innerText.includes('Изменённая таска'))",'deputy tasks');
+  const statusDisabled = title => evaluate(`Array.from(document.querySelectorAll('.task-table tbody tr')).find(row => row.querySelector('.task-title-button')?.textContent === ${JSON.stringify(title)})?.querySelector('.task-status input')?.disabled`);
+  assert.equal(await statusDisabled('Общая таска из браузера'), true, 'unassigned deputy cannot change task status');
+  assert.equal(await statusDisabled('Забронировать аудиторию'), false, 'assigned deputy can change task status');
   await evaluate("Array.from(document.querySelectorAll('.task-table tbody tr')).find(row=>row.innerText.includes('Изменённая таска')).querySelector('.task-title-button').click()");
   await waitFor("document.querySelector('dialog[open] .task-editor-archive')",'archive available in editor');
 
