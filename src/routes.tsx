@@ -21,6 +21,8 @@ import { TraineeAccessPage } from "./pages/trainee/manage";
 
 import { EquipmentPage } from "./pages/equipment/page";
 
+import { BudgetPage } from "./pages/budget/page";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -29,6 +31,7 @@ const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
+      { path: "/budget", element: <ProtectedRoute><BudgetPage /></ProtectedRoute> },
       { path: '/tasks', element: <ProtectedRoute><TasksPage /></ProtectedRoute> },
       { path: "/equipment", element: <ProtectedRoute><EquipmentPage /></ProtectedRoute> },
       {

@@ -23,6 +23,7 @@ type PositionFormData = {
   can_delete_cards: boolean;
   can_edit_any_user: boolean;
   can_manage_positions: boolean;
+  is_kaznachey: boolean;
   can_comment_cards: boolean;
 };
 
@@ -99,6 +100,7 @@ export function PositionsList() {
       can_delete_cards: position.can_delete_cards,
       can_edit_any_user: position.can_edit_any_user,
       can_manage_positions: position.can_manage_positions,
+      is_kaznachey: position.is_kaznachey,
       can_comment_cards: position.can_comment_cards,
     });
   };
@@ -115,6 +117,7 @@ export function PositionsList() {
       can_delete_cards: false,
       can_edit_any_user: false,
       can_manage_positions: false,
+      is_kaznachey: false,
       can_comment_cards: false,
     });
     setIsCreateOpen(true);
@@ -522,6 +525,7 @@ export function PositionsList() {
                 />
                 Комментарии к карточкам
               </label>
+              <label style={{display:"flex",alignItems:"center",gap:8,fontSize:14}}><input type="checkbox" checked={formData.is_kaznachey} onChange={e=>setFormData({...formData,is_kaznachey:e.target.checked})}/>Казначей (бюджет и заявки)</label>
             </div>
 
             <div

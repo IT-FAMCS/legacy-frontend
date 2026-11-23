@@ -22,6 +22,8 @@ export type UserInfo = {
   last_seen_at?: string | null;
   password_changed_at?: string | null;
   // Position flags from backend for permission checks
+  is_kaznachey?: boolean;
+  can_view_budget?: boolean;
   can_manage_positions?: boolean;
   can_register_users?: boolean;
   can_edit_categories?: boolean;

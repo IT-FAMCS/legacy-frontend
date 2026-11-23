@@ -312,6 +312,7 @@ export async function createPosition({
     can_edit_cards?: boolean;
     can_delete_cards?: boolean;
     can_edit_any_user?: boolean;
+    is_kaznachey?: boolean;
     can_manage_positions?: boolean;
   };
 }) {
@@ -344,6 +345,7 @@ export async function updatePosition({
     can_edit_cards: boolean;
     can_delete_cards: boolean;
     can_edit_any_user: boolean;
+    is_kaznachey: boolean;
     can_manage_positions: boolean;
   }>;
 }) {

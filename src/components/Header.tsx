@@ -15,6 +15,7 @@ import profileIcon from "../assets/icons/profile.svg";
 const Header = () => {
   const isAuthenticated = useUserStore((s) => s.isAuthenticated);
   const canManageTrainees = useUserStore((s) => isAdminChairOrDeputy(s.user?.position_name));
+  const canViewBudget = useUserStore(s => s.user?.can_view_budget === true);
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   // Check permissions using position flags from backend via hooks
@@ -77,6 +78,7 @@ const Header = () => {
               <Button label="Оборудка" onClick={() => goTo("/equipment")}
                 style={{ border: "none" }} hoverStyle={{ scale: 1.08 }} />
             )}
+            {isAuthenticated && canViewBudget && <Button label="Бюджет" onClick={() => goTo("/budget")} style={{ border: "none" }} hoverStyle={{ scale: 1.08 }} />}
             {isAuthenticated && canManageTrainees && (
               <Button label="Доступ стажёров" onClick={() => goTo("/trainee-access")}
                 style={{ border: "none" }} hoverStyle={{ scale: 1.08 }} />
