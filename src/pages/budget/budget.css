@@ -3,3 +3,7 @@
 .budget-month>summary{padding:16px 18px;font-size:18px;font-weight:600;text-transform:capitalize;cursor:pointer;list-style-position:inside}.budget-month>summary span{float:right;font-size:13px;font-weight:400;text-transform:none;color:#64647a}.budget-month>summary:focus-visible{outline:3px solid #686acf;outline-offset:-3px}.budget-month:not([open]){background:#f7f7ff}.budget-page .budget-danger{color:#b32b45;border-color:#ebbdc7;margin-top:6px}.budget-page td>a,.budget-page small>a{color:#5052b8;text-decoration:underline;text-underline-offset:3px}
 
 .budget-native-dialog{margin:auto;border:1px solid #e2e2ee;color:#24243d}.budget-native-dialog::backdrop{background:#20203b66}
+
+.budget-month-totals{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:12px;font-size:14px;text-transform:none;font-weight:400}.budget-month-totals strong{font-weight:500}.budget-treasurers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:16px}.budget-custody-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0}.budget-custody-row>strong{margin-left:auto}.budget-import-dialog{width:min(100%,950px)}.budget-import-dialog .budget-scroll{max-height:42vh;margin:18px 0}.budget-import-dialog .budget-actions{flex-wrap:wrap}.budget-tabs{flex-wrap:wrap}
+
+.budget-month>summary>.budget-month-totals{float:none;display:flex;font-size:14px;color:inherit}

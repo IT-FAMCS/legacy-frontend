@@ -36,3 +36,28 @@ test("ledger shows creator and applicant profiles, delete action and collapsible
   assert.match(html,/href="\/user\/cashier"/);assert.match(html,/href="\/user\/mikhail"/);
   assert.match(html,/Удалить/);assert.match(html,/Казначей/);assert.match(html,/Михаил/);
 });
+
+test("month heading shows income, expenses and net even when collapsed",()=>{
+  const html=renderToStaticMarkup(<BudgetLedger data={{balances:{cash:"87.96",card:"0.00"},years:[{year:2026,months:[{month:11,entries:[],income_total:"100.30",expense_total:"12.34",net_total:"87.96"}]}]}} onEdit={()=>{}}/>);
+  const heading=html.match(/<summary[^>]*>(.*?)<\/summary>/s)![1];
+  assert.match(heading,/100,30/);assert.match(heading,/12,34/);assert.match(heading,/87,96/);
+});
+
+import { BudgetImportButton } from "../src/pages/budget/import-dialog";
+import { Treasurers, TreasurerSelect } from "../src/pages/budget/treasurers";
+test("Google Sheets button follows server admin capability",()=>{
+  assert.equal(renderToStaticMarkup(<BudgetImportButton allowed={false} onClick={()=>{}}/>),"");
+  assert.match(renderToStaticMarkup(<BudgetImportButton allowed onClick={()=>{}}/>),/Google Sheets/);
+});
+test("custody displays separate accounts and owner may be empty",()=>{
+  const person={user_id:2,name:"Иван",login:"ivan",is_treasurer:true,can_edit:true,balances:{cash:"123.45",card:"-8.90"}};
+  const html=renderToStaticMarkup(<QueryClientProvider client={new QueryClient()}><Treasurers people={[person]} onRefresh={async()=>{}}/></QueryClientProvider>);
+  assert.match(html,/123,45/);assert.match(html,/8,90/);assert.match(html,/Наличные/);assert.match(html,/Карта/);assert.match(html,/Установить наличные/);
+  const select=renderToStaticMarkup(<TreasurerSelect people={[person]} value={null}/>);
+  assert.match(select,/<option value="" selected="">Не указан/);
+});
+
+test("treasurer selection retains current actor while options load",()=>{
+  const html=renderToStaticMarkup(<TreasurerSelect people={[]} value={42}/>);
+  assert.match(html,/<option value="42" selected="">/);
+});
