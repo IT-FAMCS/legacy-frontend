@@ -22,6 +22,7 @@ import { MultiSelect } from "../../components/MultiSelect";
 import type { Position } from "../../types/Position";
 import { useNavigate } from "react-router";
 import racoonLoading from "../../assets/images/racoon-loading.gif";
+import { matchesUserSearch } from "../../utils/user-search";
 import { formatDateTime } from "../../utils/date";
 
 type Department = {
@@ -100,6 +101,7 @@ export function AccountList() {
   const [showInactive, setShowInactive] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [formData, setFormData] = useState<UserFormData | null>(null);
+  const [search, setSearch] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState<string>("");
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
@@ -257,6 +259,7 @@ export function AccountList() {
   };
 
   const filteredUsers = users?.filter((user: User) => {
+    if (!matchesUserSearch(user, search)) return false;
     if (showInactive) {
       return user.is_deactivated || !user.is_active;
     }
@@ -359,6 +362,11 @@ export function AccountList() {
           {showInactive ? "Деактивированные пользователи" : "Все пользователи"}
         </h2>
         <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+          <label style={{display:"flex",flexDirection:"column",gap:4,fontSize:14}}>
+            Поиск пользователей
+            <input type="search" value={search} onChange={event=>setSearch(event.target.value)} placeholder="ФИО, логин или Миша вместо Михаил" style={{padding:"10px 12px",borderRadius:8,border:"1px solid #ccc",width:"min(320px, 75vw)"}}/>
+          </label>
+          {search && <button type="button" onClick={()=>setSearch("")} style={{padding:"8px 12px",borderRadius:8}}>Очистить поиск</button>}
           <select
             value={departmentFilter}
             onChange={(e) => setDepartmentFilter(e.target.value)}
@@ -395,6 +403,7 @@ export function AccountList() {
         </div>
       </div>
 
+      {search && <p role="status">Найдено: {filteredUsers?.length ?? 0}{!filteredUsers?.length && " · Попробуйте другое имя или логин."}</p>}
       <div className="table-scroll">
       <table
         style={{

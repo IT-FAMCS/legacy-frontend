@@ -29,3 +29,10 @@ test("permission revocation hides cached finance data", () => {
   assert.doesNotMatch(html,/12.345,67|budget-balances|Добавить операцию/);
   initial.user=oldUser;useUserStore.setState({user:{}});client.clear();
 });
+
+test("ledger shows creator and applicant profiles, delete action and collapsible months", () => {
+  const html=renderToStaticMarkup(<BudgetLedger data={{balances:{cash:"0.00",card:"0.00"},years:[{year:2026,months:[{month:11,entries:[{id:4,direction:"expense",account:"cash",amount:"12.34",description:"Cable",operation_at:"2026-11-23T10:00:00",request_id:1,created_by:2,updated_by:2,updated_at:"2026-11-23T10:00:00",created_by_name:"Казначей",created_by_login:"cashier",applicant_name:"Михаил",applicant_login:"mikhail"}]}]}]}} onEdit={()=>{}} onDelete={()=>{}}/>);
+  assert.match(html, /<details[^>]*class="budget-month"/);assert.match(html,/<summary/);
+  assert.match(html,/href="\/user\/cashier"/);assert.match(html,/href="\/user\/mikhail"/);
+  assert.match(html,/Удалить/);assert.match(html,/Казначей/);assert.match(html,/Михаил/);
+});
