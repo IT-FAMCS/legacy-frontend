@@ -21,7 +21,7 @@ export function SavedPayoutDetails(){
   const revoke=useMutation({mutationFn:()=>revokeDataConsent("saved_details"),onSuccess:async()=>{setCheckedVersion(null);await refresh();}});
   const busy=accept.isPending||add.isPending||remove.isPending||revoke.isPending;
   return <section className="personal-data"><h2>Сохранённые реквизиты ({rows.data?.length ?? 0}/3)</h2>
-    <p>Белинвест — номер карты, другие банки — ЕРИП/номер счёта. Не указывайте CVV/CVC, PIN, коды подтверждения и пароли.</p>
+    <p>Белинвест: номер карты, остальные банки - ерип или номер счета. <strong><u>Не указывайте CVV/CVC, PIN, коды подтверждения и пароли.</u></strong></p>
     <p>Реквизиты доступны вам на сайте и в боте. В заявке можно выбрать сохранённые или ввести новые без сохранения.</p>
     {status.isPending||(status.data?.saved_details && rows.isPending)?<p role="status">Загрузка…</p>:status.error||rows.error?<p role="alert">{status.error?.message||rows.error?.message} <button onClick={()=>{void status.refetch();void rows.refetch();}}>Повторить</button></p>:!status.data?.saved_details?<>
       {status.data && <details><summary>Условия сохранения реквизитов</summary><PolicyText policy={status.data.policy}/></details>}

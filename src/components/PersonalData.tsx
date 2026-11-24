@@ -13,13 +13,18 @@ export function DataContact({contact}:{contact?:string}){
 }
 
 export function PolicyText({policy}:{policy:DataPolicy}){
+  const emphasize=(text:string)=>text.split(/(?<=[.!?])\s+/).map((part,i)=>{
+    if(/добровольн|не отправляйте|отозвать|удален|удалён|удалени|отказ|за пределами|риски|вправе/i.test(part))return <strong key={i}><u>{part}</u>{" "}</strong>;
+    const colon=part.indexOf(": ");
+    return colon>=0 ? <span key={i}><strong><u>{part.slice(0,colon+1)}</u></strong>{part.slice(colon+1)}{" "}</span> : <span key={i}>{part}{" "}</span>;
+  });
   return <div className="personal-data-policy"><h2>Условия обработки персональных данных</h2>
     {!policy.configured && <p role="alert">Оператор ещё не заполнил сведения об обработке данных. Обратитесь к администратору.</p>}
-    <p>{policy.operator && <><strong>Оператор:</strong> {policy.operator}<br/></>}{policy.address && <><strong>Адрес:</strong> {policy.address}<br/></>}<strong>Контакт для обращений:</strong> <DataContact contact={policy.contact}/></p>
-    {policy.sections.map((text,i)=><p key={i}>{text}</p>)}
-    <p><strong>Место обработки и уполномоченные лица:</strong> {policy.processors || "Не указаны"}</p>
-    <p><strong>Срок согласия и хранения:</strong> {policy.retention || "Не указан"}</p>
-    <section aria-label="Ваши права"><h3>Ваши права и последствия согласия</h3>{policy.rights.map((text,i)=><p key={i}>{text}</p>)}</section>
+    <p>{policy.operator && <><strong><u>Оператор:</u></strong> {policy.operator}<br/></>}{policy.address && <><strong><u>Адрес:</u></strong> {policy.address}<br/></>}<strong><u>Контакт для обращений:</u></strong> <DataContact contact={policy.contact}/></p>
+    {policy.sections.map((text,i)=><p key={i}>{emphasize(text)}</p>)}
+    <p><strong><u>Место обработки и уполномоченные лица:</u></strong> {emphasize(policy.processors || "Не указаны")}</p>
+    <p><strong><u>Срок согласия и хранения:</u></strong> {emphasize(policy.retention || "Не указан")}</p>
+    <section aria-label="Ваши права"><h3><strong><u>Ваши права и последствия согласия</u></strong></h3>{policy.rights.map((text,i)=><p key={i}>{emphasize(text)}</p>)}</section>
     <small>Версия условий: {policy.version.slice(0,12)}</small>
   </div>;
 }
