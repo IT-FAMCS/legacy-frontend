@@ -3,7 +3,7 @@ import { readErrorResponse } from "../utils/api-error";
 
 export type BudgetEntryInput = { treasurer_id?: number | null; direction: "income" | "expense"; account: "cash" | "card"; amount: string; description: string; operation_at: string };
 export type BudgetEntry = BudgetEntryInput & { treasurer_name?: string | null; treasurer_login?: string | null; id: number; request_id: number | null; created_by: number; updated_by: number; updated_at: string; created_by_name?: string | null; created_by_login?: string | null; updated_by_name?: string | null; updated_by_login?: string | null; applicant_name?: string | null; applicant_login?: string | null };
-export type Budget = { can_import?: boolean; balances: { cash: string; card: string }; years: { year: number; months: { month: number; income_total?: string; expense_total?: string; net_total?: string; entries: BudgetEntry[] }[] }[] };
+export type Budget = { total?: string; can_import?: boolean; balances: { cash: string; card: string }; years: { year: number; months: { month: number; income_total?: string; expense_total?: string; net_total?: string; entries: BudgetEntry[] }[] }[] };
 export type BudgetRequest = { id: number; request_type: "reimbursement" | "add_funds"; applicant_name: string; applicant_id?: number; applicant_login?: string | null; departments: string[]; description: string; submitted_amount: string; amount: string; payout_details: string | null; status: string; created_at: string; amount_changes: { old_amount: string; new_amount: string; editor_id: number; created_at: string }[] };
 export class BudgetApiError extends Error {
   status: number;

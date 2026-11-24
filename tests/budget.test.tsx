@@ -61,3 +61,24 @@ test("treasurer selection retains current actor while options load",()=>{
   const html=renderToStaticMarkup(<TreasurerSelect people={[]} value={42}/>);
   assert.match(html,/<option value="42" selected="">/);
 });
+
+
+test("ledger displays one combined balance",()=>{
+  const html=renderToStaticMarkup(<BudgetLedger data={{balances:{cash:"100.10",card:"-12.34"},years:[]}} onEdit={()=>{}}/>);
+  assert.match(html,/87,76/);assert.doesNotMatch(html,/Наличные|На карте/);
+});
+test("treasurers warn only when total differs from ledger",()=>{
+  const person={user_id:2,name:"Иван",login:"ivan",is_treasurer:true,can_edit:true,balances:{cash:"100.10",card:"-12.34"}};
+  const render=(total:string)=>renderToStaticMarkup(<QueryClientProvider client={new QueryClient()}><Treasurers people={[person]} ledgerTotal={total} onRefresh={async()=>{}}/></QueryClientProvider>);
+  assert.match(render("100.00"),/role="alert"/);assert.match(render("100.00"),/12,24/);
+  assert.doesNotMatch(render("87.76"),/role="alert"/);
+});
+
+
+import { PolicyText } from "../src/components/PersonalData";
+test("privacy policy omits unspecified operator identity and links administrator",()=>{
+  const html=renderToStaticMarkup(<PolicyText policy={{version:"test",configured:true,operator:"",address:"",contact:"https://famcs-legacy.by/user/admin",processors:"Республика Беларусь",retention:"Срок хранения не ограничен календарной датой",sections:[],rights:[]}}/>);
+  assert.doesNotMatch(html,/Не указан|<strong>Оператор:|<strong>Адрес:/);
+  assert.match(html,/href="https:\/\/famcs-legacy.by\/user\/admin"/);
+  assert.match(html,/Республика Беларусь/);
+});

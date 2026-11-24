@@ -1,3 +1,5 @@
+import { SavedPayoutDetails } from "../../components/SavedPayoutDetails";
+import { PersonalDataControls } from "../../components/PersonalData";
 import { TaskNotifications } from '../../features/tasks/TaskNotifications';
 import { TelegramLink } from '../../components/TelegramLink';
 import { TasksBoard } from '../../features/tasks/TasksBoard';
@@ -352,7 +354,7 @@ export function AboutUser() {
         </div>
       </div>
 
-      {user?.id && (isOwnProfile || user.id === currentUser?.id) && <><TelegramLink /><TaskNotifications /></>}
+      {user?.id && (isOwnProfile || user.id === currentUser?.id) && <><TelegramLink /><TaskNotifications /><SavedPayoutDetails /><PersonalDataControls /></>}
       {user?.id && <ProfileEquipment userId={user.id} />}
       {user?.id && <AccountWarnings userId={user.id} name={`${user.last_name || ""} ${user.first_name || ""}`.trim()} />}
 

@@ -78,12 +78,29 @@ const fill = async (selector, value) => {
   await delay(50);
 };
 const memberLogin = async login => {
+  // Keep repeated runs deterministic against the isolated browser fixture.
+  const authResponse=await fetch(backend+"/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({login,password:"smoke-password"})});
+  assert.equal(authResponse.status,200,"isolated fixture authentication");
+  const auth=await authResponse.json();
+  const reset=await fetch(backend+"/api/personal-data/consents/service",{method:"DELETE",headers:{Authorization:`Bearer ${auth.access_token}`}});
+  assert.equal(reset.status,200,"reset isolated fixture consent");
   await evaluate("if (location.protocol === 'http:') localStorage.removeItem('jwt_token')");
   await navigate("/login");
   await fill("#login", login);
   await fill("#password", "smoke-password");
   await click("button[type=submit]");
-  await waitFor("location.pathname === '/home' && document.querySelector('header')", "member login");
+  await waitFor("location.pathname === '/home' && document.querySelector('.personal-data input[type=checkbox]')", "consent before member area");
+  assert.equal(await evaluate("!!document.querySelector('header')"),false,"member header hidden before consent");
+  if(login==='admin'){
+    await navigate('/register/bulk');
+    await waitFor("document.querySelector('.personal-data input[type=checkbox]')", "bulk registration requires consent");
+    assert.equal(await evaluate("!!document.querySelector('input[type=file]')"),false,"bulk import cannot bypass consent");
+    await navigate('/home');
+    await waitFor("document.querySelector('.personal-data input[type=checkbox]')", "return to consent");
+  }
+  await click('.personal-data input[type=checkbox]');
+  await evaluate("Array.from(document.querySelectorAll('button')).find(el=>el.innerText==='Согласиться и продолжить').click()");
+  await waitFor("document.querySelector('header')", "consent accepted");
 };
 
 
@@ -130,11 +147,11 @@ try {
   await evaluate(`document.querySelector('[name="description"]').value='Browser expense'`);
   await evaluate(`document.querySelector('.budget-dialog form').requestSubmit()`);
   await waitFor("!document.querySelector('.budget-dialog') && document.body.innerText.includes('Browser expense')", "manual expense saved");
-  assert.equal(await evaluate("document.querySelector('.budget-balances').innerText.includes('287,66')"),true);
+  assert.equal(await evaluate("document.querySelector('.budget-balances').innerText.includes('237,66')"),true);
   await evaluate(`Array.from(document.querySelectorAll('tr')).find(row=>row.innerText.includes('Browser expense')).querySelector('button').click()`);
   await fill('[name="amount"]',"20");
   await evaluate(`document.querySelector('.budget-dialog form').requestSubmit()`);
-  await waitFor("!document.querySelector('.budget-dialog') && document.querySelector('.budget-balances').innerText.includes('280,00')", "edited balance");
+  await waitFor("!document.querySelector('.budget-dialog') && document.querySelector('.budget-balances').innerText.includes('230,00')", "edited balance");
   assert.equal(await evaluate("Array.from(document.querySelectorAll('.budget-month a')).some(a=>a.getAttribute('href')==='/user/admin')"),true,"creator profile shown");
   await evaluate("document.querySelector('.budget-month summary').click()");
   assert.equal(await evaluate("document.querySelector('.budget-month').open"),false,"month collapses");
@@ -145,11 +162,14 @@ try {
   await command("Input.dispatchKeyEvent",{type:"keyDown",key:"Escape",code:"Escape",windowsVirtualKeyCode:27});
   await command("Input.dispatchKeyEvent",{type:"keyUp",key:"Escape",code:"Escape",windowsVirtualKeyCode:27});
   await waitFor("!document.querySelector('dialog[open]')", "Escape closes deletion confirmation");
-  assert.equal(await evaluate("document.querySelector('.budget-balances').innerText.includes('280,00')"),true,"cancel preserves balance");
+  assert.equal(await evaluate("document.querySelector('.budget-balances').innerText.includes('230,00')"),true,"cancel preserves balance");
   await evaluate(`Array.from(document.querySelectorAll('tr')).find(row=>row.innerText.includes('Browser expense')).querySelector('.budget-danger').click()`);
   await byText("Удалить операцию");
-  await waitFor("!document.querySelector('.budget-dialog') && !document.body.innerText.includes('Browser expense') && document.querySelector('.budget-balances').innerText.includes('300,00')", "deletion recalculates balance");
+  await waitFor("!document.querySelector('.budget-dialog') && !document.body.innerText.includes('Browser expense') && document.querySelector('.budget-balances').innerText.includes('250,00')", "deletion recalculates balance");
   await writeFile(join(artifacts,"budget-desktop.png"),Buffer.from((await command("Page.captureScreenshot",{format:"png"})).data,"base64"));
+  await byText("Казначеи");
+  await waitFor("document.querySelector('.budget-reconciliation')", "custody mismatch warning");
+  assert.equal(await evaluate("document.querySelector('.budget-reconciliation').innerText.includes('250,00')"),true);
   await byText("Заявки (1)");
   await waitFor("document.body.innerText.includes('Иван Тестов')", "pending request");
   assert.equal(await evaluate("document.querySelector('.budget-request').innerHTML.includes('private-browser-receipt')"),false);
@@ -166,6 +186,27 @@ try {
   assert.equal(await evaluate("Array.from(document.querySelectorAll('header button')).some(el=>el.innerText==='Бюджет')"),false);
   await navigate("/budget");await waitFor("document.body.innerText.includes('Доступ только')", "member denied");
   assert.equal(await evaluate("!!document.querySelector('.budget-balances')"),false);
+  await navigate("/account");
+  await waitFor("Array.from(document.querySelectorAll('h2')).some(el=>el.innerText.startsWith('Сохранённые реквизиты'))", "own payout section");
+  await evaluate("Array.from(document.querySelectorAll('h2')).find(el=>el.innerText.startsWith('Сохранённые реквизиты')).closest('section').querySelector('input[type=checkbox]').click()");
+  await byText("Разрешить сохранение реквизитов");
+  await waitFor("document.querySelector('input[name=label]')", "optional storage consent");
+  for(let i=1;i<=3;i++){
+    await fill('input[name=label]',`Bank ${i}`);
+    await evaluate(`document.querySelector('textarea[name=details]').value='Account ${i}';document.querySelector('input[name=label]').form.requestSubmit()`);
+    await waitFor(`document.body.innerText.includes('Сохранённые реквизиты (${i}/3)')`, "saved payout count");
+  }
+  assert.equal(await evaluate("!!document.querySelector('input[name=label]')"),false,"three-template UI limit");
+  await evaluate("Array.from(document.querySelectorAll('h2')).find(el=>el.innerText.startsWith('Сохранённые реквизиты')).closest('section').querySelector('li button').click()");
+  await byText("Подтвердить удаление");
+  await waitFor("document.body.innerText.includes('Сохранённые реквизиты (2/3)') && document.querySelector('input[name=label]')", "delete template frees slot");
+  await command("Emulation.setDeviceMetricsOverride",{width:375,height:812,deviceScaleFactor:1,mobile:true});
+  assert.equal(await evaluate("document.documentElement.scrollWidth <= innerWidth"),true,"profile personal-data sections fit phone");
+  await evaluate("Array.from(document.querySelectorAll('h2')).find(el=>el.innerText.startsWith('Сохранённые реквизиты')).scrollIntoView({block:'start'})");
+  await writeFile(join(artifacts,"saved-payouts-mobile.png"),Buffer.from((await command("Page.captureScreenshot",{format:"png"})).data,"base64"));
+  await command("Emulation.setDeviceMetricsOverride",{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await byText("Отозвать основное согласие");await byText("Подтвердить отзыв");
+  await waitFor("location.pathname === '/login'", "service consent revoke logs out");
   await memberLogin("cashier");await navigate("/budget");
   await waitFor("document.querySelector('.budget-balances')", "cashier access");
   await navigate("/accounts");
@@ -179,7 +220,7 @@ try {
   await byText("Очистить поиск");
   await waitFor("document.querySelector('tbody')?.children.length===3", "search clear restores users");
   assert.equal(runtimeErrors.length,0,JSON.stringify(runtimeErrors));
-  console.log("PASS: admin/cashier access, member denied, year/month tables, negative balance, create/edit operation, request amount history, creator profiles, collapse/reopen months, delete/cancel and recalculation, smart user search and clear, receipt privacy, mobile layout, no runtime errors.");
+  console.log("PASS: admin/cashier access, member denied, year/month tables, combined total, mismatch alert, consent acceptance/revocation, saved payout create/delete/limit, create/edit operation, request amount history, creator profiles, collapse/reopen months, delete/cancel and recalculation, smart user search and clear, receipt privacy, mobile layout, no runtime errors.");
 } finally {
   for (const pending of calls.values()) pending.reject(new Error("Browser test finished"));
   websocket?.close();

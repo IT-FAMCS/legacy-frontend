@@ -1,3 +1,4 @@
+import { ConsentGate } from "./PersonalData";
 import { Navigate, useLocation } from "react-router";
 import { useUserStore } from "../stores/user";
 
@@ -12,5 +13,5 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (!token && !isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
-  return <>{children}</>;
+  return <ConsentGate>{children}</ConsentGate>;
 };

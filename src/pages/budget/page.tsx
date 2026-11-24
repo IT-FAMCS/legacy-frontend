@@ -1,3 +1,4 @@
+import { sumMoney } from "../../utils/money";
 import { BudgetImportButton, BudgetImportDialog } from "./import-dialog";
 import { TreasurerSelect, Treasurers } from "./treasurers";
 import { getTreasurers } from "../../api/budget";
@@ -21,9 +22,8 @@ function Person({name,login,fallback}: {name?:string|null;login?:string|null;fal
 }
 
 export function BudgetLedger({data,onEdit,onDelete}: {data:Budget;onEdit:(entry:BudgetEntry)=>void;onDelete?:(entry:BudgetEntry)=>void}) {
-  return <><div className="budget-balances">{(["cash","card"] as const).map(account=><article key={account}>
-    <span>{account==="cash" ? "Наличные" : "На карте"}</span><strong className={Number(data.balances[account])<0 ? "budget-negative" : ""}>{byn(data.balances[account])}</strong>
-  </article>)}</div>
+  const total=data.total ?? sumMoney([data.balances.cash,data.balances.card]);
+  return <><div className="budget-balances"><article><span>Общая сумма бюджета</span><strong className={Number(total)<0 ? "budget-negative" : ""}>{byn(total)}</strong></article></div>
   {!data.years.length && <div className="budget-empty">Операций пока нет. Начальный баланс — 0,00 BYN.</div>}
   {data.years.map(year=><section key={year.year} className="budget-year"><h2>{year.year}</h2>{year.months.map(month=><details key={month.month} className="budget-month" open><summary>{months[month.month-1]}<span>{month.entries.length} оп.</span><span className="budget-month-totals"><strong className="budget-positive">Доход: +{byn(month.income_total ?? "0")}</strong><strong className="budget-negative">Расход: −{byn(month.expense_total ?? "0")}</strong><strong>Итог: {byn(month.net_total ?? "0")}</strong></span></summary>
     <div className="budget-scroll"><table><thead><tr><th>Дата</th><th>Операция</th><th>Счёт</th><th>Описание</th><th>Сумма</th><th>Казначей</th><th>Автор / заявитель</th><th>Действия</th></tr></thead><tbody>
@@ -85,7 +85,7 @@ export function BudgetPage() {
     {budget.isPending && <p role="status">Загрузка бюджета…</p>}
     {tab==="ledger" && budget.data && <BudgetLedger data={budget.data} onEdit={entry=>{save.reset();setForm({entry});}} onDelete={entry=>{remove.reset();setRemoving(entry);}}/>}
     {tab==="requests" && (requests.isPending ? <p>Загрузка заявок…</p> : <BudgetRequests requests={requests.data || []} onEdit={row=>{correct.reset();setRequest(row);}}/>)}
-    {tab==="treasurers" && (treasurers.isPending ? <p>Загрузка остатков:</p> : treasurers.error ? <p role="alert">{treasurers.error.message}</p> : <Treasurers people={treasurers.data || []} onRefresh={refresh}/>)}
+    {tab==="treasurers" && (treasurers.isPending ? <p>Загрузка остатков:</p> : treasurers.error ? <p role="alert">{treasurers.error.message}</p> : <Treasurers people={treasurers.data || []} ledgerTotal={budget.data ? (budget.data.total ?? sumMoney([budget.data.balances.cash,budget.data.balances.card])) : undefined} onRefresh={refresh}/>)}
     {importing && budget.data?.can_import && <BudgetImportDialog people={treasurers.data || []} onClose={()=>setImporting(false)} onDone={async count=>{setImporting(false);setNotice(`Импортировано операций: ${count}`);await refresh();}}/>}
     {form && <div className="budget-overlay"><div role="dialog" aria-modal="true" aria-labelledby="budget-form-title" className="budget-dialog"><h2 id="budget-form-title">{form.entry ? "Изменить операцию" : "Новая операция"}</h2>
       <form onSubmit={event=>{event.preventDefault();const values=new FormData(event.currentTarget);save.mutate({entry:form.entry,payload:{treasurer_id:values.get("treasurer_id") ? Number(values.get("treasurer_id")) : null,direction:values.get("direction") as BudgetEntryInput["direction"],account:values.get("account") as BudgetEntryInput["account"],amount:String(values.get("amount")).replace(",","."),description:String(values.get("description")),operation_at:new Date(String(values.get("operation_at"))+":00+03:00").toISOString()}});}}>

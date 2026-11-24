@@ -29,7 +29,7 @@ const router = createBrowserRouter([
     element: <LandingPage />,
   },
   {
-    element: <Layout />,
+    element: <ProtectedRoute><Layout /></ProtectedRoute>,
     children: [
       { path: "/budget", element: <ProtectedRoute><BudgetPage /></ProtectedRoute> },
       { path: '/tasks', element: <ProtectedRoute><TasksPage /></ProtectedRoute> },
@@ -115,11 +115,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <RegisterPage />,
+    element: <ProtectedRoute><RegisterPage /></ProtectedRoute>,
   },
   {
     path: "/register/bulk",
-    element: <RegisterBulkPage />,
+    element: <ProtectedRoute><RegisterBulkPage /></ProtectedRoute>,
   }
 ]);
 
